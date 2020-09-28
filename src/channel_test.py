@@ -11,8 +11,6 @@ def channel_invite_invalid_id():
     invalid_u_id = -1
 
 with pytest.raises(InputError) as e:
-        channel.channel_invite(login_owner['token'], channel_id, )
-        channel.channel_invite(login_owner['token'], , login_user['u_id'])
         channel.channel_invite(login_owner['token'], invalid_channel_id, login_user['u_id'])
         channel.channel_invite(login_owner['token'], channel_id, invalid_u_id)
         channel.channel_invite(login_owner['token'], invalid_channel_id, invalid_u_id)
