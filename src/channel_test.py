@@ -10,7 +10,7 @@ def channel_invite_invalid_id():
     invalid_channel_id = -1
     invalid_u_id = -1
 
-    with pytest.raise(InputError) as e:
+with pytest.raises(InputError) as e:
         channel.channel_invite(login_owner['token'], channel_id, )
         channel.channel_invite(login_owner['token'], , login_user['u_id'])
         channel.channel_invite(login_owner['token'], invalid_channel_id, login_user['u_id'])
@@ -25,7 +25,7 @@ def channel_invite_invalid_token():
     auth.auth_register("user@email.com", "password123", "User", "Test")
     login_user = auth.auth_login("user@email.com", "password123")
 
-    with pytest.raise(AccessError) as e:
+    with pytest.raises(AccessError) as e:
         channel.channel_invite("", channel_id, login_user['u_id'])
         channel.channel_invite(login_user['token'], channel_id, login_user['u_id'])
 
@@ -48,7 +48,7 @@ def channel_details_invalid_id():
     channel_id = channels.channels_create(login_owner['token'], "channel", 'u_id')
     invalid_channel_id = -1
 
-    with pytest.raise(InputError) as e:
+    with pytest.raises(InputError) as e:
         channel.channel_details(login_owner['token'], invalid_channel_id)
 
 def channel_details_invalid_token():
@@ -59,7 +59,7 @@ def channel_details_invalid_token():
     auth.auth_register("user@email.com", "password123", "User", "Test")
     login_user = auth.auth_login("user@email.com", "password123")
 
-    with pytest.raise(AccessError) as e:
+    with pytest.raises(AccessError) as e:
         channel.channel_details(login_user['token'], channel_id)
 
 def channel_details_success():
@@ -80,4 +80,3 @@ def channel_details_success():
     assert channel_details['name'] == "channel"
     assert channel_details['owner_members'] == [{u_id : login_owner['u_id'], name_first : Owner, name_last : Test}]
     assert channel_details['all_members'] == [{u_id : login_owner['u_id'], name_first : Owner, name_last : Test}, {u_id : login_user['u_id'], name_first : User, name_last : Test}]
-
