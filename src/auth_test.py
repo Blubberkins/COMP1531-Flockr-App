@@ -4,10 +4,10 @@ from error import InputError
 
 # Test functions for auth_login
 def test_login_successful():
-    reg = auth.auth_register("validemail@gmail.com", "python123", "New", "User") 
+    register = auth.auth_register("validemail@gmail.com", "python123", "New", "User") 
     login = auth.auth_login("validemail@gmail.com", "python123")
-    assert reg[0] == login[0]
-    assert reg[1] == login[1]
+    assert reg["u_id"] == login["u_id"]
+    assert reg["token"] == login["token"]
 
 def test_login_unsuccessful():
     auth.auth_register("validemail@gmail.com", "python123", "New", "User") 
@@ -28,10 +28,10 @@ def test_login_invalid_email():
         auth.auth_login("email.com", "python123") 
 
 def test_login_registered_email():
-    reg = auth.auth_register("registered@gmail.com", "python123", "New", "User")
+    register = auth.auth_register("registered@gmail.com", "python123", "New", "User")
     login = auth.auth_login("registered@gmail.com", "python123")
-    assert reg[0] == login[0]
-    assert reg[1] == login[1]
+    assert reg["u_id"] == login["u_id"]
+    assert reg["token"] == login["token"]
 
 def test_login_unregistered_email():
     auth.auth_register("registered@gmail.com", "Validpassword1!", "New", "User")
@@ -50,9 +50,9 @@ def test_login_invalid_password():
 def test_logout_successful():
     auth.auth_register("registered@gmail.com", "Validpassword1!", "New", "User")
     login = auth.auth_login("registered@gmail.com", "Validpassword1!")
-    token = login[1]
-    is_success = auth.auth_logout(token)
-    assert is_success == True
+    token = login["token"]
+    result = auth.auth_logout(token)
+    assert result["is_success"] == True
 
 # def test_logout_unsuccessful():
    
