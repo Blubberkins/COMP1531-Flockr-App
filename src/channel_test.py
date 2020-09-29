@@ -3,7 +3,7 @@ import auth
 import pytest
 from error import InputError
 from error import AccessError
-#test functions for channel_invite
+# Test functions for channel_invite
 def test_channel_invite_invalid_id():
     auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_owner = auth.auth_login("owner@email.com", "password123")
@@ -44,7 +44,7 @@ def test_channel_invite_success():
     channel_details = channel.channel_details(login_owner['token'], channel_id)
     assert channel_details['all_members'] == [{u_id : login_owner['u_id'], name_first : Owner, name_last : Test}, {u_id : login_user['u_id'], name_first : User, name_last : Test}]
 
-#tests for channel_details
+# Tests for channel_details
 def test_channel_details_invalid_id():
     auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_owner = auth.auth_login("owner@email.com", "password123")
@@ -83,3 +83,5 @@ def test_channel_details_success():
     assert channel_details['name'] == "channel"
     assert channel_details['owner_members'] == [{u_id : login_owner['u_id'], name_first : Owner, name_last : Test}]
     assert channel_details['all_members'] == [{u_id : login_owner['u_id'], name_first : Owner, name_last : Test}, {u_id : login_user['u_id'], name_first : User, name_last : Test}]
+
+    # Tests for channel_messages
