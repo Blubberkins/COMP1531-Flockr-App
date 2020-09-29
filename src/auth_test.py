@@ -57,4 +57,27 @@ def test_logout_successful():
 # def test_logout_unsuccessful():
    
 # Test functions for auth_register
-def test_register():
+# Success for register
+# def test_register():
+
+
+
+
+# Failure for register
+
+def test_register_invalid_email():
+    with pytest.raises(InputError) as e:
+        auth.auth_register("invalidemail.com", "password123", "Firstname", "Lastname")
+        auth.auth_register("@@@@@@@@@@@@@@@@", "password123", "Firstname", "Lastname")
+        auth.auth_register("invalid@email", "password123", "Firstname", "Lastname")
+
+def test_register_already_used_email():
+    auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
+    with pytest.raises(InputError) as e:
+        auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
+        auth.auth_register("validemail@gmail.com", "differentpassword123", "NewFirstname", "NewLastname")
+        
+def test_register_invalid_password():
+    with pytest.raises(InputError) as e:
+        auth.auth_register("validemail@gmail.com", "pass", "Firstname", "Lastname")
+        auth.auth_register("validemail@gmail.com", "", "Firstname", "Lastname")
