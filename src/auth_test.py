@@ -8,7 +8,6 @@ def test_login_successful():
     register = auth.auth_register("validemail@gmail.com", "python123", "New", "User") 
     login = auth.auth_login("validemail@gmail.com", "python123")
     assert register["u_id"] == login["u_id"]
-    assert register["token"] == login["token"]
 
 # Failure for login
 def test_login_empty():
@@ -27,7 +26,6 @@ def test_login_registered_email():
     register = auth.auth_register("registered@gmail.com", "python123", "New", "User")
     login = auth.auth_login("registered@gmail.com", "python123")
     assert register["u_id"] == login["u_id"]
-    assert register["token"] == login["token"]
 
 def test_login_unregistered_email():
     auth.auth_register("registered@gmail.com", "Validpassword1!", "New", "User")
