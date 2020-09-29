@@ -6,8 +6,8 @@ from error import InputError
 def test_login_successful():
     register = auth.auth_register("validemail@gmail.com", "python123", "New", "User") 
     login = auth.auth_login("validemail@gmail.com", "python123")
-    assert reg["u_id"] == login["u_id"]
-    assert reg["token"] == login["token"]
+    assert register["u_id"] == login["u_id"]
+    assert register["token"] == login["token"]
 
 def test_login_unsuccessful():
     auth.auth_register("validemail@gmail.com", "python123", "New", "User") 
@@ -30,8 +30,8 @@ def test_login_invalid_email():
 def test_login_registered_email():
     register = auth.auth_register("registered@gmail.com", "python123", "New", "User")
     login = auth.auth_login("registered@gmail.com", "python123")
-    assert reg["u_id"] == login["u_id"]
-    assert reg["token"] == login["token"]
+    assert register["u_id"] == login["u_id"]
+    assert register["token"] == login["token"]
 
 def test_login_unregistered_email():
     auth.auth_register("registered@gmail.com", "Validpassword1!", "New", "User")
@@ -58,10 +58,12 @@ def test_logout_successful():
    
 # Test functions for auth_register
 # Success for register
-# def test_register():
-
-
-
+def test_register_success():
+    auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
+    auth.auth_register("validemail@gmail.com", "           ", "Firstname", "Lastname")
+    auth.auth_register("validemail@ourearth.org", "password123", "Firstname", "Lastname")
+    auth.auth_register("validemail@gmail.com", "password123", "123456789", "Lastname")
+    auth.auth_register("validemail@gmail.com", "password123", "123456789", "@#$%^&(*")
 
 # Failure for register
 
@@ -80,4 +82,23 @@ def test_register_already_used_email():
 def test_register_invalid_password():
     with pytest.raises(InputError) as e:
         auth.auth_register("validemail@gmail.com", "pass", "Firstname", "Lastname")
+    with pytest.raises(InputError) as e:    
         auth.auth_register("validemail@gmail.com", "", "Firstname", "Lastname")
+    with pytest.raises(InputError) as e:    
+        auth.auth_register("validemail@gmail.com", "123@b", "Firstname", "Lastname")
+
+def test_register_invalid_first_name():
+    with pytest.raises(InputError) as e:
+        auth.auth_register("validemail@gmail.com", "password123", "", "Lastname")
+    with pytest.raises(InputError) as e:
+        auth.auth_register("validemail@gmail.com", "password123", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz", "Lastname")
+
+def test_register_invalid_last_name():
+    with pytest.raises(InputError) as e:
+        auth.auth_register("validemail@gmail.com", "password123", "Firstname", "")
+
+    with pytest.raises(InputError) as e:
+        auth.auth_register("validemail@gmail.com", "password123", "Firstname", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz")
+
+
+
