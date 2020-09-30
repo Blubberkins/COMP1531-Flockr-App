@@ -134,3 +134,47 @@ def test_channel_messages_multiple_messages_success():
     assert channel_messages['end'] == -1
     assert channel_messages['messages'] == [{'message_id': 1, 'u_id': login_owner['u_id'],'message': 'example message', 'time_created': 0}, {'message_id': 2, 'u_id': login_owner['u_id'],'message': 'example message', 'time_created': 0}
     , {'message_id': 3, 'u_id': login_owner['u_id'],'message': 'example message', 'time_created': 0}]
+
+# Tests for channel_leave
+
+def test_channel_leave_invalid_channel_id():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    invalid_channel_id = channel_id - 1
+
+    with pytest.raises(InputError) as e:
+        channel.channel_leave(login_owner['token'], invalid_channel_id)
+    
+def test_channel_leave_not_in_channel():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    channel_id2 = channels.channels_create(login_user['token'], "channel", True)
+
+    with pytest.raises(AccessError) as e:  
+        channel.channel_leave(login_owner['token'], channel_id2)
+        channel.channel_leave(login_user['token'], channel_id)
+
+# Tests for channel_join
+
+def test_channel_join_invalid_channel_id():    
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    invalid_channel_id = channel_id - 1
+
+    with pytest.raises(InputError) as e:
+        channel.channel_leave(login_user['token'], invalid_channel_id)
+
+def test_channel_join_private_channel():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+
+    channel_id = channels.channels_create(login_owner['token'], "channel", False)
+
+    with pytest.raises(AccessError) as e:
+        channel.channel_leave(login_user['token'], channel_id)
+
+
