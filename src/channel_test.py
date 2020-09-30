@@ -77,7 +77,16 @@ def test_channel_details_success():
 
 # Tests for channel_messages
 
-def test_empty_channel_messages():
+def test_channel_messages_invalid_start_index():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    channel_id2 = channels.channels_create(login_owner['token'], "channel", True)
+    
+    message.message_send(login_owner['token'], channel_id2, 'example message')
+
+    with pytest.raises(InputError) as e:
+        channel.channel_messages(login_owner['token'], channel_id, 0)
+        channel.channel_messages(login_owner['token'], channel_id2, 1)
     pass
 
 def test_channel_messages_invalid_channel():
@@ -85,7 +94,7 @@ def test_channel_messages_invalid_channel():
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
     invalid_channel_id = channel_id - 1
 
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(InputError) as e:
         channel.channel_messages(login_owner['token'], invalid_channel_id, 0)
     pass
 
