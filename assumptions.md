@@ -5,6 +5,7 @@
 * Space bars are considered characters for password length.
 * First and last name contain no spaces may contain symbols such as !@#$%^&*(
 * Registering will login the user.
+* The token returned from auth_register and auth_login will be the same as the user email.
 
 ## Channel
 * The channel_details function returns a dictionary
