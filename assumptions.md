@@ -4,6 +4,7 @@
 * The return values of auth_register and auth_login functions should match when logging in with the same details which have just been registered with.
 * Space bars are considered characters for password length.
 * First and last name contain no spaces may contain symbols such as !@#$%^&*(
+* Registering will login the user
 
 ## Channels
 * The name of a new channel can include space bars (considered as characters) and symbols
