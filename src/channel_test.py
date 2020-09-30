@@ -76,7 +76,6 @@ def test_channel_details_success():
     assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
 
 # Tests for channel_messages
-
 def test_channel_messages_invalid_start_index():
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -136,7 +135,6 @@ def test_channel_messages_multiple_messages_success():
     , {'message_id': 3, 'u_id': login_owner['u_id'],'message': 'example message', 'time_created': 0}]
 
 # Tests for channel_leave
-
 def test_channel_leave_invalid_channel_id():
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -157,7 +155,6 @@ def test_channel_leave_not_in_channel():
         channel.channel_leave(login_user['token'], channel_id)
 
 # Tests for channel_join
-
 def test_channel_join_invalid_channel_id():    
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
@@ -176,5 +173,96 @@ def test_channel_join_private_channel():
 
     with pytest.raises(AccessError) as e:
         channel.channel_leave(login_user['token'], channel_id)
+
+# Test for channel_addowner
+def test_channel_addowner_invalid_id():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_invite(login_owner['token'], channel_id, login_user['u_id'])
+
+    invalid_channel_id = -1
+    invalid_u_id = -1
+
+    with pytest.raises(InputError) as e:
+        channel.channel_addowner(login_owner['token'], invalid_channel_id, login_user['u_id'])
+        channel.channel_addowner(login_owner['token'], channel_id, invalid_u_id)
+        channel.channel_addowner(login_owner['token'], invalid_channel_id, invalid_u_id)
+
+def test_channel_addowner_already_owner():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    with pytest.raises(InputError) as e:
+        channel.channel_addowner(login_owner['token'], channel_id, login_owner['u_id'])
+
+def test_channel_addowner_invalid_token():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_invite(login_owner['token'], channel_id, login_user['u_id'])
+
+    with pytest.raises(AccessError) as e:
+        channel.channel_addowner(login_user['token'], channel_id, login_user['u_id'])
+
+def test_channel_addowner_success():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_invite(login_owner['token'], channel_id, login_user['u_id'])
+
+    channel.channel_addowner(login_owner['token'], channel_id, login_user['u_id'])
+    channel_details = channel.channel_details(login_owner['token'], channel_id)
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+
+# Tests for channel_removeowner
+def test_channel_removeowner_invalid_id():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_invite(login_owner['token'], channel_id, login_user['u_id'])
+
+    invalid_channel_id = -1
+    invalid_u_id = -1
+
+    with pytest.raises(InputError) as e:
+        channel.channel_removeowner(login_owner['token'], invalid_channel_id, login_user['u_id'])
+        channel.channel_removeowner(login_owner['token'], channel_id, invalid_u_id)
+        channel.channel_removeowner(login_owner['token'], invalid_channel_id, invalid_u_id)
+
+def test_channel_removeowner_not_owner():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_invite(login_owner['token'], channel_id, login_user['u_id'])
+
+    with pytest.raises(InputError) as e:
+        channel.channel_removeowner(login_owner['token'], channel_id, login_user['u_id'])
+
+def test_channel_removeowner_invalid_token():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_invite(login_owner['token'], channel_id, login_user['u_id'])
+
+    with pytest.raises(AccessError) as e:
+        channel.channel_removeowner(login_user['token'], channel_id, login_owner['u_id'])
+
+def test_channel_removeowner_success():
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_invite(login_owner['token'], channel_id, login_user['u_id'])
+
+    channel.channel_addowner(login_owner['token'], channel_id, login_user['u_id'])
+    channel.channel_removeowner(login_user['token'], channel_id, login_owner['u_id'])
+    assert channel_details['owner_members'] == [{'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
 
 
