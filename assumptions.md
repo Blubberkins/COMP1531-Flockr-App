@@ -6,5 +6,8 @@
 * First and last name contain no spaces may contain symbols such as !@#$%^&*(
 * Registering will login the user.
 
+## Channel
+* The channel_details function returns a list
+
 ## Channels
 * The name of a new channel can include space bars (considered as characters) and symbols.
