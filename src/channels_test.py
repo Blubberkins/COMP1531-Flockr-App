@@ -256,9 +256,38 @@ def test_channels_listall_join_one_public_join_one_private_channel():
 # TEST FUNCTIONS FOR CHANNELS_CREATE
 #
 
-# Create one public channel successfully
-def test_channels_list_public_success():
+# Create one public channel successfully with channel name 20 characters long
+def test_channels_create_public_success():
     login = auth.auth_register("validemail@gmail.com", "password123", "New", "Owner")
 
-    channel_id = channels.channels_create(login['token'], "channel", True)
+    channel_id = channels.channels_create(login['token'], "abcdefghijklmnopqrst", True)
+    channel_details = channel.channel_details(login['token'], channel_id)
 
+    assert channel_details == {"name" : "abcdefghijklmnopqrst", 
+    "owner_members" : [{"u_id" : login['u_id'], "name_first" : "New", "name_last" : "Owner"}],
+    "all_members" : [{"u_id" : login['u_id'], "name_first" : "New", "name_last" : "Owner"}]}
+
+# Create one public channel unsuccessfully with channel name > 20 characters long
+def test_channels_create_public_unsuccess():
+    login = auth.auth_register("validemail@gmail.com", "password123", "New", "Owner")
+
+    with pytest.raises(InputError) as e:
+        channels.channels_create(login['token'], "abcdefghijklmnopqrstu", True)
+    
+# Create one private channel successfully with channel name 20 characters long
+def test_channels_create_private_success():
+    login = auth.auth_register("validemail@gmail.com", "password123", "New", "Owner")
+
+    channel_id = channels.channels_create(login['token'], "abcdefghijklmnopqrst", False)
+    channel_details = channel.channel_details(login['token'], channel_id)
+
+    assert channel_details == {"name" : "abcdefghijklmnopqrst", 
+    "owner_members" : [{"u_id" : login['u_id'], "name_first" : "New", "name_last" : "Owner"}],
+    "all_members" : [{"u_id" : login['u_id'], "name_first" : "New", "name_last" : "Owner"}]}
+
+# Create one private channel unsuccessfully with channel name > 20 characters long
+def test_channels_create_private_unsuccess():
+    login = auth.auth_register("validemail@gmail.com", "password123", "New", "Owner")
+
+    with pytest.raises(InputError) as e:
+        channels.channels_create(login['token'], "abcdefghijklmnopqrstu", False)
