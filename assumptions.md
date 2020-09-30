@@ -8,6 +8,8 @@
 
 ## Channel
 * The channel_details function returns a dictionary
+* Users will be able to see public channels, and can join them (channel_join)
+* Users invited to a channel do not need to join them after
 
 ## Channels
 * The name of a new channel can include space bars (considered as characters) and symbols.
