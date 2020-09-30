@@ -11,3 +11,4 @@
 
 ## Channels
 * The name of a new channel can include space bars (considered as characters) and symbols.
+* The names of new channels can be the same as existing channels.
