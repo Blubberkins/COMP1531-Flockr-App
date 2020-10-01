@@ -4,30 +4,23 @@ from error import AccessError
 import re
 
 def check(email):  
-
-# pass the regular expression 
-# and the string in search() method 
+# Pass the regular expression and the string into the search() method 
     regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
-    if(re.search(regex,email)):  
-        
-    
-        return True
-            
-    else:  
-        
+    if (re.search(regex,email)):  
+        return True   
+    else:         
         return False
 
-
-
+# data.data["accounts"][email] = password
 def auth_login(email, password):
     # Check if email is valid
     if check(email) == False:
         raise InputError("Invalid email")
     
     # Check if email and password are associated with a registered account
-    for i in len(data["users"]): 
-        if email != data["users"][i]["email"]:
+    for i in len(data.data["accounts"]): 
+        if email != data.data["accounts"]["email"]:
             raise InputError("No account found")   
         elif password != data["users"][i]["password"]:
             raise InputError("Incorrect password")
@@ -112,7 +105,7 @@ def auth_register(email, password, name_first, name_last):
             is_duplicate = True
 
             #While the new created handle is still true ie user2 and user2
-            while is_duplicate = True:
+            while is_duplicate == True:
                 #attach a number to the end of handle
                 handle = handle[:19] + str(duplicate_count)
                 duplicate_count += 1
@@ -120,16 +113,14 @@ def auth_register(email, password, name_first, name_last):
                 if handle != data["users"][i]["handle_str"]:
                     is_duplicate = False
 
-
     data.data["users"][u_id - 1]["u_id"] = u_id
     data.data["users"][u_id - 1]["email"] = email   
     data.data["users"][u_id - 1]["name_first"] = name_first
     data.data["users"][u_id - 1]["name_last"] = name_last 
     data.data["users"][u_id - 1]["handle_str"] = handle
 
-	data.data["accounts"][email] = password
-
-
+    data.data["accounts"][u_id - 1]["email"] = email
+    data.data["accounts"][u_id - 1]["password"] = password
 
     return {
         'u_id': u_id,
