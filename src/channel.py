@@ -35,12 +35,12 @@ def channel_messages(token, channel_id, start):
             channel_index = x
             # Check token
             if token in data.data["channels"][x]["channel_id"]:
-                isValid_token = True:
+                isValid_token = True
                 break
             break
     if correct_channel_id == False:
         raise InputError("Channel ID is not a valid channel")
-    if isValid_token = False:
+    if isValid_token == False:
         raise AccessError("Authorised user is not a member of channel with channel_id")
     # Check whether start > no. messages in channel
     if  start > len(data.data["channels"][channel_index]["messages"]):
