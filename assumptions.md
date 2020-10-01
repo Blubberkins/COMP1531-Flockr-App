@@ -16,3 +16,4 @@
 * The name of a new channel can include space bars (considered as characters) and symbols.
 * The names of new channels can be the same as existing channels.
 * The channel will not be able to be created with an empty name.
+* Channel_list and channel_listall will return lists (rather than dictionaries, like the stub fucntion implies)
