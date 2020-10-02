@@ -24,7 +24,7 @@ def channel_invite(token, channel_id, u_id):
             raise InputError("Invitee is already invited to this channel")
 
     u_id_true = 0
-    for invitee in data[users]:
+    for invitee in data['users']:
         if invitee['u_id'] == u_id:
             u_id_true = 1
             break
