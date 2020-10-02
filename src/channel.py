@@ -39,25 +39,30 @@ def channel_invite(token, channel_id, u_id):
 
     return {}
 
-
 def channel_details(token, channel_id):
-    return {
-        'name': 'Hayden',
-        'owner_members': [
-            {
-                'u_id': 1,
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-            }
-        ],
-        'all_members': [
-            {
-                'u_id': 1,
-                'name_first': 'Hayden',
-                'name_last': 'Jacobs',
-            }
-        ],
-    }
+    channel_id_true = 0
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            channel_id_true = 1
+            break   
+    if channel_id_true == 0:
+        raise InputError("Invalid channel id")
+
+    for user in data['users']:
+        if user['token'] == token:
+            break
+
+    token_true = 0
+    for members in channel['all_members']:
+        if user['u_id'] == members['u_id']:
+            token_true = 1
+            break
+    if token_true == 0:
+        raise AccessError("User is not part of this channel")
+
+    channel_details_dict = {'name' : channel['name'], 'owner_members' : channel['owner_members'], 'all_members' : channel['all_members']}
+
+    return channel_details_dict
 
 def channel_messages(token, channel_id, start):
     # Check channel_id
