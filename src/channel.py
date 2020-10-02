@@ -25,18 +25,26 @@ def channel_details(token, channel_id):
 
 def channel_messages(token, channel_id, start):
     # Check channel_id
+    num_users = len(data.data["users"])
     num_channels = len(data.data["channels"])
+    u_id = 0
+    for x in range(num_users):
+        if data.data["users"][x]["token"] == token:
+            u_id = data.data["users"][x]["u_id"]
     correct_channel_id = False
     isValid_token = False
     channel_index = 0
+
     for x in range(num_channels):
         if data.data["channels"][x]["channel_id"] == channel_id:
             correct_channel_id = True
             channel_index = x
             # Check token
-            if token in data.data["channels"][x]["channel_id"]:
-                isValid_token = True
-                break
+            num_members = len(data.data["channels"][x]["all_members"])
+            for i in range(num_members):
+                if u_id in data.data["channels"][x]["all_members"][i]["u_id"]:
+                    isValid_token = True
+                    break
             break
     if correct_channel_id == False:
         raise InputError("Channel ID is not a valid channel")
@@ -61,26 +69,35 @@ def channel_messages(token, channel_id, start):
 
 def channel_leave(token, channel_id):
     # Check channel_id
+    num_users = len(data.data["users"])
     num_channels = len(data.data["channels"])
+    u_id = 0
+    for x in range(num_users):
+        if data.data["users"][x]["token"] == token:
+            u_id = data.data["users"][x]["u_id"]
     correct_channel_id = False
     isValid_token = False
     channel_index = 0
-    
+    member_index = 0
+
     for x in range(num_channels):
         if data.data["channels"][x]["channel_id"] == channel_id:
             correct_channel_id = True
             channel_index = x
             # Check token
-            if token in data.data["channels"][x]["channel_id"]:
-                isValid_token = True
-                break
+            num_members = len(data.data["channels"][x]["all_members"])
+            for i in range(num_members):
+                if u_id in data.data["channels"][x]["all_members"][i]["u_id"]:
+                    member_index = i
+                    isValid_token = True
+                    break
             break
     if correct_channel_id == False:
         raise InputError("Channel ID is not a valid channel")
     if isValid_token == False:
         raise AccessError("Authorised user is not a member of channel with channel_id")
-
-    # Remove User
+    # Check if user is an owner_member
+    
     return {
     }
 
