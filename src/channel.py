@@ -2,7 +2,12 @@ from data import data
 import error
 def channel_invite(token, channel_id, u_id):
     global data
+<<<<<<< HEAD
     channel_id_true = 0
+=======
+
+    channel_id_true = False
+>>>>>>> Implemented channel_addowner and channel_removeowner
     for channel_invited in data['channels']:
         if channel_invited['channel_id'] == channel_id:
             channel_id_true = True
@@ -10,9 +15,13 @@ def channel_invite(token, channel_id, u_id):
     if channel_id_true == False:
         raise InputError("Invalid channel id")
 
+    token_exist = False
     for inviter in data['users']:
         if inviter['token'] == token:
+            token_exist = True
             break
+    if token_exist == False:
+        raise AccessError("Token does not exist")
 
     token_true = False
     for members in channel_invited['all_members']:
@@ -34,33 +43,40 @@ def channel_invite(token, channel_id, u_id):
     if u_id_true == False:
         raise InputError("Invitee does not exist")
 
-    if channel_id_true == True and token_true == True and u_id_true == True:
-        invitee_member_info = {'u_id' : invitee['u_id'], 'name_first' : invitee['name_first'], 'name_last' : invitee['name_last']}
-        channel_invited['all_members'].append(invitee_member_info)
+    invitee_member_info = {'u_id' : invitee['u_id'], 'name_first' : invitee['name_first'], 'name_last' : invitee['name_last']}
+    channel_invited['all_members'].append(invitee_member_info)
 
     return {}
 
 def channel_details(token, channel_id):
+<<<<<<< HEAD
     global data
     channel_id_true = 0
+=======
+    channel_id_true = False
+>>>>>>> Implemented channel_addowner and channel_removeowner
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
-            channel_id_true = 1
+            channel_id_true = True
             break   
-    if channel_id_true == 0:
+    if channel_id_true == False:
         raise InputError("Invalid channel id")
 
+    token_exist = False
     for user in data['users']:
         if user['token'] == token:
+            token_exist = True
             break
+    if token_exist == False:
+        raise AccessError("Token does not exist")
 
-    token_true = 0
+    token_true = False
     for members in channel['all_members']:
         if user['u_id'] == members['u_id']:
-            token_true = 1
+            token_true = True
             break
-    if token_true == 0:
-        raise AccessError("User is not part of this channel")
+    if token_true == False:
+        raise AccessError("Authorised user is not part of this channel")
 
     channel_details_dict = {'name' : channel['name'], 'owner_members' : channel['owner_members'], 'all_members' : channel['all_members']}
 
@@ -186,9 +202,84 @@ def channel_join(token, channel_id):
     return {}
 
 def channel_addowner(token, channel_id, u_id):
-    return {
-    }
+    global data
+
+    channel_id_true = False
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            channel_id_true = True
+            break   
+    if channel_id_true == False:
+        raise InputError("Invalid channel id")
+
+    token_exist = False
+    for user in data['users']:
+        if user['token'] == token:
+            token_exist = True
+            break
+    if token_exist == False:
+        raise AccessError("Token does not exist")
+
+    token_true = False
+    for members in channel['owner_members']:
+        if user['u_id'] == members['u_id']:
+            token_true = True
+            break
+    if token_true == False:
+        raise AccessError("Authorised user is not an owner")
+   
+    for members in channel['owner_members']:
+        if members['u_id'] == u_id:
+            raise InputError("User is already an owner of this channel")
+
+    u_id_true = False
+    for member in channel['all_members']:
+        if member['u_id'] == u_id:
+            u_id_true = True
+            break
+    if u_id_true == False:
+        raise InputError("User is not part of the channel")
+
+    member_info = {'u_id' : member['u_id'], 'name_first' : member['name_first'], 'name_last' : member['name_last']}
+    channel['owner_members'].append(member_info)
+
+    return {}
 
 def channel_removeowner(token, channel_id, u_id):
-    return {
-    }
+    global data
+
+    channel_id_true = False
+    for channel in data['channels']:
+        if channel['channel_id'] == channel_id:
+            channel_id_true = True
+            break   
+    if channel_id_true == False:
+        raise InputError("Invalid channel id")
+
+    token_exist = False
+    for user in data['users']:
+        if user['token'] == token:
+            token_exist = True
+            break
+    if token_exist == False:
+        raise AccessError("Token does not exist")
+
+    token_true = False
+    for members in channel['owner_members']:
+        if user['u_id'] == members['u_id']:
+            token_true = True
+            break
+    if token_true == False:
+        raise AccessError("Authorised user is not an owner")
+    
+    is_owner = False
+    for member in channel['owner_members']:
+        if member['u_id'] == u_id:
+            is_owner = True
+            break
+    if is_owner == False:
+        raise InputError("User is not an owner of this channel")
+
+    channel['owner_members'].remove(member)
+
+    return {}
