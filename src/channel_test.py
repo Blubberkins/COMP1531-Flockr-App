@@ -34,7 +34,7 @@ def test_channel_invite_invalid_token():
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
 
     with pytest.raises(AccessError) as e:
-        channel.channel_invite("", channel_id, login_user['u_id'])
+        channel.channel_invite("invalid token", channel_id, login_user['u_id'])
         channel.channel_invite(login_user['token'], channel_id, login_owner['u_id'])
 
 def test_channel_invite_success():
@@ -64,6 +64,7 @@ def test_channel_details_invalid_token():
 
     with pytest.raises(AccessError) as e:
         channel.channel_details(login_user['token'], channel_id)
+        channel.channel_details("invalid token", channel_id)
 
 def test_channel_details_success():
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
@@ -259,6 +260,7 @@ def test_channel_addowner_invalid_token():
 
     with pytest.raises(AccessError) as e:
         channel.channel_addowner(login_user['token'], channel_id, login_user['u_id'])
+        channel.channel_addowner("invalid token", channel_id, login_user['u_id'])
 
 
 def test_channel_addowner_success():
@@ -307,6 +309,7 @@ def test_channel_removeowner_invalid_token():
 
     with pytest.raises(AccessError) as e:
         channel.channel_removeowner(login_user['token'], channel_id, login_owner['u_id'])
+        channel.channel_removeowner("invalid token", channel_id, login_owner['u_id'])
 
 def test_channel_removeowner_success():
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
