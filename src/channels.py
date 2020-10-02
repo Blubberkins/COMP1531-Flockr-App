@@ -38,12 +38,19 @@ def channels_list(token):
 
 def channels_listall(token):
     global data
-    num_channels = len(data['channels'])
-    returnDict = {'channels': [{}]}
-    for index in range(num_channels):
-        returnDict['channels'][index]["channel_id"] = data['channels'][index]["channel_id"]
-        returnDict['channels'][index]["name"] = data['channels'][index]["name"]
-    return returnDict
+
+    # create the dictionary to be returned by the function
+    all_channels = {
+        "channels" : []
+    }
+
+    for x in data['channels']:
+        # create a dictionary containing data about the channel
+        channel_data = {"channel_id" : x['channel_id'], "name" : x['name']}
+
+        all_channels['channels'].append(channel_data)
+
+    return all_channels
     '''
     u_id = 0
     # retrieve and store the u_id of the user
