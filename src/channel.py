@@ -2,39 +2,43 @@ from data import data
 import error
 def channel_invite(token, channel_id, u_id):
     global data
+<<<<<<< HEAD
     channel_id_true = 0
+=======
+    channel_id_true = False
+>>>>>>> dc0a8bbbf79c60b1808f2ca3ade2a7a07063179f
     for channel_invited in data['channels']:
         if channel_invited['channel_id'] == channel_id:
-            channel_id_true = 1
+            channel_id_true = True
             break   
-    if channel_id_true == 0:
+    if channel_id_true == False:
         raise InputError("Invalid channel id")
 
     for inviter in data['users']:
         if inviter['token'] == token:
             break
 
-    token_true = 0
+    token_true = False
     for members in channel_invited['all_members']:
         if inviter['u_id'] == members['u_id']:
-            token_true = 1
+            token_true = True
             break
-    if token_true == 0:
+    if token_true == False:
         raise AccessError("Inviter is not part of this channel")
 
     for members in channel_invited['all_members']:
         if members['u_id'] == u_id:
             raise InputError("Invitee is already invited to this channel")
 
-    u_id_true = 0
+    u_id_true = False
     for invitee in data['users']:
         if invitee['u_id'] == u_id:
-            u_id_true = 1
+            u_id_true = True
             break
-    if u_id_true == 0:
+    if u_id_true == False:
         raise InputError("Invitee does not exist")
 
-    if channel_id_true == 1 and token_true == 1 and u_id_true == 1:
+    if channel_id_true == True and token_true == True and u_id_true == True:
         invitee_member_info = {'u_id' : invitee['u_id'], 'name_first' : invitee['name_first'], 'name_last' : invitee['name_last']}
         channel_invited['all_members'].append(invitee_member_info)
 
