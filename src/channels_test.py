@@ -221,7 +221,7 @@ def test_channels_listall_not_join_one_private_channel():
 
     channels_listall = channels.channels_listall(login_user['token'])
 
-    assert channels_listall == {"channels" : []}
+    assert channels_listall == {"channels" : [{'channel_id': 1, 'name': 'channel 1'}]}
 
 # Owner creates one private channel and user joins that channel
 def test_channels_listall_join_one_private_channel():

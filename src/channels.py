@@ -39,10 +39,10 @@ def channels_list(token):
 def channels_listall(token):
     global data
     num_channels = len(data['channels'])
-    returnDict = [{}]
+    returnDict = {'channels': [{}]}
     for index in range(num_channels):
-        returnDict[index]["channel_id"] = data['channels'][index]["channel_id"]
-        returnDict[index]["name"] = data['channels'][index]["name"]
+        returnDict['channels'][index]["channel_id"] = data['channels'][index]["channel_id"]
+        returnDict['channels'][index]["name"] = data['channels'][index]["name"]
     return returnDict
     '''
     u_id = 0
