@@ -20,10 +20,6 @@ def auth_login(email, password):
         raise InputError("Invalid email")
     
     # Check if email and password are associated with a registered account
-
-    
-
-
     if data["users"] != []:
         for user in data["users"]:            
             if email == user["email"] and password == user["password"]:
@@ -33,9 +29,6 @@ def auth_login(email, password):
                 }
         raise InputError("Invalid email or password")    
                
-                    
-
-
 def auth_logout(token):
     global data
 
@@ -65,7 +58,6 @@ def auth_register(email, password, name_first, name_last):
             if email == user["email"]:
                 raise InputError("Email is already in use")        
  
-
     # Check if password is valid
     if len(password) < 6:
         raise InputError("Invalid password")
@@ -82,9 +74,6 @@ def auth_register(email, password, name_first, name_last):
     handle = (name_first + name_last)[:20].lower()
     
     # Check if handles are the same
-
-    
-
     for user in data["users"]: 
         duplicate_count = 2
 
@@ -100,27 +89,16 @@ def auth_register(email, password, name_first, name_last):
                 # If new handle is unique, i.e. user2 and user3
                 if handle != user["handle_str"]:
                     is_duplicate = False
-    '''
-    data["users"][u_id - 1]["u_id"] = u_id
-    data["users"][u_id - 1]["email"] = email   
-    data["users"][u_id - 1]["name_first"] = name_first
-    data["users"][u_id - 1]["name_last"] = name_last 
-    data["users"][u_id - 1]["handle_str"] = handle
 
-    data["users"][u_id - 1]["email"] = email
-    data["users"][u_id - 1]["password"] = password
-    '''
     user = {}
     user["u_id"] = u_id
     user["email"] = email   
     user["name_first"] = name_first
     user["name_last"] = name_last 
     user["handle_str"] = handle
-
-    
     user["password"] = password
+    user["token"] = email
     data["users"].append(user)
-    
     
     return {
         "u_id": u_id,
