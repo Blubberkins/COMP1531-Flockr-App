@@ -44,7 +44,7 @@ def channel_messages(token, channel_id, start):
         raise AccessError("Authorised user is not a member of channel with channel_id")
     # Check whether start > no. messages in channel
     if  start > len(data.data["channels"][channel_index]["messages"]):
-        raise InputError("Start is greater than the total number of messages in the channel")
+        raise   InputError("Start is greater than the total number of messages in the channel")
     
     # Initialise return dictionary
     returnDict = {}
@@ -60,6 +60,27 @@ def channel_messages(token, channel_id, start):
     return returnDict
 
 def channel_leave(token, channel_id):
+    # Check channel_id
+    num_channels = len(data.data["channels"])
+    correct_channel_id = False
+    isValid_token = False
+    channel_index = 0
+    
+    for x in range(num_channels):
+        if data.data["channels"][x]["channel_id"] == channel_id:
+            correct_channel_id = True
+            channel_index = x
+            # Check token
+            if token in data.data["channels"][x]["channel_id"]:
+                isValid_token = True
+                break
+            break
+    if correct_channel_id == False:
+        raise InputError("Channel ID is not a valid channel")
+    if isValid_token == False:
+        raise AccessError("Authorised user is not a member of channel with channel_id")
+
+    # Remove User
     return {
     }
 
