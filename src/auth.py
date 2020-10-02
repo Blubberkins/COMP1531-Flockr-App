@@ -1,4 +1,4 @@
-import data
+from data import data
 from error import InputError
 from error import AccessError
 import re
@@ -13,55 +13,56 @@ def check(email):
         return False
 
 def auth_login(email, password):
+    global data
+
     # Check if email is valid
     if check(email) == False:
         raise InputError("Invalid email")
     
     # Check if email and password are associated with a registered account
-    for i in len(data.data["accounts"]): 
-        if email != data.data["accounts"][i]["email"]:
-            raise InputError("No account found")   
-        elif password != data.data["accounts"][i]["password"]:
-            raise InputError("Incorrect password")
-        elif email != data.data["accounts"][i]["email"] and password == data.data["accounts"][i]["password"]:
-            return {
-                "u_id": data.data["accounts"][i]["u_id"],
-                "token": email,
-            }
+
+    
+
+
+    if data["users"] != []:
+        for user in data["users"]:            
+            if email == user["email"] and password == user["password"]:
+                return {
+                    "u_id": user["u_id"],
+                    "token": email,
+                }
+        raise InputError("Invalid email or password")    
+               
+                    
+
 
 def auth_logout(token):
-    # Check if token matches a registered email
-    for i in len(data.data["accounts"]):
-        if token != data.data["accounts"][i]["email"]:
-            raise AccessError("Invalid token")
-            return {
-                "is_success": False,
-            }
+    global data
 
-    # Using check email function to check whether function is email, based on assumption that token is user email
-    if check(token) == False:
-        raise AccessError("Invalid token")
-        return {
-            "is_success": False,
-        }
-    else:
-        # Invalidate token and log the user out
-        token = "invalid_token"
-        return {
-            "is_success": True,
-        }
+    # Check if token matches a registered email
+    for user in data["users"]: 
+        if token == user["email"]:
+            # Invalidate token and log the user out
+            token = "invalid_token"
+            return {
+                "is_success": True,
+            }
+    return {
+        "is_success": False,
+    }
 
 def auth_register(email, password, name_first, name_last):
-    u_id = len(data["users"]) + 1
+    global data
+    
+    u_id = len(data["users"])
             
     # Check if email is valid
     if check(email) == False:
         raise InputError("Invalid email")
+     
+         
+ 
 
-    for i in len(data["users"]):
-        if email == data["users"][i]["email"]:
-            raise InputError("Email is already in use")
-          
     # Check if password is valid
     if len(password) < 6:
         raise InputError("Invalid password")
@@ -78,11 +79,14 @@ def auth_register(email, password, name_first, name_last):
     handle = (name_first + name_last)[:20].lower()
     
     # Check if handles are the same
-    for i in len(data.data["users"]):
+
+    
+
+    for user in data["users"]: 
         duplicate_count = 2
 
         # If same handle exists
-        if handle == data.data["users"][i]["handle_str"]:
+        if handle == user["handle_str"]:
             is_duplicate = True
 
             # While the new created handle is still true, i.e. user2 and user2
@@ -91,18 +95,30 @@ def auth_register(email, password, name_first, name_last):
                 handle = handle[:19] + str(duplicate_count)
                 duplicate_count += 1
                 # If new handle is unique, i.e. user2 and user3
-                if handle != data.data["users"][i]["handle_str"]:
+                if handle != user["handle_str"]:
                     is_duplicate = False
+    '''
+    data["users"][u_id - 1]["u_id"] = u_id
+    data["users"][u_id - 1]["email"] = email   
+    data["users"][u_id - 1]["name_first"] = name_first
+    data["users"][u_id - 1]["name_last"] = name_last 
+    data["users"][u_id - 1]["handle_str"] = handle
 
-    data.data["users"][u_id - 1]["u_id"] = u_id
-    data.data["users"][u_id - 1]["email"] = email   
-    data.data["users"][u_id - 1]["name_first"] = name_first
-    data.data["users"][u_id - 1]["name_last"] = name_last 
-    data.data["users"][u_id - 1]["handle_str"] = handle
+    data["users"][u_id - 1]["email"] = email
+    data["users"][u_id - 1]["password"] = password
+    '''
+    user = {}
+    user["u_id"] = u_id
+    user["email"] = email   
+    user["name_first"] = name_first
+    user["name_last"] = name_last 
+    user["handle_str"] = handle
 
-    data.data["accounts"][u_id - 1]["email"] = email
-    data.data["accounts"][u_id - 1]["password"] = password
-
+    
+    user["password"] = password
+    data["users"].append(user)
+    
+    
     return {
         "u_id": u_id,
         "token": email,
