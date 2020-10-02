@@ -186,7 +186,9 @@ def channel_join(token, channel_id):
     user_dictionary = {}
     for x in range(num_users):
         if data["users"][x]["token"] == token:
-            user_dictionary = data["users"][x]
+            user_dictionary["u_id"] = data["users"][x]['u_id']
+            user_dictionary["name_first"] = data["users"][x]['name_first']
+            user_dictionary["name_last"] = data["users"][x]['name_last']
             break
     data["channels"][channel_index]["all_members"].append(user_dictionary)
     return {}
