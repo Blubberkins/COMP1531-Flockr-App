@@ -85,9 +85,12 @@ def test_logout_failure():
 # Success for register
 def test_register_success():
     clear()
-    auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
-    auth.auth_register("validemail@gmail.com", "           ", "Firstname", "Lastname")
-    auth.auth_register("validemail@ourearth.org", "password123", "Firstname", "Lastname")
+    register_user1 = auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
+    assert register_user1["token"] == "validemail@gmail.com"
+    register_user2 = auth.auth_register("validemail@gmail.com", "           ", "Firstname", "Lastname")
+    assert register_user2["token"] == "validemail@gmail.com"
+    register_user3 = auth.auth_register("validemail@ourearth.org", "password123", "Firstname", "Lastname")
+    assert register_user3["token"] == "validemail@gmail.com"
 
 # Failure for register
 def test_register_invalid_email():
