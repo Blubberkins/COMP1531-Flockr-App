@@ -3,7 +3,6 @@ import pytest
 from error import InputError
 from other import clear
 
-
 # TEST FUNCTIONS FOR AUTH_LOGIN
 # Success for login
 def test_login_success():
@@ -28,16 +27,14 @@ def test_login_success():
 
 # Failure for login
 def test_login_empty():
-    data = {}
-    data = {"users" : [], "channels" : [],  "members" : []}
+    clear()
     register_user = auth.auth_register("validemail@gmail.com", "python123", "New", "User") 
     auth.auth_logout(register_user["token"])
     with pytest.raises(InputError) as e:
         auth.auth_login("", "") 
 
 def test_login_invalid_email():
-    data = {}
-    data = {"users" : [], "channels" : [],  "members" : []}
+    clear()
     register_user = auth.auth_register("validemail@gmail.com", "python123", "New", "User") 
     auth.auth_logout(register_user["token"])
     with pytest.raises(InputError) as e:
