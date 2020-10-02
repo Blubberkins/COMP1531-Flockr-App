@@ -1,13 +1,8 @@
 from data import data
-import error
+from error import AccessError, InputError
 def channel_invite(token, channel_id, u_id):
     global data
-<<<<<<< HEAD
-    channel_id_true = 0
-=======
-
     channel_id_true = False
->>>>>>> Implemented channel_addowner and channel_removeowner
     for channel_invited in data['channels']:
         if channel_invited['channel_id'] == channel_id:
             channel_id_true = True
@@ -49,12 +44,7 @@ def channel_invite(token, channel_id, u_id):
     return {}
 
 def channel_details(token, channel_id):
-<<<<<<< HEAD
-    global data
-    channel_id_true = 0
-=======
     channel_id_true = False
->>>>>>> Implemented channel_addowner and channel_removeowner
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
             channel_id_true = True
