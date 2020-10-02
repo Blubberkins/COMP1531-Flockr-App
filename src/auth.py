@@ -60,7 +60,10 @@ def auth_register(email, password, name_first, name_last):
     if check(email) == False:
         raise InputError("Invalid email")
      
-         
+    if data["users"] != []:
+        for user in data["users"]:
+            if email == user["email"]:
+                raise InputError("Email is already in use")        
  
 
     # Check if password is valid
