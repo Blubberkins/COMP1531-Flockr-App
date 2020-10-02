@@ -1,5 +1,10 @@
+import data
+
+
+
 def clear():
-    pass
+    data.data = {}
+    data.data = {"users" : [], "channels" : [],  "members" : []}
 
 def users_all(token):
     return {
