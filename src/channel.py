@@ -133,7 +133,10 @@ def channel_leave(token, channel_id):
     if isValid_token == False:
         raise AccessError("Authorised user is not a member of channel with channel_id")
     # Check if user is an owner_member
-    
+    isOwner_Member = False
+    num_owners = len(data.data["channels"][channel_index]["owner_members"])
+    for owner_index in range(num_owners):
+        if u_id in data.data["channels"][channel_index]["owner_members"][owner_index]["u_id"]
     return {
     }
 
