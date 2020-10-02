@@ -135,18 +135,17 @@ def channel_leave(token, channel_id):
         if data["channels"][x]["channel_id"] == channel_id:
             correct_channel_id = True
             channel_index = x
-            # Check token
-            num_members = len(data["channels"][x]["all_members"])
-            for i in range(num_members):
-                if data["channels"][x]["all_members"][i]["u_id"] == u_id:
-                    member_index = i
-                    isValid_token = True
-                    break
-            break
-    if correct_channel_id == False:
-        raise InputError("Channel ID is not a valid channel")
+        # Check token
+        num_members = len(data["channels"][x]["all_members"])
+        for i in range(num_members):
+            if data["channels"][x]["all_members"][i]["u_id"] == u_id:
+                member_index = i
+                isValid_token = True
+                    
     if isValid_token == False:
         raise AccessError("Authorised user is not a member of channel with channel_id")
+    if correct_channel_id == False:
+        raise InputError("Channel ID is not a valid channel")
     
     # Check if user is an owner_member
     num_owners = len(data["channels"][channel_index]["owner_members"])
@@ -156,8 +155,11 @@ def channel_leave(token, channel_id):
             data["channels"][channel_index]["owner_members"].remove(remove_target)
             break
     # Remove member
-    remove_target = data["channels"][x]["all_members"][member_index]
-    data["channels"][x]["all_members"].remove(remove_target)
+    remove_target = data["channels"][channel_index]["all_members"][member_index]
+    data["channels"][channel_index]["all_members"].remove(remove_target)
+    # Check if channel still has members
+    if len(data["channels"][channel_index]["all_members"]) == 0:
+        data["channels"].remove(data["channels"][channel_index])
     return {}
 
 def channel_join(token, channel_id):
