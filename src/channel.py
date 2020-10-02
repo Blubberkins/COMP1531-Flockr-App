@@ -74,7 +74,7 @@ def channel_messages(token, channel_id, start):
             u_id = data.data["users"][x]["u_id"]
     correct_channel_id = False
     isValid_token = False
-    channel_index = 0
+    channel_index = -1
 
     for x in range(num_channels):
         if data.data["channels"][x]["channel_id"] == channel_id:
@@ -118,8 +118,8 @@ def channel_leave(token, channel_id):
             u_id = data.data["users"][x]["u_id"]
     correct_channel_id = False
     isValid_token = False
-    channel_index = 0
-    member_index = 0
+    channel_index = -1
+    member_index = -1
 
     for x in range(num_channels):
         if data.data["channels"][x]["channel_id"] == channel_id:
@@ -137,6 +137,7 @@ def channel_leave(token, channel_id):
         raise InputError("Channel ID is not a valid channel")
     if isValid_token == False:
         raise AccessError("Authorised user is not a member of channel with channel_id")
+    
     # Check if user is an owner_member
     num_owners = len(data.data["channels"][channel_index]["owner_members"])
     for owner_index in range(num_owners):
@@ -147,12 +148,37 @@ def channel_leave(token, channel_id):
     # Remove member
     remove_target = data.data["channels"][x]["all_members"][member_index]
     data.data["channels"][x]["all_members"].remove(remove_target)
-    return {
-    }
+    return {}
 
 def channel_join(token, channel_id):
-    return {
-    }
+    # Check channel id
+    num_channels = len(data.data["channels"])
+    isChannelPublic = True
+    correct_channel_id = False
+    channel_index = -1
+    for x in range(num_channels):
+        if data.data["channels"][x]["channel_id"] == channel_id:
+            correct_channel_id = True
+            channel_index = x
+            # Check if the channel is private
+            if data.data["channels"][x]["is_public"] == False:
+                isChannelPublic = False
+                break
+            break
+
+    if correct_channel_id == False:
+        raise InputError("Channel ID is not a valid channel")
+    if isChannelPublic == False:
+        raise AccessError("Channel is private")
+    # Add user to channel
+    num_users = len(data.data["users"])
+    user_dictionary = {}
+    for x in range(num_users):
+        if data.data["users"][x]["token"] == token:
+            user_dictionary = data.data["users"][x]
+            break
+    data.data["channels"][channel_index]["all_members"].append(user_dictionary)
+    return {}
 
 def channel_addowner(token, channel_id, u_id):
     return {
