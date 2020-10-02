@@ -1,10 +1,10 @@
-import data
-
-
+from data import data
 
 def clear():
-    data.data = {}
-    data.data = {"users" : [], "channels" : [],  "members" : []}
+    global data
+    data["users"].clear()
+    data["channels"].clear()
+    data["members"].clear()
 
 def users_all(token):
     return {
