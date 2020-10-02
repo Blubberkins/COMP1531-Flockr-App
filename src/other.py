@@ -1,4 +1,3 @@
-
 from data import data
 
 def clear():
@@ -6,7 +5,6 @@ def clear():
     data["users"].clear()
     data["channels"].clear()
     data["members"].clear()
-
 
 def users_all(token):
     return {

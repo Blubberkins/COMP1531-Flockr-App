@@ -1,6 +1,6 @@
 data = {
     "users": [
-        {
+        #{
             # "u_id" : 1, 
             # "email" : "registered@gmail.com", 
             # "password" : "validpassword123",
@@ -8,7 +8,7 @@ data = {
             # "name_first" : "New", 
             # "name_last" : "User", 
             # "handle_str" : "newuser",
-        }
+        #}
     ],
     "channels" : [
         {
