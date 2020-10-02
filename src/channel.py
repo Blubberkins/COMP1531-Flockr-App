@@ -2,11 +2,7 @@ from data import data
 import error
 def channel_invite(token, channel_id, u_id):
     global data
-<<<<<<< HEAD
     channel_id_true = 0
-=======
-    channel_id_true = False
->>>>>>> dc0a8bbbf79c60b1808f2ca3ade2a7a07063179f
     for channel_invited in data['channels']:
         if channel_invited['channel_id'] == channel_id:
             channel_id_true = True
