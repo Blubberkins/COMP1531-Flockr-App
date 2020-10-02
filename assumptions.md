@@ -14,6 +14,7 @@
 * Users will be able to see public channels, and can join them (channel_join)
 * Users invited to a channel do not need to join them after
 * channel_id is a positive number (>= 1)
+* If the last member of a channel leaves, all the data for that channel is deleted
 
 ## Channels
 * The name of a new channel can include space bars (considered as characters) and symbols.
