@@ -1,6 +1,7 @@
-import data
+from data import data
 import error
 def channel_invite(token, channel_id, u_id):
+    global data
     channel_id_true = 0
     for channel_invited in data['channels']:
         if channel_invited['channel_id'] == channel_id:
@@ -40,6 +41,7 @@ def channel_invite(token, channel_id, u_id):
     return {}
 
 def channel_details(token, channel_id):
+    global data
     channel_id_true = 0
     for channel in data['channels']:
         if channel['channel_id'] == channel_id:
@@ -65,25 +67,26 @@ def channel_details(token, channel_id):
     return channel_details_dict
 
 def channel_messages(token, channel_id, start):
+    global data
     # Check channel_id
-    num_users = len(data.data["users"])
-    num_channels = len(data.data["channels"])
+    num_users = len(data["users"])
+    num_channels = len(data["channels"])
     u_id = 0
     for x in range(num_users):
-        if data.data["users"][x]["token"] == token:
-            u_id = data.data["users"][x]["u_id"]
+        if data["users"][x]["token"] == token:
+            u_id = data["users"][x]["u_id"]
     correct_channel_id = False
     isValid_token = False
     channel_index = -1
 
     for x in range(num_channels):
-        if data.data["channels"][x]["channel_id"] == channel_id:
+        if data["channels"][x]["channel_id"] == channel_id:
             correct_channel_id = True
             channel_index = x
             # Check token
-            num_members = len(data.data["channels"][x]["all_members"])
+            num_members = len(data["channels"][x]["all_members"])
             for i in range(num_members):
-                if u_id in data.data["channels"][x]["all_members"][i]["u_id"]:
+                if u_id in data["channels"][x]["all_members"][i]["u_id"]:
                     isValid_token = True
                     break
             break
@@ -92,7 +95,7 @@ def channel_messages(token, channel_id, start):
     if isValid_token == False:
         raise AccessError("Authorised user is not a member of channel with channel_id")
     # Check whether start > no. messages in channel
-    if  start > len(data.data["channels"][channel_index]["messages"]):
+    if  start > len(data["channels"][channel_index]["messages"]):
         raise   InputError("Start is greater than the total number of messages in the channel")
     
     # Initialise return dictionary
@@ -101,34 +104,35 @@ def channel_messages(token, channel_id, start):
     returnDict["start"] = start
     returnDict["end"] = 50
     num_messages = 50
-    if len(data.data["channels"][channel_index]["messages"]) <= 50:
+    if len(data["channels"][channel_index]["messages"]) <= 50:
         returnDict["end"] = -1
-        num_messages = len(data.data["channels"][channel_index]["messages"])
+        num_messages = len(data["channels"][channel_index]["messages"])
     for x in range(num_messages):
-        returnDict["messages"].append(data.data["channels"][channel_index]["messages"][x])
+        returnDict["messages"].append(data["channels"][channel_index]["messages"][x])
     return returnDict
 
 def channel_leave(token, channel_id):
+    global data
     # Check channel_id
-    num_users = len(data.data["users"])
-    num_channels = len(data.data["channels"])
+    num_users = len(data["users"])
+    num_channels = len(data["channels"])
     u_id = 0
     for x in range(num_users):
-        if data.data["users"][x]["token"] == token:
-            u_id = data.data["users"][x]["u_id"]
+        if data["users"][x]["token"] == token:
+            u_id = data["users"][x]["u_id"]
     correct_channel_id = False
     isValid_token = False
     channel_index = -1
     member_index = -1
 
     for x in range(num_channels):
-        if data.data["channels"][x]["channel_id"] == channel_id:
+        if data["channels"][x]["channel_id"] == channel_id:
             correct_channel_id = True
             channel_index = x
             # Check token
-            num_members = len(data.data["channels"][x]["all_members"])
+            num_members = len(data["channels"][x]["all_members"])
             for i in range(num_members):
-                if data.data["channels"][x]["all_members"][i]["u_id"] == u_id:
+                if data["channels"][x]["all_members"][i]["u_id"] == u_id:
                     member_index = i
                     isValid_token = True
                     break
@@ -139,29 +143,30 @@ def channel_leave(token, channel_id):
         raise AccessError("Authorised user is not a member of channel with channel_id")
     
     # Check if user is an owner_member
-    num_owners = len(data.data["channels"][channel_index]["owner_members"])
+    num_owners = len(data["channels"][channel_index]["owner_members"])
     for owner_index in range(num_owners):
-        if data.data["channels"][channel_index]["owner_members"][owner_index]["u_id"] == u_id:
-            remove_target = data.data["channels"][channel_index]["owner_members"][owner_index]
-            data.data["channels"][channel_index]["owner_members"].remove(remove_target)
+        if data["channels"][channel_index]["owner_members"][owner_index]["u_id"] == u_id:
+            remove_target = data["channels"][channel_index]["owner_members"][owner_index]
+            data["channels"][channel_index]["owner_members"].remove(remove_target)
             break
     # Remove member
-    remove_target = data.data["channels"][x]["all_members"][member_index]
-    data.data["channels"][x]["all_members"].remove(remove_target)
+    remove_target = data["channels"][x]["all_members"][member_index]
+    data["channels"][x]["all_members"].remove(remove_target)
     return {}
 
 def channel_join(token, channel_id):
+    global data
     # Check channel id
-    num_channels = len(data.data["channels"])
+    num_channels = len(data["channels"])
     isChannelPublic = True
     correct_channel_id = False
     channel_index = -1
     for x in range(num_channels):
-        if data.data["channels"][x]["channel_id"] == channel_id:
+        if data["channels"][x]["channel_id"] == channel_id:
             correct_channel_id = True
             channel_index = x
             # Check if the channel is private
-            if data.data["channels"][x]["is_public"] == False:
+            if data["channels"][x]["is_public"] == False:
                 isChannelPublic = False
                 break
             break
@@ -171,13 +176,13 @@ def channel_join(token, channel_id):
     if isChannelPublic == False:
         raise AccessError("Channel is private")
     # Add user to channel
-    num_users = len(data.data["users"])
+    num_users = len(data["users"])
     user_dictionary = {}
     for x in range(num_users):
-        if data.data["users"][x]["token"] == token:
-            user_dictionary = data.data["users"][x]
+        if data["users"][x]["token"] == token:
+            user_dictionary = data["users"][x]
             break
-    data.data["channels"][channel_index]["all_members"].append(user_dictionary)
+    data["channels"][channel_index]["all_members"].append(user_dictionary)
     return {}
 
 def channel_addowner(token, channel_id, u_id):
