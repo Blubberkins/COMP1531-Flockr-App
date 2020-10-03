@@ -193,11 +193,7 @@ def test_channel_leave_success():
     channel.channel_leave(login_owner['token'], channel_id['channel_id'])
 
     channel_list = channels.channels_listall(login_owner['token'])
-<<<<<<< HEAD
     assert channel_list == {'channels': [{}]}
-=======
-    assert channel_list == [{}]
->>>>>>> e6279fc64a91b4e0e0c9b206856fa7c8cfb4003c
 
 # Tests for channel_join
 def test_channel_join_invalid_channel_id():    
