@@ -3,8 +3,8 @@ from error import InputError
 from error import AccessError
 import re
 
-def check(email):  
-# Pass the regular expression and the string into the search() method 
+def valid_email(email):  
+    # Pass the regular expression and the string into the search() method 
     regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
     if (re.search(regex,email)):  
@@ -16,7 +16,7 @@ def auth_login(email, password):
     global data
 
     # Check if email is valid
-    if check(email) == False:
+    if valid_email(email) == False:
         raise InputError("Invalid email")
     
     # Check if email and password are associated with a registered account
@@ -40,6 +40,8 @@ def auth_logout(token):
             return {
                 "is_success": True,
             }
+
+    # If token does not match a registered email, return false
     return {
         "is_success": False,
     }
@@ -50,9 +52,10 @@ def auth_register(email, password, name_first, name_last):
     u_id = len(data["users"])
             
     # Check if email is valid
-    if check(email) == False:
+    if valid_email(email) == False:
         raise InputError("Invalid email")
-     
+    
+    # Check if email is already in use
     if data["users"] != []:
         for user in data["users"]:
             if email == user["email"]:
@@ -90,6 +93,7 @@ def auth_register(email, password, name_first, name_last):
                 if handle != user["handle_str"]:
                     is_duplicate = False
 
+    # Create a dictionary for the users' details and add this to the list of users
     user = {}
     user["u_id"] = u_id
     user["email"] = email   
