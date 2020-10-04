@@ -83,7 +83,7 @@ def test_channel_details_success():
     assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
     assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
 
-# Tests for channel_messages
+# Tests for channel_messages (not required for Iteration 1)
 '''def test_channel_messages_invalid_start_index():
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
