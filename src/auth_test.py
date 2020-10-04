@@ -71,17 +71,14 @@ def test_login_invalid_password():
 def test_logout_success():
     clear()
     register_user = auth.auth_register("registered@gmail.com", "python123", "New", "User")
-    
     assert auth.auth_logout(register_user["token"])["is_success"] == True
 
-'''
-# Failure for logout - UNSURE OF THIS, MAY BE REMOVED FOR FINAL SUBMISSION
+# Failure for logout 
 def test_logout_failure():
     clear()
     auth.auth_register("registered@gmail.com", "python123", "New", "User")
-    result = auth.auth_logout("invalid_token")
-    assert result["is_success"] == False
-'''        
+    assert auth.auth_logout("invalid_token")["is_success"] == False
+
 # TEST FUNCTIONS FOR AUTH_REGISTER
 # Success for register
 def test_register_success():
