@@ -11,6 +11,7 @@ data = {
             # "name_first" : "New",
             # "name_last" : "User",
             # "handle_str" : "newuser",
+            # "permission_id" : 1
         # }
     ],
     "channels" : [
