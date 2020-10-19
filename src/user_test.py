@@ -96,5 +96,6 @@ def test_user_profile_setname_invalid_firstlastname():
 
     with pytest.raises(InputError):
         user.user_profile_setname(token, "", "")
+        user.user_profile_setname(token, "", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz")
+        user.user_profile_setname(token, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz", "")
         user.user_profile_setname(token, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz")   
-          
