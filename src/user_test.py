@@ -3,7 +3,7 @@ import pytest
 from error import InputError
 from other import clear
 
-# Test FUNCTIONS FOR USER_PROFILE
+# TEST FUNCTIONS FOR USER_PROFILE
 # Success for user profile
 def test_user_profile_success():
     """Tests for success when displaying a user profile."""
