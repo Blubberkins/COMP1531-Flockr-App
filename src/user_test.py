@@ -4,8 +4,9 @@ from error import InputError
 from other import clear
 
 # Test FUNCTIONS FOR USER_PROFILE
-# Success for displaying user profile
+# Success for user profile
 def test_user_profile_success():
+    """Tests for success when displaying a user profile."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     token = register_user1[0]
@@ -20,8 +21,9 @@ def test_user_profile_success():
     }
     assert user_info == user
 
-# Failure for displaying user profile
+# Failure for user profile
 def test_user_profile_invalid_u_id():
+    """Tests for failure to display a user profile."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     token = register_user1[0]
@@ -29,4 +31,8 @@ def test_user_profile_invalid_u_id():
     with pytest.raises(InputError):
         user_profile(token, -1)
 
-# TEST FUNCTIONS FOR 
+"""
+TEST FUNCTIONS FOR USER_PROFILE_SETNAME, USER_PROFILE_SETEMAIL, USER_PROFILE_SETHANDLE
+Given the nature of blackbox testing and the absence of return values for the previously mentioned functions, 
+blackbox tests are unable to be written for these features.
+"""
