@@ -5,9 +5,9 @@ import re
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
-    regex = '^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
+    regex = r'^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$'
 
-    if (re.search(regex,email)):  
+    if re.search(regex, email):  
         return True   
     else:         
         return False
@@ -16,7 +16,7 @@ def auth_login(email, password):
     global data
 
     # Check if email is valid
-    if valid_email(email) == False:
+    if not valid_email(email):
         raise InputError("Invalid email")
     
     # Check if email and password are associated with a registered account
@@ -40,7 +40,7 @@ def auth_logout(token):
             return {
                 "is_success": True,
             }
-    
+
     # If token does not match a registered email, return false
     return {
         "is_success": False,
@@ -52,7 +52,7 @@ def auth_register(email, password, name_first, name_last):
     u_id = len(data["users"])
             
     # Check if email is valid
-    if valid_email(email) == False:
+    if not valid_email(email):
         raise InputError("Invalid email")
     
     # Check if email is already in use
@@ -85,7 +85,7 @@ def auth_register(email, password, name_first, name_last):
             is_duplicate = True
 
             # While the new created handle is still true, i.e. user2 and user2
-            while is_duplicate == True:
+            while is_duplicate:
                 # Attach a number to the end of handle
                 handle = handle[:19] + str(duplicate_count)
                 duplicate_count += 1
@@ -93,7 +93,7 @@ def auth_register(email, password, name_first, name_last):
                 if handle != user["handle_str"]:
                     is_duplicate = False
 
-    # Create a dictionary for the user's details and add this entry to the list of users
+    # Create a dictionary for the users' details and add this to the list of users
     user = {}
     user["u_id"] = u_id
     user["email"] = email   
