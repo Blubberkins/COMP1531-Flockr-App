@@ -3,6 +3,7 @@ from error import InputError
 from error import AccessError
 import re
 import hashlib
+import jwt
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -12,6 +13,17 @@ def valid_email(email):
         return True   
     else:         
         return False
+
+def encode_jwt(email):
+    SECRET = "COMP1531"
+    non_encoded_token = {'email' : email}
+    token = jwt.encode(non_encoded_token, SECRET, algorithm ='HS256')
+    return token
+
+def decode_jwt(token):
+    SECRET = "COMP1531"
+    email = jwt.decode(token, SECRET, algorithm = 'HS256')
+    return email[("email")]
 
 def auth_login(email, password):
     global data
@@ -28,7 +40,7 @@ def auth_login(email, password):
             if email == user["email"] and password == user["password"]:
                 return {
                     "u_id": user["u_id"],
-                    "token": email,
+                    "token": encode_jwt(email),
                 }
         raise InputError("Invalid email or password")    
                
@@ -37,7 +49,7 @@ def auth_logout(token):
 
     # Check if token matches a registered email
     for user in data["users"]: 
-        if token == user["email"]:
+        if decode_jwt(token) == user["email"]:
             # Invalidate token and log the user out
             token = "invalid_token"
             return {
@@ -104,10 +116,10 @@ def auth_register(email, password, name_first, name_last):
     user["name_last"] = name_last 
     user["handle_str"] = handle
     user["password"] = hashlib.sha256(password.encode()).hexdigest()
-    user["token"] = email
+    user["token"] = encode_jwt(email)
     data["users"].append(user)
     
     return {
         "u_id": u_id,
-        "token": email,
+        "token": encode_jwt(email),
     }
