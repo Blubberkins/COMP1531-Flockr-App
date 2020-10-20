@@ -65,7 +65,7 @@ def test_search_empty():
     channel_id = channels.channels_create(login['token'], "channel", True)
     message.message_send(login['token'], channel_id, "message")
 
-    assert other.search(login['token'], "") == {[]}
+    assert other.search(login['token'], "") == {'messages': []}
 
 def test_search_own_channel_single_message_complete():
     other.clear()
@@ -74,7 +74,7 @@ def test_search_own_channel_single_message_complete():
     channel_id = channels.channels_create(login['token'], "channel", True)
     message_id = message.message_send(login['token'], channel_id, "message")
 
-    assert other.search(login['token'], "message") == {[{'message_id' : message_id, 'u_id' : login['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
+    assert other.search(login['token'], "message") == {'messages': [{'message_id' : message_id, 'u_id' : login['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
 
 def test_search_own_channel_single_message_incomplete():
     other.clear()
@@ -83,7 +83,7 @@ def test_search_own_channel_single_message_incomplete():
     channel_id = channels.channels_create(login['token'], "channel", True)
     message_id = message.message_send(login['token'], channel_id, "message")
 
-    assert other.search(login['token'], "ess") == {[{'message_id' : message_id, 'u_id' : login['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
+    assert other.search(login['token'], "ess") == {'messages': [{'message_id' : message_id, 'u_id' : login['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
 
 def test_search_other_channel_single_message_complete():
     other.clear()
@@ -95,7 +95,7 @@ def test_search_other_channel_single_message_complete():
 
     message_id = message.message_send(login_owner['token'], channel_id, "message")
 
-    assert other.search(login_user['token'], "message") == {[{'message_id' : message_id, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
+    assert other.search(login_user['token'], "message") == {'messages': [{'message_id' : message_id, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
 
 def test_search_other_channel_single_message_incomplete():
     other.clear()
@@ -107,7 +107,7 @@ def test_search_other_channel_single_message_incomplete():
 
     message_id = message.message_send(login_owner['token'], channel_id, "message")
 
-    assert other.search(login_user['token'], "ess") == {[{'message_id' : message_id, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
+    assert other.search(login_user['token'], "ess") == {'messages': [{'message_id' : message_id, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
 
 def test_search_both_channels_two_messages_complete():
     other.clear()
@@ -122,7 +122,7 @@ def test_search_both_channels_two_messages_complete():
     message_id1 = message.message_send(login_owner['token'], channel_id1, "message")
     message_id2 = message.message_send(login_user['token'], channel_id2, "message")
 
-    assert other.search(login_user['token'], "message") == {[{'message_id' : message_id1, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']},
+    assert other.search(login_user['token'], "message") == {'messages': [{'message_id' : message_id1, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']},
                                                             {'message_id' : message_id2, 'u_id' : login_user['u_id'], 'message' : "message", 'time_created' : data.data['messages'][1]['time_created']}]}
 
 def test_search_both_channels_two_messages_incomplete():
@@ -138,7 +138,7 @@ def test_search_both_channels_two_messages_incomplete():
     message_id1 = message.message_send(login_owner['token'], channel_id1, "message")
     message_id2 = message.message_send(login_user['token'], channel_id2, "messages")
 
-    assert other.search(login_user['token'], "ess") == {[{'message_id' : message_id1, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']},
+    assert other.search(login_user['token'], "ess") == {'messages': [{'message_id' : message_id1, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']},
                                                         {'message_id' : message_id2, 'u_id' : login_user['u_id'], 'message' : "messages", 'time_created' : data.data['messages'][1]['time_created']}]}
 
 def test_search_own_channel_single_message_excluding_other_channel():
@@ -152,4 +152,4 @@ def test_search_own_channel_single_message_excluding_other_channel():
     message.message_send(login_owner['token'], channel_id1, "message")
     message_id2 = message.message_send(login_user['token'], channel_id2, "message")
 
-    assert other.search(login_user['token'], "message") == {[{'message_id' : message_id2, 'u_id' : login_user['u_id'], 'message' : "message", 'time_created' : data.data['messages'][1]['time_created']}]}
+    assert other.search(login_user['token'], "message") == {'messages': [{'message_id' : message_id2, 'u_id' : login_user['u_id'], 'message' : "message", 'time_created' : data.data['messages'][1]['time_created']}]}
