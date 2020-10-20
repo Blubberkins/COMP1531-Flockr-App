@@ -58,6 +58,12 @@ def test_user_profile_setname_success():
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     token = register_user1[0]
     u_id = register_user1[1]
+    user_info = user.user_profile(token, u_id) 
+    name_first = user_info["name_first"]
+    name_last = user_info["name_last"]
+
+    assert name_first == "New"
+    assert name_last == "User"
 
     user_profile_setname(token, "Flock", "Owner")
     updated_user_info = user.user_profile(token, u_id) 
