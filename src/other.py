@@ -23,6 +23,24 @@ def admin_userpermission_change(token, u_id, permission_id):
     pass
 
 def search(token, query_str):
+    token_exist = False
+    for user in data['users']:
+        if user['token'] == token:
+            token_exist = True
+            break
+    if token_exist == False:
+        raise AccessError("Token does not exist")
+
+    u_id = 0
+    # retrieve and store the u_id of the user
+    for x in data['users']:
+
+        if x['token'] == token:
+            u_id = x['u_id']
+            break
+
+    
+
     return {
         'messages': [
             {
