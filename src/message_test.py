@@ -6,6 +6,7 @@ import pytest
 from error import AccessError, InputError
 from other import clear
 
+# Tests for message_send
 def test_message_send_input_error():
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
@@ -38,3 +39,45 @@ def test_message_send_success():
     assert message.message_send(login_user["token"], channel_id["channel_id"], "sample message") == {"message_id": 1}
     assert message.message_send(login_owner["token"], channel_id["channel_id"], "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores.") == {"message_id": 2}
     assert message.message_send(login_user["token"], channel_id["channel_id"], "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores.") == {"message_id": 3}
+
+# Tests for message_remove
+def test_message_remove_no_messages():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    with pytest.raises(InputError):
+        message.message_remove(login_owner['token'], 1)
+
+def test_message_remove_removed_message():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+    message.message_remove(login_owner["token"], 0)
+
+    with pytest.raises(InputError):
+        message.message_remove(login_owner["token"], 0)
+
+def test_message_remove_not_message_sender():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_join(login_user["token"], channel_id["channel_id"])
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    with pytest.raises(AccessError):
+        message.message_remove(login_user, 0)
+
+def test_message_admin_remove_success():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_join(login_user["token"], channel_id["channel_id"])
+
+    message.message_send(login_user["token"], channel_id["channel_id"], "sample message")
+
+    assert message.message_remove(login_owner["token"], 0) == {}
