@@ -64,6 +64,8 @@ def test_admin_userpermission_change_success():
 
 # test functions for search
 def test_search_empty():
+    """Checks that search returns nothing when given an empty string"""
+
     other.clear()
     login = auth.auth_register("user@email.com", "password123", "User", "Test")
 
@@ -73,6 +75,8 @@ def test_search_empty():
     assert other.search(login['token'], "") == {'messages': []}
 
 def test_search_own_channel_single_message_complete():
+    """Tests for success when user creates their own channel, sends a message, and searches for the complete message"""
+    
     other.clear()
     login = auth.auth_register("user@email.com", "password123", "User", "Test")
 
@@ -82,6 +86,8 @@ def test_search_own_channel_single_message_complete():
     assert other.search(login['token'], "message") == {'messages': [{'message_id' : message_id, 'u_id' : login['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
 
 def test_search_own_channel_single_message_incomplete():
+    """Tests for success when user creates their own channel, sends a message, and searches for part of the message"""
+    
     other.clear()
     login = auth.auth_register("user@email.com", "password123", "User", "Test")
 
@@ -91,6 +97,8 @@ def test_search_own_channel_single_message_incomplete():
     assert other.search(login['token'], "ess") == {'messages': [{'message_id' : message_id, 'u_id' : login['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
 
 def test_search_other_channel_single_message_complete():
+    """Tests for success when owner creates a channel, user joins the channel, owner sends a message, and user searches for the complete message"""
+    
     other.clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password321", "User", "Test")
@@ -103,6 +111,8 @@ def test_search_other_channel_single_message_complete():
     assert other.search(login_user['token'], "message") == {'messages': [{'message_id' : message_id, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
 
 def test_search_other_channel_single_message_incomplete():
+    """Tests for success when owner creates a channel, user joins the channel, owner sends a message, and user searches for part of the message"""
+    
     other.clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password321", "User", "Test")
@@ -115,6 +125,8 @@ def test_search_other_channel_single_message_incomplete():
     assert other.search(login_user['token'], "ess") == {'messages': [{'message_id' : message_id, 'u_id' : login_owner['u_id'], 'message' : "message", 'time_created' : data.data['messages'][0]['time_created']}]}
 
 def test_search_both_channels_two_messages_complete():
+    """Tests for success when owner creates a channel, user joins the channel, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches for the complete messages"""
+    
     other.clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password321", "User", "Test")
@@ -131,6 +143,8 @@ def test_search_both_channels_two_messages_complete():
                                                             {'message_id' : message_id2, 'u_id' : login_user['u_id'], 'message' : "message", 'time_created' : data.data['messages'][1]['time_created']}]}
 
 def test_search_both_channels_two_messages_incomplete():
+    """Tests for success when owner creates a channel, user joins the channel, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches for part of the messages"""
+    
     other.clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password321", "User", "Test")
@@ -147,6 +161,8 @@ def test_search_both_channels_two_messages_incomplete():
                                                         {'message_id' : message_id2, 'u_id' : login_user['u_id'], 'message' : "messages", 'time_created' : data.data['messages'][1]['time_created']}]}
 
 def test_search_own_channel_single_message_excluding_other_channel():
+    """Tests for success when owner creates a channel but user does not join, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches the messages"""
+    
     other.clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password321", "User", "Test")
