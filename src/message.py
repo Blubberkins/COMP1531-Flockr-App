@@ -11,9 +11,10 @@ def message_send(token, channel_id, message):
     channel_index = 0
     for channels in data["channels"]:
         if channels["channel_id"] == channel_id:
-            index = channels
+            valid_channel_id == True
+            channel_index = channels
             break
-    if valid_channel_id == False:
+    if not valid_channel_id:
         raise InputError("Invalid channel")
     if len(message) > 1000:
         raise InputError("Message is larger than 1000 characters")
@@ -27,9 +28,9 @@ def message_send(token, channel_id, message):
             break
     for users in data["channels"][channel_index]:
         if users["u_id"] == u_id:
-            valid_token == True
+            valid_token = True
             break
-    if valid_token == False:
+    if not valid_token:
         raise AccessError("The user has not joined the channel they are trying to post to")
 
     # Add message
@@ -45,9 +46,39 @@ def message_send(token, channel_id, message):
     data["messages"].append(return_dict)
     # Remove channel_id key for return value
     return_dict.pop("channel_id")
+    data["num_messages"] += 1
     return return_dict
 
 def message_remove(token, message_id):
+    global data
+    # Check Input Error
+    does_message_exist = False
+    message_index = 0
+    for messages in data["messages"]:
+        if messages["message_id"] == message_id:
+            does_message_exist = True
+            message_index = messages
+            break
+    if not does_message_exist:
+        raise InputError("Message has already been deleted")
+    
+    # Check AccessError
+    u_id = -1
+    u_id_permission = -1
+    for users in data["users"]:
+        if users["token"] == token:
+            u_id = users["u_id"]
+            users["permission_id"] = u_id_permission
+            break
+    message_owner_or_flock_owner = False
+    if data["messages"][message_index]["u_id"] == u_id:
+        message_owner_or_flock_owner = True
+    if u_id_permission == 1:
+        message_owner_or_flock_owner = True
+    if not message_owner_or_flock_owner:
+        raise AccessError("User is not a flock owner or the original user who sent the message")
+
+    data["messages"].pop(message_index)
     return {
     }
 
