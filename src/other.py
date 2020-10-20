@@ -7,12 +7,6 @@ def clear():
     data["channels"].clear()
     data["members"].clear()
 
-def clear():
-    global data
-    data["users"].clear()
-    data["channels"].clear()
-    data["members"].clear()
-
 def users_all(token):
     token_exist = False
     for user in data['users']:
