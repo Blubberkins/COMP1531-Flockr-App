@@ -24,31 +24,78 @@ def user_profile(token, u_id):
     
     Raises:
         InputError: When user with u_id is not a valid user.
+        AccessError: When the user's token is invalid.
     """
 
-    user = {}
-    user["u_id"] = u_id
-    user["email"] = email   
-    user["name_first"] = name_first
-    user["name_last"] = name_last 
-    user["handle_str"] = handle
-  
-    return {
-        'user': {
-        	'u_id': 1,
-        	'email': 'cs1531@cse.unsw.edu.au',
-        	'name_first': 'Hayden',
-        	'name_last': 'Jacobs',
-        	'handle_str': 'hjacobs',
-        },
-    }
+    global data
+
+    if token == "invalid_token":
+        raise AccessError("Invalid permissions")
+
+    if data["users"] != []:
+        for user in data["users"]:            
+            if u_id == user["u_id"]:
+                return {
+                    "u_id": user["u_id"],
+                    "email": user["email"],
+                    "name_first": user["name_first"],
+                    "name_last": user["name_last"],
+                    "handle_str": user["handle_str"],       
+                }
+        raise InputError("Invalid user_id"}
 
 def user_profile_setname(token, name_first, name_last):
-    return {
-    }
+    """Updates a user's first and last name.
+
+    Args:
+        token: A string which acts an authorisation hash.
+        name_first: A string which is the user's new first name.
+        name_last: A string which is the user's new last name.
+
+    
+    Raises:
+        InputError: When name_first is not between 1 and 50 characters inclusively in length.
+                    When name_last is not between 1 and 50 characters inclusively in length.
+        AccessError: When the user's token is invalid.
+    """
+
+    global data 
+    # Check if token is valid
+    if token == "invalid_token":
+        raise AccessError("Invalid permissions")
+
+    # Check if first name is valid
+    if len(name_first) < 1 or len(name_first) > 50:
+        raise InputError("Invalid first name")
+
+    # Check if last name is valid
+    if len(name_last) < 1 or len(name_last) > 50:     
+        raise InputError("Invalid last name")
+
+    # If all checks valid, then set user's first and last name to passed in first and last names
+    if data["users"] != []:
+        for user in data["users"]:            
+            if token == user["token"]:
+                user["name_first"] = name_first
+                user["name_last"] = name_last
+
+    return {}
 
 def user_profile_setemail(token, email):
+    """Updates a user's email.
+
+    Args:
+        token: A string which acts an authorisation hash.
+        email: A string which is the user's new email.
+
+    Raises:
+        InputError: When email entered is not a valid email.
+                    When email address is already being used by another user.
+        AccessError: When the user's token is invalid.
+    """
+
     global data
+
     # Check if token called is valid
     if token == "invalid_token":
         raise AccessError("Invalid permissions")
@@ -66,12 +113,25 @@ def user_profile_setemail(token, email):
     # If all checks valid, then set user's email to passed in email
     for user in data["users"]:
         if token == user["token"]:
-            user["email"] == email
+            user["email"] = email
 
     return {}
 
 def user_profile_sethandle(token, handle_str):
+    """Updates a user's handle.
+
+    Args:
+        token: A string which acts an authorisation hash.
+        handle_str: A string which is the user's new handle.
+
+    Raises:
+        InputError: When handle_str is not between 3 and 20 characters.
+                    When handle is already used by another user.
+        AccessError: When the user's token is invalid.
+    """
+
     global data
+
     # Check if token called is valid
     if token == "invalid_token":
         raise AccessError("Invalid permissions")
@@ -89,6 +149,6 @@ def user_profile_sethandle(token, handle_str):
     # If all checks valid, then set user's handle to passed in handle_str
     for user in data["users"]:
         if token == user["token"]:
-            user["handle_str"] == handle_str
+            user["handle_str"] = handle_str
 
     return {}
