@@ -8,6 +8,15 @@ def clear():
     data["members"].clear()
 
 def users_all(token):
+    """
+    Returns a list of all users in the Flockr
+        Args:
+            token: String which is used as an authorisation hash
+        Return:
+            user_list: A list of all users
+        Raises:
+            AccessError: An error that occurs when token is invalid or the user is not authorised
+    """
     token_exist = False
     for user in data['users']:
         if user['token'] == token:
@@ -30,6 +39,16 @@ def users_all(token):
     return users_list
 
 def admin_userpermission_change(token, u_id, permission_id):
+    """
+    Changes the global permissions a user has access to
+        Args:
+            token: String which is used as an authorisation hash
+            u_id: An integer which is used to identify a user
+            permission_id: An integer which defines what global permissions a user has access to
+        Raises:
+            InputError: An error that occurs when either u_id or permission_id is invalid
+            AccessError: An error that occurs when token is invalid or the user is not authorised
+    """
     global data
 
     token_exist = False
