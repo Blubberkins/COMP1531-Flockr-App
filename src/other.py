@@ -2,10 +2,14 @@ from data import data
 from error import AccessError, InputError
 
 def clear():
+    """ Clears all data stored in the data file """
+
     global data
     data["users"].clear()
     data["channels"].clear()
     data["members"].clear()
+    data["messages"].clear()
+    data["num_messages"] = 0
 
 def users_all(token):
     """
@@ -83,6 +87,8 @@ def search(token, query_str):
         Args:
             token: String which is used as an authorisation hash
             query_str: String that is being searched for
+        Return:
+            search_results: A list of dictionaries containing info on all the messages that match the search query
     """
 
     # checking for valid token
