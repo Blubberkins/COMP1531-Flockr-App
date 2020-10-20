@@ -51,7 +51,7 @@ def user_profile_setemail(token, email):
     global data
     # Check if token called is valid
     if token == "invalid_token":
-        raise AccessError "Invalid permissions"
+        raise AccessError("Invalid permissions")
 
     # Check if email is valid
     if not valid_email(email):
@@ -61,7 +61,7 @@ def user_profile_setemail(token, email):
     if data["users"] != []:
         for user in data["users"]:
             if email == user["email"]
-                raise InputError "Email is already in use"
+                raise InputError("Email is already in use")
 
     # If all checks valid, then set user's email to passed in email
     for user in data["users"]:
@@ -74,7 +74,7 @@ def user_profile_sethandle(token, handle_str):
     global data
     # Check if token called is valid
     if token == "invalid_token":
-        raise AccessError "Invalid permissions"
+        raise AccessError("Invalid permissions")
     
     # Check if handle is valid
     if len(handle_str) < 3 or len(handle_str) > 20:
@@ -84,7 +84,7 @@ def user_profile_sethandle(token, handle_str):
     if data["users"] != []:
         for user in data["users"]:
             if handle_str == user["handle_str"]
-                raise InputError "Handle is already in use"
+                raise InputError("Handle is already in use")
 
     # If all checks valid, then set user's handle to passed in handle_str
     for user in data["users"]:
