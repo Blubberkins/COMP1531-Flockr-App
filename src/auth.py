@@ -2,6 +2,7 @@ from data import data
 from error import InputError
 from error import AccessError
 import re
+import hashlib
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -20,6 +21,8 @@ def auth_login(email, password):
         raise InputError("Invalid email")
     
     # Check if email and password are associated with a registered account
+    password = hashlib.sha256(password.encode()).hexdigest()
+
     if data["users"] != []:
         for user in data["users"]:            
             if email == user["email"] and password == user["password"]:
@@ -100,7 +103,7 @@ def auth_register(email, password, name_first, name_last):
     user["name_first"] = name_first
     user["name_last"] = name_last 
     user["handle_str"] = handle
-    user["password"] = password
+    user["password"] = hashlib.sha256(password.encode()).hexdigest()
     user["token"] = email
     data["users"].append(user)
     
