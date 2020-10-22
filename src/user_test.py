@@ -10,8 +10,8 @@ def test_user_profile_success1():
     """Tests for success when a registered user can view own profile."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
-    u_id = register_user1[1]
+    token = register_user1["token"]
+    u_id = register_user1["u_id"]
 
     user_info = user.user_profile(token, u_id)
     return_user = {
@@ -29,9 +29,9 @@ def test_user_profile_success2():
     """Tests for success when a registered user can view another user's profile."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    user1_token = register_user1[0]
+    user1_token = register_user1["token"]
     register_user2 = auth.auth_register("pythonthings@gmail.com", "pythonrules123", "Python", "Programmer")
-    user2_u_id = register_user2[1]
+    user2_u_id = register_user2["u_id"]
 
     user_info = user.user_profile(user1_token, user2_u_id) 
     return_user = {
@@ -50,7 +50,7 @@ def test_user_profile_invalid_u_id():
     """Tests for failure to display a registered user's own profile."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
+    token = register_user1["token"]
 
     with pytest.raises(InputError):
         user.user_profile(token, -1)
@@ -61,8 +61,8 @@ def test_user_profile_setname_success():
     """Tests for success when a user changes their first and last name."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
-    u_id = register_user1[1]
+    token = register_user1["token"]
+    u_id = register_user1["u_id"]
     user_info = user.user_profile(token, u_id) 
     name_first = user_info["user"]["name_first"]
     name_last = user_info["user"]["name_last"]
@@ -83,7 +83,7 @@ def test_user_profile_setname_invalid_firstname():
     """Tests for failure when a user inputs an invalid first name."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
+    token = register_user1["token"]
 
     with pytest.raises(InputError):
         user.user_profile_setname(token, "", "Owner")
@@ -93,7 +93,7 @@ def test_user_profile_setname_invalid_lastname():
     """Tests for failure when a user inputs an invalid last name."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
+    token = register_user1["token"]
 
     with pytest.raises(InputError):
         user.user_profile_setname(token, "Python", "")
@@ -103,7 +103,7 @@ def test_user_profile_setname_invalid_firstlastname():
     """Tests for failure when a user inputs invalid first and last names."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
+    token = register_user1["token"]
 
     with pytest.raises(InputError):
         user.user_profile_setname(token, "", "")
@@ -117,8 +117,8 @@ def test_user_profile_setemail_success():
     """Tests for success when a user changes their email."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
-    u_id = register_user1[1]
+    token = register_user1["token"]
+    u_id = register_user1["u_id"]
     user_info = user.user_profile(token, u_id) 
     user_email = user_info["user"]["email"]
 
@@ -135,7 +135,7 @@ def test_user_profile_invalid_email():
     """Tests for failure when a user inputs an invalid email address."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
+    token = register_user1["token"]
 
     with pytest.raises(InputError):
         user.user_profile_setemail(token, "")
@@ -149,11 +149,11 @@ def test_user_profile_email_already_in_use():
     """Tests for failure when a user inputs a email that is already in use."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token1 = register_user1[0]
+    token1 = register_user1["token"]
     register_user2 = auth.auth_register("differentemail@gmail.com", "321wordpass", "Different", "User")
-    token2 = register_user2[0]
+    token2 = register_user2["token"]
     register_user3 = auth.auth_register("randomperson@gmail.com", "987drowssap", "Random", "User")
-    token3 = register_user3[0]
+    token3 = register_user3["token"]
 
     with pytest.raises(InputError):
         user.user_profile_setemail(token2, "validemail@gmail.com")
@@ -167,8 +167,8 @@ def test_user_profile_sethandle_success():
     """Tests for success when a user changes their handle."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
-    u_id = register_user1[1]
+    token = register_user1["token"]
+    u_id = register_user1["u_id"]
     user_info = user.user_profile(token, u_id) 
     user_handle = user_info["user"]["handle_str"]
 
@@ -185,7 +185,7 @@ def test_user_profile_invalid_handle():
     """Tests for failure when a user inputs an invalid handle."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1[0]
+    token = register_user1["token"]
 
     with pytest.raises(InputError):
         user.user_profile_sethandle(token, "")
@@ -197,11 +197,11 @@ def test_user_profile_handle_already_in_use():
     """Tests for failure when a user inputs a handle that is already in use."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token1 = register_user1[0]
+    token1 = register_user1["token"]
     register_user2 = auth.auth_register("differentemail@gmail.com", "321wordpass", "Different", "User")
-    token2 = register_user2[0]
+    token2 = register_user2["token"]
     register_user3 = auth.auth_register("randomperson@gmail.com", "987drowssap", "Random", "User")
-    token3 = register_user3[0]
+    token3 = register_user3["token"]
 
     with pytest.raises(InputError):
         user.user_profile_sethandle(token2, "newuser")
