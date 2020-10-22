@@ -64,7 +64,7 @@ def auth_logout(token):
 def auth_register(email, password, name_first, name_last):
     global data
     
-    u_id = len(data["users"])
+    u_id = len(data["users"]) + 1
             
     # Check if email is valid
     if not valid_email(email):
