@@ -145,7 +145,7 @@ def user_profile_sethandle(token, handle_str):
     # Check if handle is already in use
     if data["users"] != []:
         for user in data["users"]:
-            if handle_str == user["handle_str"]
+            if handle_str == user["handle_str"]:
                 raise InputError("Handle is already in use")
 
     # If all checks valid, then set user's handle to passed in handle_str
