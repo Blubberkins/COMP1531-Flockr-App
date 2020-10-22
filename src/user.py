@@ -36,11 +36,13 @@ def user_profile(token, u_id):
         for user in data["users"]:            
             if u_id == user["u_id"]:
                 return {
-                    "u_id": user["u_id"],
-                    "email": user["email"],
-                    "name_first": user["name_first"],
-                    "name_last": user["name_last"],
-                    "handle_str": user["handle_str"],       
+                    "user": {
+                        "u_id": user["u_id"],
+                        "email": user["email"],
+                        "name_first": user["name_first"],
+                        "name_last": user["name_last"],
+                        "handle_str": user["handle_str"],  
+                    }
                 }
         raise InputError("Invalid user_id"}
 
