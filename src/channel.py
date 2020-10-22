@@ -75,46 +75,59 @@ def channel_details(token, channel_id):
 def channel_messages(token, channel_id, start):
     global data
     # Check channel_id
-    num_users = len(data["users"])
-    num_channels = len(data["channels"])
-    u_id = 0
-    for x in range(num_users):
-        if data["users"][x]["token"] == token:
-            u_id = data["users"][x]["u_id"]
-    correct_channel_id = False
-    isValid_token = False
-    channel_index = -1
-
-    for x in range(num_channels):
-        if data["channels"][x]["channel_id"] == channel_id:
-            correct_channel_id = True
-            channel_index = x
-            # Check token
-            num_members = len(data["channels"][x]["all_members"])
-            for i in range(num_members):
-                if u_id in data["channels"][x]["all_members"][i]["u_id"]:
-                    isValid_token = True
-                    break
+    isValidChannel = False
+    for channel in data["channels"]:
+        if channel["channel_id"] == channel_id:
+            isValidChannel = True 
             break
-    if correct_channel_id == False:
-        raise InputError("Channel ID is not a valid channel")
-    if isValid_token == False:
-        raise AccessError("Authorised user is not a member of channel with channel_id")
-    # Check whether start > no. messages in channel
-    if  start > len(data["channels"][channel_index]["messages"]):
-        raise   InputError("Start is greater than the total number of messages in the channel")
+
+    if not isValidChannel:
+        raise InputError("Invalid channel ID")
     
-    # Initialise return dictionary
+    # Check token
+    isValidToken = False
+    u_id = -1
+    for user in data["user"]:
+        if user["token"] == token:
+            u_id = user["u_id"]
+            break
+    for channel in data["channels"]:
+        if channel["channel_id"] == channel_id:
+            for user in channel["all_members"]:
+                if user["u_id"] == u_id:
+                    isValidToken = True
+                    break
+    if not isValidToken:
+        raise AccessError("User is not a member of the channel")
+
+    # Check if start index is valid
+    counter = 0
+    for message in data["messages"]:
+        if message["channel_id"] == channel_id:
+            counter += 1
+
+    if start + 1 > counter:
+        raise InputError("Start is greater than the total number of messages in the channel")
+    
     returnDict = {}
     returnDict["messages"] = []
     returnDict["start"] = start
     returnDict["end"] = 50
-    num_messages = 50
-    if len(data["channels"][channel_index]["messages"]) <= 50:
+    counter = 0
+    index = 0
+
+    for message in data["messages"]:
+        if message["channel_id"] == channel_id:
+            if index < start:
+                index += 1
+            else:
+                if counter < 50:
+                    returnDict["messages"].append(message)
+                    counter += 1
+
+    if counter != 50:
         returnDict["end"] = -1
-        num_messages = len(data["channels"][channel_index]["messages"])
-    for x in range(num_messages):
-        returnDict["messages"].append(data["channels"][channel_index]["messages"][x])
+
     return returnDict
 
 def channel_leave(token, channel_id):
