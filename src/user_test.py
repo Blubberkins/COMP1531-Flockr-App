@@ -13,12 +13,14 @@ def test_user_profile_success1():
     u_id = register_user1[1]
 
     user_info = user.user_profile(token, u_id) 
-    user = {
-        "u_id" : 1,
-        "email" : "validemail@gmail.com",
-        "name_first" : "New",
-        "name_last" : "User",
-        "handle_str" : "newuser",
+    user = { 
+        "user": {
+           "u_id" : 1,
+            "email" : "validemail@gmail.com",
+            "name_first" : "New",
+            "name_last" : "User",
+            "handle_str" : "newuser", 
+        }
     }
     assert user_info == user
 
@@ -32,11 +34,13 @@ def test_user_profile_success2():
 
     user_info = user.user_profile(user1_token, user2_u_id) 
     user = {
-        "u_id" : 2,
-        "email" : "pythonthings@gmail.com",
-        "name_first" : "Python",
-        "name_last" : "Programmer",
-        "handle_str" : "pythonprogrammer",
+        "user": {
+            "u_id" : 2,
+            "email" : "pythonthings@gmail.com",
+            "name_first" : "Python",
+            "name_last" : "Programmer",
+            "handle_str" : "pythonprogrammer",
+        }
     }
     assert user_info == user
 
@@ -59,16 +63,16 @@ def test_user_profile_setname_success():
     token = register_user1[0]
     u_id = register_user1[1]
     user_info = user.user_profile(token, u_id) 
-    name_first = user_info["name_first"]
-    name_last = user_info["name_last"]
+    name_first = user_info["user"]["name_first"]
+    name_last = user_info["user"]["name_last"]
 
     assert name_first == "New"
     assert name_last == "User"
 
     user.user_profile_setname(token, "Flock", "Owner")
     updated_user_info = user.user_profile(token, u_id) 
-    updated_name_first = updated_user_info["name_first"]
-    updated_name_last = updated_user_info["name_last"]
+    updated_name_first = updated_user_info["user"]["name_first"]
+    updated_name_last = updated_user_info["user"]["name_last"]
     
     assert updated_name_first == "Flock"
     assert updated_name_last == "Owner"
@@ -115,15 +119,16 @@ def test_user_profile_setemail_success():
     token = register_user1[0]
     u_id = register_user1[1]
     user_info = user.user_profile(token, u_id) 
-    user_email = user_info["email"]
+    user_email = user_info["user"]["email"]
 
     assert user_email == "validemail@gmail.com"
 
     user.user_profile_setemail(token, "newemail@gmail.com")
     updated_user_info = user.user_profile(token, u_id) 
-    updated_email = updated_user_info["email"]
+    updated_email = updated_user_info["user"]["email"]
     
     assert updated_email = "newemail@gmail.com"
+    
 # Failure for set email
 def test_user_profile_invalid_email():
     """Tests for failure when a user inputs an invalid email address."""
@@ -138,7 +143,6 @@ def test_user_profile_invalid_email():
         user.user_profile_setemail(token, "email.com")
         user.user_profile_setemail(token, "@@@@@@")
         user.user_profile_setemail(token, "email@email")
-        
         
 def test_user_profile_email_already_in_use():
     """Tests for failure when a user inputs a email that is already in use."""
@@ -165,15 +169,16 @@ def test_user_profile_sethandle_success():
     token = register_user1[0]
     u_id = register_user1[1]
     user_info = user.user_profile(token, u_id) 
-    user_handle = user_info["handle_str"]
+    user_handle = user_info["user"]["handle_str"]
 
     assert user_handle == "newuser"
 
     user.user_profile_sethandle(token, "newhandle")
     updated_user_info = user.user_profile(token, u_id) 
-    updated_handle = updated_user_info["handle_str"]
+    updated_handle = updated_user_info["user"]["handle_str"]
     
     assert updated_handle = "newhandle"
+    
 # Failure for set handle
 def test_user_profile_invalid_handle():
     """Tests for failure when a user inputs an invalid handle."""
@@ -202,3 +207,4 @@ def test_user_profile_email_already_in_use():
         user.user_profile_sethandle(token1, "differentuser")
         user.user_profile_sethandle(token3, "newuser)
         user.user_profile_sethandle(token3, "differentuser")
+        
