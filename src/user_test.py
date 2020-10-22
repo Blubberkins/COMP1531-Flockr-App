@@ -177,7 +177,7 @@ def test_user_profile_sethandle_success():
     updated_user_info = user.user_profile(token, u_id) 
     updated_handle = updated_user_info["user"]["handle_str"]
     
-    assert updated_handle = "newhandle"
+    assert updated_handle == "newhandle"
     
 # Failure for set handle
 def test_user_profile_invalid_handle():
