@@ -76,7 +76,7 @@ def inv_user(login_owner, login_user, channel_id):
         'u_id': login_user['u_id']
     }
     requests.post(f"{url}/channel/invite", json=invite_user)
-    
+
 #tests for http_channel_invite
 def test_http_channel_invite_invalid_id(url):
     login_owner = reg_owner()
@@ -99,12 +99,15 @@ def test_http_channel_invite_invalid_id(url):
         'u_id': login_user['u_id']
     }
 
-
     r = requests.post(f"{url}/channel/invite", json=invalid_u_id)
-        assert r['message'] == "Invitee does not exist"
-        assert r['code'] == 400
-    requests.post(f"{url}/channel/invite", json=invalid_channel_id)
+    payload = r.json
+    assert payload['message'] == "Invitee does not exist"
+    assert payload['code'] == 400
 
+    r = requests.post(f"{url}/channel/invite", json=invalid_channel_id)
+    payload = r.json
+    assert payload['message'] == "Invalid channel id"
+    assert payload['code'] == 400
 
 def test_http_channel_invite_invalid_token(url):
     login_owner = reg_owner()
@@ -125,9 +128,15 @@ def test_http_channel_invite_invalid_token(url):
         'u_id': login_user['u_id']
     }
 
-    with pytest.raises(AccessError):
-        requests.post(f"{url}/channel/invite", json=empty_token)
-        requests.post(f"{url}/channel/invite", json=invalid_token)
+    r = requests.post(f"{url}/channel/invite", json=empty_token)
+    payload = r.json()
+    assert payload['message'] == "Token does not exist"
+    assert payload['code'] == 400
+
+    r = requests.post(f"{url}/channel/invite", json=invalid_token)
+    payload = r.json()
+    assert payload['message'] == "Inviter is not part of this channel"
+    assert payload['code'] == 400
 
 def test_http_channel_invite_success(url):
     login_owner = reg_owner()
@@ -142,7 +151,7 @@ def test_http_channel_invite_success(url):
         'u_id': login_user['u_id']
     }
     requests.post(f"{url}/channel/invite", json=success_invite)
-   
+
     get_details = {
         login_owner['token'],
         channel_id['channel_id']
@@ -151,6 +160,11 @@ def test_http_channel_invite_success(url):
     channel_details = r.json
 
     assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+
+    r = requests.post(f"{url}/channel/invite", json=success_invite)
+    payload = r.json()
+    assert payload['message'] == "Invitee is already invited to this channel"
+    assert payload['code'] == 400
 
 #tests for http_channel_details
 def test_http_channel_details_invalid_id(url):
@@ -164,8 +178,10 @@ def test_http_channel_details_invalid_id(url):
         'token': login_owner,
         'channel_id': invalid_channel_id
     }
-    with pytest.raises(InputError):
-        requests.get(f"{url}/channel/details", json=invalid_id)
+    r = requests.get(f"{url}/channel/details", json=invalid_id)
+    payload = r.json()
+    assert payload['message'] == "Invalid channel id"
+    assert payload['code'] == 400
 
 def test_http_channel_details_invalid_token(url):
     login_owner = reg_owner()
@@ -184,9 +200,14 @@ def test_http_channel_details_invalid_token(url):
         'channel_id': channel_id['channel_id']
     }
 
-    with pytest.raises(AccessError):
-        requests.get(f"{url}/channel/details", json=empty_token)
-        requests.get(f"{url}/channel/details", json=invalid_token)
+    r = requests.get(f"{url}/channel/details", json=empty_token)
+    payload = r.json
+    assert payload['message'] == "Token does not exist"
+    assert payload['code'] == 400
+
+    r = requests.get(f"{url}/channel/details", json=invalid_token)
+    assert payload['message'] == "User is not authorised"
+    assert payload['code'] == 400
 
 def test_http_channel_details_success(url):
     login_owner = reg_owner()
@@ -230,9 +251,11 @@ def test_http_channel_addowner_invalid_id(url):
         'channel_id': channel_id['channel_id'],
         'u_id': login_user['u_id']
     }
-    with pytest.raises(InputError):
-        requests.post(f"{url}/channel/addowner", json=make_user_owner_fail)
-   
+    r = requests.post(f"{url}/channel/addowner", json=make_user_owner_fail)
+    payload = r.json()
+    assert payload['message'] == "Target is not part of the channel"
+    assert payload['code'] == 400
+
     inv_user(login_owner, login_user, channel_id)
 
     invalid_id = -1
@@ -249,16 +272,15 @@ def test_http_channel_addowner_invalid_id(url):
         'u_id': invalid_id
     }
 
-    invalid_both_id = {
-        'token': login_owner['token'],
-        'channel_id': invalid_id,
-        'u_id': invalid_id
-    }
+    r = requests.post(f"{url}/channel/addowner", json=invalid_channel_id)
+    payload = r.json()
+    assert payload['message'] == "Invalid channel id"
+    assert payload['code'] == 400
 
-    with pytest.raises(InputError):
-        requests.post(f"{url}/channel/addowner", json=invalid_channel_id)
-        requests.post(f"{url}/channel/addowner", json=invalid_u_id)
-        requests.post(f"{url}/channel/addowner", json=invalid_both_id)
+    r = requests.post(f"{url}/channel/addowner", json=invalid_u_id)
+    payload = r.json()
+    assert payload['message'] == "Target is not part of the channel"
+    assert payload['code'] == 400
 
 def test_http_channel_addowner_already_owner(url):
     login_owner = reg_owner()
@@ -271,8 +293,10 @@ def test_http_channel_addowner_already_owner(url):
         'u_id': login_owner['u_id']
     }
 
-    with pytest.raises(InputError):
-        requests.post(f"{url}/channel/addowner", json=make_owner_owner)
+    r = requests.post(f"{url}/channel/addowner", json=make_owner_owner)
+    payload = r.json()
+    assert payload['message'] == "Target is already an owner of this channel"
+    assert payload['code'] == 400
 
 def test_http_channel_addowner_invalid_token(url):
     login_owner = reg_owner()
@@ -295,9 +319,15 @@ def test_http_channel_addowner_invalid_token(url):
         'u_id': login_user['u_id']
     }
 
-    with pytest.raises(AccessError):
-        requests.post(f"{url}/channel/addowner", json=empty_token)
-        requests.post(f"{url}/channel/addowner", json=invalid_token)
+    r = requests.post(f"{url}/channel/addowner", json=empty_token)
+    payload = r.json()
+    assert payload['message'] == "Token does not exist"
+    assert payload['code'] == 400
+
+    r = requests.post(f"{url}/channel/addowner", json=invalid_token)
+    payload = r.json()
+    assert payload['message'] == "User is not authorised"
+    assert payload['code'] == 400
 
 def test_http_channel_addowner_success(url):
     login_owner = reg_owner()
@@ -354,16 +384,15 @@ def test_http_channel_removeowner_invalid_id(url):
         'u_id': invalid_id
     }
 
-    invalid_both_id = {
-        'token': login_owner['token'],
-        'channel_id': invalid_id,
-        'u_id': invalid_id
-    }
+    r = requests.post(f"{url}/channel/removeowner", json=invalid_channel_id)
+    payload = r.json()
+    assert payload['message'] == "Invalid channel id"
+    assert payload['code'] == 400
 
-    with pytest.raises(InputError):
-        requests.post(f"{url}/channel/removeowner", json=invalid_channel_id)
-        requests.post(f"{url}/channel/removeowner", json=invalid_u_id)
-        requests.post(f"{url}/channel/removeowner", json=invalid_both_id)
+    r = requests.post(f"{url}/channel/removeowner", json=invalid_u_id)
+    payload = r.json()
+    assert payload['message'] == "Target is not an owner of this channel"
+    assert payload['code'] == 400
 
 def test_http_channel_removeowner_not_owner(url):
     login_owner = reg_owner()
@@ -378,8 +407,10 @@ def test_http_channel_removeowner_not_owner(url):
         'u_id': login_user['u_id']
     }
 
-    with pytest.raises(InputError):
-        requests.post(f"{url}/channel/removeowner", json=remove_owner_user)
+    r = requests.post(f"{url}/channel/removeowner", json=remove_owner_user)
+    payload = r.json()
+    assert payload['message'] == "Target is not an owner of this channel"
+    assert payload['code'] == 400
 
 def test_http_channel_removeowner_invalid_token(url):
     login_owner = reg_owner()
@@ -402,9 +433,15 @@ def test_http_channel_removeowner_invalid_token(url):
         'u_id': login_owner['u_id']
     }
 
-    with pytest.raises(AccessError):
-        requests.post(f"{url}/channel/removeowner", json=empty_token)
-        requests.post(f"{url}/channel/removeowner", json=invalid_token)
+    r = requests.post(f"{url}/channel/removeowner", json=empty_token)
+    payload = r.json()
+    assert payload['message'] == "Token does not exist"
+    assert payload['code'] == 400
+
+    r = requests.post(f"{url}/channel/removeowner", json=invalid_token)
+    payload = r.json()
+    assert payload['message'] == "User is not authorised"
+    assert payload['code'] == 400
 
 def test_http_channel_removeowner_success(url):
     login_owner = reg_owner()
