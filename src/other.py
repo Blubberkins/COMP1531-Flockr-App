@@ -1,5 +1,6 @@
 from data import data
-from error import AccessError, InputError
+from error import InputError
+from error import AccessError
 
 def clear():
     """ Clears all data stored in the data file """
