@@ -127,7 +127,7 @@ def test_user_profile_setemail_success():
     updated_user_info = user.user_profile(token, u_id) 
     updated_email = updated_user_info["user"]["email"]
     
-    assert updated_email = "newemail@gmail.com"
+    assert updated_email == "newemail@gmail.com"
     
 # Failure for set email
 def test_user_profile_invalid_email():
