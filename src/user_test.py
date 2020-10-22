@@ -23,7 +23,7 @@ def test_user_profile_success1():
             "handle_str" : "newuser",
         }
     }
-    assert user_info == return_user
+    assert user_info["user"] == return_user
 
 def test_user_profile_success2():
     """Tests for success when a registered user can view another user's profile."""
@@ -43,7 +43,7 @@ def test_user_profile_success2():
             "handle_str" : "pythonprogrammer",
         }
     }
-    assert user_info == return_user
+    assert user_info["user"] == return_user
 
 # Failure for user profile
 def test_user_profile_invalid_u_id():
