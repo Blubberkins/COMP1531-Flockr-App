@@ -287,6 +287,8 @@ def test_channel_removeowner_invalid_id():
 
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
     channel.channel_invite(login_owner['token'], channel_id, login_user['u_id'])
+    
+    channel.channel_addowner(login_owner['token'], channel_id, login_user['u_id'])
 
     invalid_channel_id = -1
     invalid_u_id = -1
