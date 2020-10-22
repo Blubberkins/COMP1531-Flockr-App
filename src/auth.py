@@ -117,6 +117,10 @@ def auth_register(email, password, name_first, name_last):
     user["handle_str"] = handle
     user["password"] = hashlib.sha256(password.encode()).hexdigest()
     user["token"] = encode_jwt(email)
+    if u_id == 1:
+        user["permission_id"] = 1
+    else:
+        user["permission_id"] = 2
     data["users"].append(user)
     
     return {
