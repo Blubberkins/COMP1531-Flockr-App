@@ -1,3 +1,4 @@
+import auth
 import user
 import pytest
 from error import InputError
@@ -12,17 +13,17 @@ def test_user_profile_success1():
     token = register_user1[0]
     u_id = register_user1[1]
 
-    user_info = user.user_profile(token, u_id) 
-    user = { 
+    user_info = user.user_profile(token, u_id)
+    return_user = {
         "user": {
-           "u_id" : 1,
+            "u_id" : 1,
             "email" : "validemail@gmail.com",
             "name_first" : "New",
             "name_last" : "User",
-            "handle_str" : "newuser", 
+            "handle_str" : "newuser",
         }
     }
-    assert user_info == user
+    assert user_info == return_user
 
 def test_user_profile_success2():
     """Tests for success when a registered user can view another user's profile."""
@@ -30,10 +31,10 @@ def test_user_profile_success2():
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     user1_token = register_user1[0]
     register_user2 = auth.auth_register("pythonthings@gmail.com", "pythonrules123", "Python", "Programmer")
-    user2_u_id = register_user1[1]
+    user2_u_id = register_user2[1]
 
     user_info = user.user_profile(user1_token, user2_u_id) 
-    user = {
+    return_user = {
         "user": {
             "u_id" : 2,
             "email" : "pythonthings@gmail.com",
@@ -42,7 +43,7 @@ def test_user_profile_success2():
             "handle_str" : "pythonprogrammer",
         }
     }
-    assert user_info == user
+    assert user_info == return_user
 
 # Failure for user profile
 def test_user_profile_invalid_u_id():
@@ -192,7 +193,7 @@ def test_user_profile_invalid_handle():
         user.user_profile_sethandle(token, "abcdefghijklmnopqrstuvwxyz")
         user.user_profile_sethandle(token, "                          ")
 
-def test_user_profile_email_already_in_use():
+def test_user_profile_handle_already_in_use():
     """Tests for failure when a user inputs a handle that is already in use."""
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
@@ -205,6 +206,6 @@ def test_user_profile_email_already_in_use():
     with pytest.raises(InputError):
         user.user_profile_sethandle(token2, "newuser")
         user.user_profile_sethandle(token1, "differentuser")
-        user.user_profile_sethandle(token3, "newuser)
+        user.user_profile_sethandle(token3, "newuser")
         user.user_profile_sethandle(token3, "differentuser")
         
