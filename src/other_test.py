@@ -4,6 +4,7 @@ import message
 import channel
 import channels
 import pytest
+import data
 from error import InputError
 from error import AccessError
 

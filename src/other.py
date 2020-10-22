@@ -1,4 +1,6 @@
 from data import data
+from error import InputError
+from error import AccessError
 
 def clear():
     """ Clears all data stored in the data file """
@@ -79,9 +81,6 @@ def admin_userpermission_change(token, u_id, permission_id):
         raise InputError("Permission id does not exist")
 
     member['permission_id'] = permission_id
-
-def admin_userpermission_change(token, u_id, permission_id):
-    pass
 
 def search(token, query_str):
     """
