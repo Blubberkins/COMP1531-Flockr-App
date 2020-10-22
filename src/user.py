@@ -44,7 +44,7 @@ def user_profile(token, u_id):
                         "handle_str": user["handle_str"],  
                     }
                 }
-        raise InputError("Invalid user_id"}
+        raise InputError("Invalid user_id")
 
 def user_profile_setname(token, name_first, name_last):
     """Updates a user's first and last name.
