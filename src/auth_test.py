@@ -2,6 +2,7 @@ import auth
 import pytest
 from error import InputError
 from other import clear
+import jwt
 
 # TEST FUNCTIONS FOR AUTH_LOGIN
 # Success for login
@@ -71,27 +72,26 @@ def test_login_invalid_password():
 def test_logout_success():
     clear()
     register_user = auth.auth_register("registered@gmail.com", "python123", "New", "User")
-    
-    assert auth.auth_logout(register_user["token"])["is_success"] == True
+    result = auth.auth_logout(register_user["token"])
+    assert result["is_success"] == True
 
-'''
 # Failure for logout - UNSURE OF THIS, MAY BE REMOVED FOR FINAL SUBMISSION
 def test_logout_failure():
     clear()
     auth.auth_register("registered@gmail.com", "python123", "New", "User")
     result = auth.auth_logout("invalid_token")
     assert result["is_success"] == False
-'''        
+        
 # TEST FUNCTIONS FOR AUTH_REGISTER
 # Success for register
 def test_register_success():
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
-    assert register_user1["token"] == "validemail@gmail.com"
-    register_user2 = auth.auth_register("validemail2@gmail.com", "           ", "Firstname", "Lastname")
-    assert register_user2["token"] == "validemail2@gmail.com"
-    register_user3 = auth.auth_register("validemail3@ourearth.org", "password123", "Firstname", "Lastname")
-    assert register_user3["token"] == "validemail3@ourearth.org"
+    assert register_user1["u_id"] == 1
+    register_user2 = auth.auth_register("differentemail@gmail.com", "           ", "Firstname", "Lastname")
+    assert register_user2["u_id"] == 2
+    register_user3 = auth.auth_register("validemail@ourearth.org", "password123", "Firstname", "Lastname")
+    assert register_user3["u_id"] == 3
 
 # Failure for register
 def test_register_invalid_email():
