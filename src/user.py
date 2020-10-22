@@ -109,7 +109,7 @@ def user_profile_setemail(token, email):
     # Check if email is already in use
     if data["users"] != []:
         for user in data["users"]:
-            if email == user["email"]
+            if email == user["email"]:
                 raise InputError("Email is already in use")
 
     # If all checks valid, then set user's email to passed in email
