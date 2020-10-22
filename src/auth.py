@@ -49,7 +49,7 @@ def auth_logout(token):
 
     # Check if token matches a registered email
     for user in data["users"]: 
-        if decode_jwt(token) == user["email"]:
+        if token != "invalid_token" and decode_jwt(token) == user["email"]:
             # Invalidate token and log the user out
             token = "invalid_token"
             return {
