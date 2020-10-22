@@ -2,6 +2,7 @@ import auth
 import pytest
 from error import InputError
 from other import clear
+import jwt
 
 # TEST FUNCTIONS FOR AUTH_LOGIN
 # Success for login
