@@ -36,8 +36,8 @@ def test_url(url):
     '''
     assert url.startswith("http")
 
-#tests for http_channel_invite
-def test_http_channel_invite_invalid_id(url):
+#register owner function
+def reg_owner():
     register_owner = {
         'email': "owner@email.com",
         'password': "password123",
@@ -45,16 +45,10 @@ def test_http_channel_invite_invalid_id(url):
         'name_last': "Test"
     }
     r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    return r.json()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
-
+#register user function
+def reg_user():
     register_user = {
         'email': "user@email.com",
         'password': "password321",
@@ -62,7 +56,34 @@ def test_http_channel_invite_invalid_id(url):
         'name_last': "Test"
     }
     r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    return r.json()
+
+#create channel function
+def create_channel(login_owner):
+    channels_create = {
+        'token': login_owner['token'],
+        'name': "channel",
+        'is_public': True
+    }
+    r = requests.post(f"{url}/channels/create", json=channels_create)
+    return r.json()
+
+#invite user function
+def inv_user(login_owner, login_user, channel_id):
+    invite_user = {
+        'token': login_owner['token'],
+        'channel_id': channel_id['channel_id'],
+        'u_id': login_user['u_id']
+    }
+    requests.post(f"{url}/channel/invite", json=invite_user)
+    
+#tests for http_channel_invite
+def test_http_channel_invite_invalid_id(url):
+    login_owner = reg_owner()
+
+    channel_id = create_channel(login_owner)
+
+    login_user = reg_user()
 
     invalid_id = -1
 
@@ -78,43 +99,19 @@ def test_http_channel_invite_invalid_id(url):
         'u_id': login_user['u_id']
     }
 
-    invalid_both_id = {
-        'token': login_owner['token'],
-        'channel_id': invalid_id,
-        'u_id': invalid_id
-    }
 
-    with pytest.raises(InputError):
-        requests.post(f"{url}/channel/invite", json=invalid_u_id)
-        requests.post(f"{url}/channel/invite", json=invalid_channel_id)
-        requests.post(f"{url}/channel/invite", json=invalid_both_id)
+    r = requests.post(f"{url}/channel/invite", json=invalid_u_id)
+        assert r['message'] == "Invitee does not exist"
+        assert r['code'] == 400
+    requests.post(f"{url}/channel/invite", json=invalid_channel_id)
+
 
 def test_http_channel_invite_invalid_token(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
     empty_token = {
         'token': "",
@@ -133,31 +130,11 @@ def test_http_channel_invite_invalid_token(url):
         requests.post(f"{url}/channel/invite", json=invalid_token)
 
 def test_http_channel_invite_success(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
     success_invite = {
         'token': login_owner['token'],
@@ -177,22 +154,9 @@ def test_http_channel_invite_success(url):
 
 #tests for http_channel_details
 def test_http_channel_details_invalid_id(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
     invalid_channel_id = -1
 
@@ -204,31 +168,11 @@ def test_http_channel_details_invalid_id(url):
         requests.get(f"{url}/channel/details", json=invalid_id)
 
 def test_http_channel_details_invalid_token(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
     empty_token = {
         'token': "",
@@ -245,22 +189,9 @@ def test_http_channel_details_invalid_token(url):
         requests.get(f"{url}/channel/details", json=invalid_token)
 
 def test_http_channel_details_success(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
     get_details = {
         'token': login_owner['token'],
@@ -272,21 +203,9 @@ def test_http_channel_details_success(url):
     assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
     assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
-    invite_user = {
-        'token': login_owner['token'],
-        'channel_id': channel_id['channel_id'],
-        'u_id': login_user['u_id']
-    }
-    requests.post(f"{url}/channel/invite", json=invite_user)
+    inv_user(login_owner, login_user, channel_id)
 
     get_details = {
         'token': login_user['token'],
@@ -300,31 +219,11 @@ def test_http_channel_details_success(url):
 
 #tests http_channel_addowner
 def test_http_channel_addowner_invalid_id(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
     make_user_owner_fail = {
         'token': login_owner['token'],
@@ -334,12 +233,7 @@ def test_http_channel_addowner_invalid_id(url):
     with pytest.raises(InputError):
         requests.post(f"{url}/channel/addowner", json=make_user_owner_fail)
    
-    invite_user = {
-        'token': login_owner['token'],
-        'channel_id': channel_id['channel_id'],
-        'u_id': login_user['u_id']
-    }
-    requests.post(f"{url}/channel/invite", json=invite_user)
+    inv_user(login_owner, login_user, channel_id)
 
     invalid_id = -1
 
@@ -367,22 +261,9 @@ def test_http_channel_addowner_invalid_id(url):
         requests.post(f"{url}/channel/addowner", json=invalid_both_id)
 
 def test_http_channel_addowner_already_owner(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
     make_owner_owner = {
         'token': login_owner['token'],
@@ -394,38 +275,13 @@ def test_http_channel_addowner_already_owner(url):
         requests.post(f"{url}/channel/addowner", json=make_owner_owner)
 
 def test_http_channel_addowner_invalid_token(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
-    invite_user = {
-        'token': login_owner['token'],
-        'channel_id': channel_id['channel_id'],
-        'u_id': login_user['u_id']
-    }
-    requests.post(f"{url}/channel/invite", json=invite_user)
+    inv_user(login_owner, login_user, channel_id)
 
     empty_token = {
         'token': "",
@@ -444,38 +300,13 @@ def test_http_channel_addowner_invalid_token(url):
         requests.post(f"{url}/channel/addowner", json=invalid_token)
 
 def test_http_channel_addowner_success(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
-    invite_user = {
-        'token': login_owner['token'],
-        'channel_id': channel_id['channel_id'],
-        'u_id': login_user['u_id']
-    }
-    requests.post(f"{url}/channel/invite", json=invite_user)
+    inv_user(login_owner, login_user, channel_id)
 
     make_user_owner = {
         'token': login_owner['token'],
@@ -494,38 +325,13 @@ def test_http_channel_addowner_success(url):
 
 #tests http_channel_removeowner
 def test_http_channel_removeowner_invalid_id(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
-    invite_user = {
-        'token': login_owner['token'],
-        'channel_id': channel_id['channel_id'],
-        'u_id': login_user['u_id']
-    }
-    requests.post(f"{url}/channel/invite", json=invite_user)
+    inv_user(login_owner, login_user, channel_id)
 
     make_user_owner = {
         'token': login_owner['token'],
@@ -560,31 +366,11 @@ def test_http_channel_removeowner_invalid_id(url):
         requests.post(f"{url}/channel/removeowner", json=invalid_both_id)
 
 def test_http_channel_removeowner_not_owner(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
     remove_owner_user = {
         'token': login_owner['token'],
@@ -596,38 +382,13 @@ def test_http_channel_removeowner_not_owner(url):
         requests.post(f"{url}/channel/removeowner", json=remove_owner_user)
 
 def test_http_channel_removeowner_invalid_token(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
-    invite_user = {
-        'token': login_owner['token'],
-        'channel_id': channel_id['channel_id'],
-        'u_id': login_user['u_id']
-    }
-    requests.post(f"{url}/channel/invite", json=invite_user)
+    inv_user(login_owner, login_user, channel_id)
 
     empty_token = {
         'token': "",
@@ -646,38 +407,13 @@ def test_http_channel_removeowner_invalid_token(url):
         requests.post(f"{url}/channel/removeowner", json=invalid_token)
 
 def test_http_channel_removeowner_success(url):
-    register_owner = {
-        'email': "owner@email.com",
-        'password': "password123",
-        'name_first': "Owner",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
-    login_owner = r.json()
+    login_owner = reg_owner()
 
-    channels_create = {
-        'token': login_owner['token'],
-        'name': "channel",
-        'is_public': True
-    }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
-    channel_id = r.json()
+    channel_id = create_channel(login_owner)
 
-    register_user = {
-        'email': "user@email.com",
-        'password': "password321",
-        'name_first': "User",
-        'name_last': "Test"
-    }
-    r = requests.post(f"{url}/auth/register", json=register_user)
-    login_user = r.json()
+    login_user = reg_user()
 
-    invite_user = {
-        'token': login_owner['token'],
-        'channel_id': channel_id['channel_id'],
-        'u_id': login_user['u_id']
-    }
-    requests.post(f"{url}/channel/invite", json=invite_user)
+    inv_user(login_owner, login_user, channel_id)
 
     remove_owner = {
         'token': login_user['token'],
