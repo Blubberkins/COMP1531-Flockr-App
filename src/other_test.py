@@ -3,7 +3,6 @@ import other
 import message
 import channel
 import channels
-import data
 import pytest
 from error import InputError
 from error import AccessError
