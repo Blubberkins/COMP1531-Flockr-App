@@ -9,7 +9,6 @@ from error import InputError
 from error import AccessError
 from other import clear
 
-
 # Use this fixture to get the URL of the server.
 @pytest.fixture
 def url():
@@ -37,8 +36,9 @@ def test_url(url):
     '''
     assert url.startswith("http")
 
-#register owner function
-def reg_owner():
+# Register owner function
+def reg_owner(url):
+    """Registers an owner, the original owner of the Flock."""
     register_owner = {
         'email': "owner@email.com",
         'password': "password123",
@@ -48,8 +48,9 @@ def reg_owner():
     r = requests.post(f"{url}/auth/register", json=register_owner)
     return r.json()
 
-#register user function
-def reg_user():
+# Register user function
+def reg_user(url):
+    """Registers a user."""
     register_user = {
         'email': "user@email.com",
         'password': "password321",
@@ -60,7 +61,7 @@ def reg_user():
     return r.json()
 
 #create channel function
-def create_channel(login_owner):
+def create_channel(url, login_owner):
     channels_create = {
         'token': login_owner['token'],
         'name': "channel",
@@ -70,7 +71,7 @@ def create_channel(login_owner):
     return r.json()
 
 #invite user function
-def inv_user(login_owner, login_user, channel_id):
+def inv_user(url, login_owner, login_user, channel_id):
     invite_user = {
         'token': login_owner['token'],
         'channel_id': channel_id['channel_id'],
@@ -100,11 +101,11 @@ def create_unique_channel(user, name, is_public):
 #tests for http_channel_invite
 def test_http_channel_invite_invalid_id(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
     invalid_id = -1
 
@@ -121,22 +122,22 @@ def test_http_channel_invite_invalid_id(url):
     }
 
     r = requests.post(f"{url}/channel/invite", json=invalid_u_id)
-    payload = r.json
+    payload = r.json()
     assert payload['message'] == "Invitee does not exist"
     assert payload['code'] == 400
 
     r = requests.post(f"{url}/channel/invite", json=invalid_channel_id)
-    payload = r.json
+    payload = r.json()
     assert payload['message'] == "Invalid channel id"
     assert payload['code'] == 400
 
 def test_http_channel_invite_invalid_token(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
     empty_token = {
         'token': "",
@@ -162,11 +163,11 @@ def test_http_channel_invite_invalid_token(url):
 
 def test_http_channel_invite_success(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
     success_invite = {
         'token': login_owner['token'],
@@ -192,9 +193,9 @@ def test_http_channel_invite_success(url):
 #tests for http_channel_details
 def test_http_channel_details_invalid_id(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    create_channel(url, login_owner)
 
     invalid_channel_id = -1
 
@@ -209,11 +210,11 @@ def test_http_channel_details_invalid_id(url):
 
 def test_http_channel_details_invalid_token(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
     empty_token = {
         'token': "",
@@ -236,9 +237,9 @@ def test_http_channel_details_invalid_token(url):
 
 def test_http_channel_details_success(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
     get_details = {
         'token': login_owner['token'],
@@ -250,9 +251,9 @@ def test_http_channel_details_success(url):
     assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
     assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    inv_user(login_owner, login_user, channel_id)
+    inv_user(url, login_owner, login_user, channel_id)
 
     get_details = {
         'token': login_user['token'],
@@ -267,11 +268,11 @@ def test_http_channel_details_success(url):
 #tests http_channel_addowner
 def test_http_channel_addowner_invalid_id(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
     make_user_owner_fail = {
         'token': login_owner['token'],
@@ -283,7 +284,7 @@ def test_http_channel_addowner_invalid_id(url):
     assert payload['message'] == "Target is not part of the channel"
     assert payload['code'] == 400
 
-    inv_user(login_owner, login_user, channel_id)
+    inv_user(url, login_owner, login_user, channel_id)
 
     invalid_id = -1
 
@@ -311,9 +312,9 @@ def test_http_channel_addowner_invalid_id(url):
 
 def test_http_channel_addowner_already_owner(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
     make_owner_owner = {
         'token': login_owner['token'],
@@ -328,13 +329,13 @@ def test_http_channel_addowner_already_owner(url):
 
 def test_http_channel_addowner_invalid_token(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    inv_user(login_owner, login_user, channel_id)
+    inv_user(url, login_owner, login_user, channel_id)
 
     empty_token = {
         'token': "",
@@ -360,13 +361,13 @@ def test_http_channel_addowner_invalid_token(url):
 
 def test_http_channel_addowner_success(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    inv_user(login_owner, login_user, channel_id)
+    inv_user(url, login_owner, login_user, channel_id)
 
     make_user_owner = {
         'token': login_owner['token'],
@@ -386,13 +387,13 @@ def test_http_channel_addowner_success(url):
 #tests http_channel_removeowner
 def test_http_channel_removeowner_invalid_id(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    inv_user(login_owner, login_user, channel_id)
+    inv_user(url, login_owner, login_user, channel_id)
 
     make_user_owner = {
         'token': login_owner['token'],
@@ -427,11 +428,11 @@ def test_http_channel_removeowner_invalid_id(url):
 
 def test_http_channel_removeowner_not_owner(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
     remove_owner_user = {
         'token': login_owner['token'],
@@ -446,13 +447,13 @@ def test_http_channel_removeowner_not_owner(url):
 
 def test_http_channel_removeowner_invalid_token(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    inv_user(login_owner, login_user, channel_id)
+    inv_user(url, login_owner, login_user, channel_id)
 
     empty_token = {
         'token': "",
@@ -478,13 +479,13 @@ def test_http_channel_removeowner_invalid_token(url):
 
 def test_http_channel_removeowner_success(url):
     clear()
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_channel(login_owner)
+    channel_id = create_channel(url, login_owner)
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    inv_user(login_owner, login_user, channel_id)
+    inv_user(url, login_owner, login_user, channel_id)
 
     remove_owner = {
         'token': login_user['token'],
