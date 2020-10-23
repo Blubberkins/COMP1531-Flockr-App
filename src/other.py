@@ -68,14 +68,14 @@ def admin_userpermission_change(token, u_id, permission_id):
     if user['permission_id'] == 1:
         token_true = True
     if token_true == False:
-        raise AccessError("Authorised user does not have permission")
+        raise AccessError("User is not authorised")
 
     for member in data['users']:
         if member['u_id'] == u_id:
             u_id_true = True
             break
     if u_id_true == False:
-        raise InputError("User does not exist")
+        raise InputError("Target does not exist")
 
     if permission_id != 1 and permission_id != 2:
         raise InputError("Permission id does not exist")
