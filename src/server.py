@@ -34,7 +34,7 @@ def echo():
 
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
-    response = other.users_all(requests.args.get('token'))
+    response = other.users_all(request.args.get('token'))
     return dumps(response)
 
 @APP.route("/admin/userpermission/change", methods=['POST'])
@@ -45,8 +45,7 @@ def http_admin_userpermission_change():
 
 @APP.route("/search", methods=['GET'])
 def http_search():
-    data = request.get_json()
-    response = other.search(data['token'], data['query_str'])
+    response = other.search(request.args.get('token'), request.args.get('query_str'))
     return dumps(response)
 
 if __name__ == "__main__":
