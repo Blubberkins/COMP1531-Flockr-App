@@ -7,6 +7,7 @@ import pytest
 import requests
 from error import InputError
 from error import AccessError
+from other import clear
 
 
 # Use this fixture to get the URL of the server.
@@ -79,6 +80,7 @@ def inv_user(login_owner, login_user, channel_id):
 
 #tests for http_channel_invite
 def test_http_channel_invite_invalid_id(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -110,6 +112,7 @@ def test_http_channel_invite_invalid_id(url):
     assert payload['code'] == 400
 
 def test_http_channel_invite_invalid_token(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -139,6 +142,7 @@ def test_http_channel_invite_invalid_token(url):
     assert payload['code'] == 400
 
 def test_http_channel_invite_success(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -168,6 +172,7 @@ def test_http_channel_invite_success(url):
 
 #tests for http_channel_details
 def test_http_channel_details_invalid_id(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -184,6 +189,7 @@ def test_http_channel_details_invalid_id(url):
     assert payload['code'] == 400
 
 def test_http_channel_details_invalid_token(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -210,6 +216,7 @@ def test_http_channel_details_invalid_token(url):
     assert payload['code'] == 400
 
 def test_http_channel_details_success(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -240,6 +247,7 @@ def test_http_channel_details_success(url):
 
 #tests http_channel_addowner
 def test_http_channel_addowner_invalid_id(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -283,6 +291,7 @@ def test_http_channel_addowner_invalid_id(url):
     assert payload['code'] == 400
 
 def test_http_channel_addowner_already_owner(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -299,6 +308,7 @@ def test_http_channel_addowner_already_owner(url):
     assert payload['code'] == 400
 
 def test_http_channel_addowner_invalid_token(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -330,6 +340,7 @@ def test_http_channel_addowner_invalid_token(url):
     assert payload['code'] == 400
 
 def test_http_channel_addowner_success(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -355,6 +366,7 @@ def test_http_channel_addowner_success(url):
 
 #tests http_channel_removeowner
 def test_http_channel_removeowner_invalid_id(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -395,6 +407,7 @@ def test_http_channel_removeowner_invalid_id(url):
     assert payload['code'] == 400
 
 def test_http_channel_removeowner_not_owner(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -413,6 +426,7 @@ def test_http_channel_removeowner_not_owner(url):
     assert payload['code'] == 400
 
 def test_http_channel_removeowner_invalid_token(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)
@@ -444,6 +458,7 @@ def test_http_channel_removeowner_invalid_token(url):
     assert payload['code'] == 400
 
 def test_http_channel_removeowner_success(url):
+    clear()
     login_owner = reg_owner()
 
     channel_id = create_channel(login_owner)

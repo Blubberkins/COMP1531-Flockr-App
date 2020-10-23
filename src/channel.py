@@ -264,7 +264,7 @@ def channel_removeowner(token, channel_id, u_id):
             token_true = True
             break
     if token_true == False:
-        raise AccessError("Authorised user is not an owner")
+        raise AccessError("User is not authorised")
     
     is_owner = False
     for member in channel['owner_members']:
@@ -272,7 +272,7 @@ def channel_removeowner(token, channel_id, u_id):
             is_owner = True
             break
     if is_owner == False:
-        raise InputError("User is not an owner of this channel")
+        raise InputError("Target is not an owner of this channel")
 
     channel['owner_members'].remove(member)
 
