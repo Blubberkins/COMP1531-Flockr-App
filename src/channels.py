@@ -104,10 +104,10 @@ def channels_create(token, name, is_public):
 
     # adding channel info
     new_channel = {
-        'channel_id': len(data['channels']) + 1
-        'name': name
-        'is_public': is_public
-        'owner_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}]
+        'channel_id': len(data['channels']) + 1,
+        'name': name,
+        'is_public': is_public,
+        'owner_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}],
         'all_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}]
     }
 
