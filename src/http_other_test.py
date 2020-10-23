@@ -93,11 +93,7 @@ def send_message(login_user, channel_id, message):
 
 # search message function
 def search(login_user, query_str):
-    search_message = {
-        'token': login_user['token'],
-        'query_str': query_str
-    }
-    r = requests.post(f"{url}/search", json=search_message)
+    r = requests.get(f"{url}/search", params={'token': login_user['token'], 'query_str': query_str})
     return r.json()
 
 #
