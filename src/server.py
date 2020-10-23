@@ -34,14 +34,12 @@ def echo():
 
 @APP.route("/channels/list", methods=['GET'])
 def http_channels_list():
-    data = request.get_json()
-    response = channels.channels_list(data['token'])
+    response = channels.channels_list(request.args.get('token'))
     return dumps(response)
 
 @APP.route("/channels/listall", methods=['GET'])
 def http_channels_listall():
-    data = request.get_json()
-    response = channels.channels_listall(data['token'])
+    response = channels.channels_listall(request.args.get('token'))
     return dumps(response)
 
 @APP.route("/channels/create", methods=['POST'])
