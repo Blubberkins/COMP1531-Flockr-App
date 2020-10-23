@@ -188,7 +188,7 @@ def test_http_logout_success():
     registered_user1 = register_user1()
     loggedout_user1 = logout_user1(registered_user1)
 
-    assert loggedout_user1["is_success"] == True
+    assert loggedout_user1["is_success"] == [True]
 
 def test_http_logout_failure():
     clear()
@@ -200,4 +200,4 @@ def test_http_logout_failure():
     r = requests.post(f"{url}/auth/login", json=invalid_logout)
     payload = r.json()
 
-    assert payload["is_success"] == False
+    assert payload["is_success"] == [False]
