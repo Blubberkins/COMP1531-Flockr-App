@@ -91,13 +91,8 @@ def test_user_profile_invalid_u_id():
     clear()
     login_owner = register_owner(url)
     invalid_u_id = -1
-    invalid_user_info = {
-        "token": login_owner["token"],
-        "u_id": invalid_u_id,
-    }
-    r = requests.get(f"{url}/user/profile", json=invalid_user_info)
-    payload = r.json()
-    assert payload['message'] == "User does not exist"
+    payload = get_user_profile(url, login_owner["token", invalid_u_id])
+    assert payload['message'] == "Invalid user_id"
     assert payload['code'] == 400
 
 # TEST FUNCTIONS FOR HTTP_USER_PROFILE_SETNAME
@@ -106,7 +101,7 @@ def test_http_user_profile_setname_success(url):
     """Tests for success when a user changes their first and last name."""
     clear()
     login_user = register_user(url)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["name_first"] == ["New"]
     assert payload["user"]["name_last"] == ["User"]
 
@@ -116,8 +111,7 @@ def test_http_user_profile_setname_success(url):
         "name_last": "Programmer",
     }
     requests.put(f"{url}/user/profile/setname", json=new_name)
-    r = requests.get(f"{url}/user/profile", json=user_info)
-    payload = r.json()
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["name_first"] == new_name["name_first"]
     assert payload["user"]["name_last"] == new_name["name_last"]
 
@@ -126,7 +120,7 @@ def test_http_user_profile_setname_invalid_firstname(url):
     """Tests for failure when a user inputs an invalid first name."""
     clear()
     login_user = register_user(url)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["name_first"] == ["New"]
     assert payload["user"]["name_last"] == ["User"]
 
@@ -136,7 +130,7 @@ def test_http_user_profile_setname_invalid_firstname(url):
         "name_last": "Programmer",
     }
     requests.put(f"{url}/user/profile/setname", json=empty_name_first)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid first name"
     assert payload["code"] == 400
 
@@ -146,7 +140,7 @@ def test_http_user_profile_setname_invalid_firstname(url):
         "name_last": "Programmer",
     }
     requests.put(f"{url}/user/profile/setname", json=invalid_name_first)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid first name"
     assert payload["code"] == 400
 
@@ -154,7 +148,7 @@ def test_http_user_profile_setname_invalid_lastname(url):
     """Tests for failure when a user inputs an invalid last name."""
     clear()
     login_user = register_user(url)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["name_first"] == ["New"]
     assert payload["user"]["name_last"] == ["User"]
 
@@ -164,7 +158,7 @@ def test_http_user_profile_setname_invalid_lastname(url):
         "name_last": "",
     }
     requests.put(f"{url}/user/profile/setname", json=empty_name_last)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid last name"
     assert payload["code"] == 400
 
@@ -174,7 +168,7 @@ def test_http_user_profile_setname_invalid_lastname(url):
         "name_last": "Programmerprogrammerprogrammerprogrammerprogrammerprogrammer",
     }
     requests.put(f"{url}/user/profile/setname", json=invalid_name_last)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid last name"
     assert payload["code"] == 400
 
@@ -182,7 +176,7 @@ def test_http_user_profile_setname_invalid_firstlastname(url):
     """Tests for failure when a user inputs an invalid firs and last name."""
     clear()
     login_user = register_user(url)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["name_first"] == ["New"]
     assert payload["user"]["name_last"] == ["User"]
 
@@ -192,7 +186,7 @@ def test_http_user_profile_setname_invalid_firstlastname(url):
         "name_last": "",
     }
     requests.put(f"{url}/user/profile/setname", json=empty_name)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid first name"
     assert payload["code"] == 400
 
@@ -202,7 +196,7 @@ def test_http_user_profile_setname_invalid_firstlastname(url):
         "name_last": "Programmerprogrammerprogrammerprogrammerprogrammerprogrammer",
     }
     requests.put(f"{url}/user/profile/setname", json=invalid_name)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid first name"
     assert payload["code"] == 400
 
@@ -212,7 +206,7 @@ def test_http_user_profile_setemail_success():
     """Tests for success when a user changes their email."""
     clear()
     login_user = register_user(url)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["email"] == ["user@gmail.com"]
 
     new_email = {
@@ -220,7 +214,7 @@ def test_http_user_profile_setemail_success():
         "email": "pythoniscool@gmail.com",
     }
     requests.put(f"{url}/user/profile/setemail", json=new_email)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["email"] == new_email["email"]
     
 # Failure for set email
@@ -228,7 +222,7 @@ def test_http_user_profile_invalid_email():
     """Tests for failure when a user inputs an invalid email address."""
     clear()
     login_user = register_user(url)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["email"] == ["user@gmail.com"]
 
     empty_email = {
@@ -236,7 +230,7 @@ def test_http_user_profile_invalid_email():
         "email": "",
     }
     requests.put(f"{url}/user/profile/setemail", json=empty_email)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid email"
     assert payload["code"] == 400
 
@@ -245,7 +239,7 @@ def test_http_user_profile_invalid_email():
         "email": "email@email",
     }
     requests.put(f"{url}/user/profile/setemail", json=invalid_email)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid email"
     assert payload["code"] == 400
         
@@ -260,7 +254,7 @@ def test_http_user_profile_email_already_in_use():
         "email": "owner@gmail.com",
     }
     requests.put(f"{url}/user/profile/setemail", json=owner_email)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Email is already in use"
     assert payload["code"] == 400
        
@@ -270,7 +264,7 @@ def test_http_user_profile_sethandle_success():
     """Tests for success when a user changes their handle."""
     clear()
     login_user = register_user(url)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["handle"] == "newuser"
 
     new_handle = {
@@ -278,7 +272,7 @@ def test_http_user_profile_sethandle_success():
         "handle": "pythonprogrammer",
     }
     requests.put(f"{url}/user/profile/sethandle", json=new_handle)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["handle"] == new_handle["handle"]
     
 # Failure for set handle
@@ -286,7 +280,7 @@ def test_http_user_profile_invalid_handle():
     """Tests for failure when a user inputs an invalid handle."""
     clear()
     login_user = register_user(url)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["handle"] == "newuser"
 
     empty_handle = {
@@ -294,7 +288,7 @@ def test_http_user_profile_invalid_handle():
         "handle": "",
     }
     requests.put(f"{url}/user/profile/sethandle", json=empty_handle)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid handle"
     assert payload["code"] == 400
 
@@ -303,7 +297,7 @@ def test_http_user_profile_invalid_handle():
         "handle": "iamaprettygoodpythonprogrammer",
     }
     requests.put(f"{url}/user/profile/sethandle", json=invalid_handle)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid handle"
     assert payload["code"] == 400
 
@@ -312,23 +306,23 @@ def test_user_profile_handle_already_in_use():
     clear()
     login_owner = register_user(url)
     login_user = register_user(url)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"]["handle"] == "newuser"
 
-    user_handle = {
+    new_owner_handle = {
         "token": login_owner["user"]["token"],
         "handle": login_user["user"]["handle"],
     }
-    requests.put(f"{url}/user/profile/sethandle", json=user_handle)
-    payload = get_owner_profile(url, login_owner)
+    requests.put(f"{url}/user/profile/sethandle", json=new_owner_handle)
+    payload = get_user_profile(url, login_owner["token"], login_owner["u_id"])
     assert payload["message"] == "Invalid handle"
     assert payload["code"] == 400
 
-    owner_handle = {
+    new_user_handle = {
         "token": login_user["user"]["token"],
         "handle": login_owner["user"]["handle"],
     }
     requests.put(f"{url}/user/profile/sethandle", json=owner_handle)
-    payload = get_user_profile(url, login_user)
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid handle"
     assert payload["code"] == 400
