@@ -39,7 +39,7 @@ def http_users_all():
     return dumps(response)
 
 @APP.route("/admin/userpermission/change", methods=['POST'])
-def http_users_all():
+def http_admin_userpermission_change():
     data = request.get_json()
     response = other.admin_userpermission_change(data['token'], data['u_id'], data['permission_id'])
     return dumps(response)
