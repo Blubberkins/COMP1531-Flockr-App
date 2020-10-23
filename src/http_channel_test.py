@@ -78,6 +78,25 @@ def inv_user(login_owner, login_user, channel_id):
     }
     requests.post(f"{url}/channel/invite", json=invite_user)
 
+#message send function
+def msg_send(user, channel, message):
+    message_send = {
+        'token': user['token'],
+        'channel_id': channel['channel_id'],
+        'message': message
+    }
+    requests.post(f"{url}/message/remove", json=message_send)
+
+#create unique channel function
+def create_unique_channel(user, name, is_public):
+    channel = {
+        'token': user['token'],
+        'name': name,
+        'is_public': is_public
+    }
+    r = requests.post(f"{url}/channels/create", json=channel)
+    return r.json()
+
 #tests for http_channel_invite
 def test_http_channel_invite_invalid_id(url):
     clear()
@@ -482,3 +501,87 @@ def test_http_channel_removeowner_success(url):
     channel_details = r.json()
     assert channel_details['owner_members'] == [{'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
     
+def test_http_channel_messages_invalid_start_index(url):
+    clear()
+    login_owner = reg_owner()
+    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id2 = create_unique_channel(login_owner, "channel2", True)
+
+    msg_send(login_owner, channel_id, "example message")
+
+    invalid_start1 = {
+        "token": login_owner["token"],
+        "channel_id": channel_id["channel_id"],
+        "start": 0
+    }
+
+    r = requests.get(f"{url}/channel/messages", json=invalid_start1)
+    payload = r.json()
+    assert payload["message"] == "Start is greater than the total number of messages in the channel"
+    assert payload["code"] == 400
+
+    invalid_start2 = {
+        "token": login_owner["token"],
+        "channel_id": channel_id2["channel_id"],
+        "start": 1
+    }
+
+    r = requests.get(f"{url}/channel/messages", json=invalid_start2)
+    payload = r.json()
+    assert payload["message"] == "Start is greater than the total number of messages in the channel"
+    assert payload["code"] == 400
+    
+def test_http_channel_messages_invalid_channel():
+    clear()
+    login_owner = reg_owner()
+    create_unique_channel(login_owner, "channel", True)
+
+    invalid_channel = {
+        "token": login_owner["token"],
+        "channel_id": -1,
+        "start": 0
+    }
+
+    r = requests.get(f"{url}/channel/messages", json=invalid_channel)
+    payload = r.json()
+    assert payload["message"] == "Channel ID is not a valid channel"
+    assert payload["code"] == 400
+    
+def test_http_channel_messages_invalid_token():
+    clear()
+    login_owner = reg_owner()
+    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id2 = create_unique_channel(login_owner, "channel2", True)
+    login_user = reg_user
+
+    invalid_token = {
+        "token": login_user["token"],
+        "channel_id": channel_id["channel_id"],
+        "start": 0
+    }
+
+    r = requests.get(f"{url}/channel/messages", json=invalid_token)
+    payload = r.json()
+    assert payload["message"] == "Channel ID is not a valid channel"
+    assert payload["code"] == 400
+
+    invalid_token2 = {
+        "token": login_user["token"],
+        "channel_id": channel_id2["channel_id"],
+        "start": 0
+    }
+    
+    r = requests.get(f"{url}/channel/messages", json=invalid_token2)
+    payload = r.json()
+    assert payload["message"] == "Channel ID is not a valid channel"
+    assert payload["code"] == 400
+
+def test_http_channel_messages_one_message_success():
+    clear()
+    login_owner = reg_owner()
+    channel_id = create_unique_channel(login_owner, "channel", True)
+
+    msg_send(login_owner, channel_id, "example message")
+
+
+
