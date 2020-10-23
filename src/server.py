@@ -34,8 +34,7 @@ def echo():
 
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
-    data = request.get_json()
-    response = other.users_all(data['token'])
+    response = other.users_all(requests.args.get('token'))
     return dumps(response)
 
 @APP.route("/admin/userpermission/change", methods=['POST'])
