@@ -38,7 +38,7 @@ def test_url(url):
     assert url.startswith("http")
 
 #register owner function
-def reg_owner():
+def reg_owner(url):
     register_owner = {
         'email': "owner@email.com",
         'password': "password123",
@@ -49,7 +49,7 @@ def reg_owner():
     return r.json()
 
 #register user function
-def reg_user():
+def reg_user(url):
     register_user = {
         'email': "user@email.com",
         'password': "password321",
@@ -60,7 +60,7 @@ def reg_user():
     return r.json()
 
 #create channel function
-def create_channel(login_owner):
+def create_channel(url, login_owner):
     channels_create = {
         'token': login_owner['token'],
         'name': "channel",
@@ -70,7 +70,7 @@ def create_channel(login_owner):
     return r.json()
 
 #invite user function
-def inv_user(login_owner, login_user, channel_id):
+def inv_user(url, login_owner, login_user, channel_id):
     invite_user = {
         'token': login_owner['token'],
         'channel_id': channel_id['channel_id'],
