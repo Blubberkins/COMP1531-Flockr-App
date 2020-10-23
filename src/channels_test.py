@@ -215,7 +215,7 @@ def test_channels_listall_not_join_one_private_channel():
 
     login_owner = auth.auth_register("validemail1@gmail.com", "password123", "New", "Owner") 
 
-    channels.channels_create(login_owner['token'], "channel 1", False)
+    channel_id = channels.channels_create(login_owner['token'], "channel 1", False)
 
     login_user = auth.auth_register("validemail2@gmail.com", "password123", "New", "User") 
 
@@ -246,7 +246,7 @@ def test_channels_listall_join_one_public_not_join_one_private_channel():
     login_owner = auth.auth_register("validemail1@gmail.com", "password123", "New", "Owner") 
 
     channel_id_1 = channels.channels_create(login_owner['token'], "channel 1", True)
-    channels.channels_create(login_owner['token'], "channel 2", False)
+    channel_id_2 = channels.channels_create(login_owner['token'], "channel 2", False)
 
     login_user = auth.auth_register("validemail2@gmail.com", "password123", "New", "User") 
 
