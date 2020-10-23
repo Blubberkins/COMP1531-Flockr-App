@@ -40,7 +40,7 @@ def test_url(url):
 #
 
 # register owner function
-def reg_owner():
+def reg_owner(url):
     register_owner = {
         'email': "owner@email.com",
         'password': "password123",
@@ -51,7 +51,7 @@ def reg_owner():
     return r.json()
 
 # register user function
-def reg_user():
+def reg_user(url):
     register_user = {
         'email': "user@email.com",
         'password': "password321",
@@ -62,7 +62,7 @@ def reg_user():
     return r.json()
 
 # invite user function
-def inv_user(login_owner, channel_id, login_user):
+def inv_user(url, login_owner, channel_id, login_user):
     invite_user = {
         'token': login_owner['token'],
         'channel_id': channel_id['channel_id'],
@@ -71,7 +71,7 @@ def inv_user(login_owner, channel_id, login_user):
     requests.post(f"{url}/channel/invite", json=invite_user)
 
 # show channel details function
-def chan_details(login_user, channel_id):
+def chan_details(url, login_user, channel_id):
     channel_details = {
         'token': login_user['token'],
         'channel_id': channel_id['channel_id']
@@ -80,15 +80,16 @@ def chan_details(login_user, channel_id):
     return r.json()
 
 # join channel function
-def join_channel(login_user, channel_id):
+def join_channel(url, login_user, channel_id):
     join_public_channel = {
         'token': login_user['token'],
         'channel_id': channel_id['channel_id']
     }
     requests.post(f"{url}/channel/join", json=join_public_channel)
+    return r.json()
 
 # create public channel function
-def create_public_channel(login_owner, channel_name):
+def create_public_channel(url, login_owner, channel_name):
     channels_create_public = {
         'token': login_owner['token'],
         'name': channel_name,
@@ -98,7 +99,7 @@ def create_public_channel(login_owner, channel_name):
     return r.json()
 
 # create private channel function
-def create_private_channel(login_owner, channel_name):
+def create_private_channel(url, login_owner, channel_name):
     channels_create_private = {
         'token': login_owner['token'],
         'name': channel_name,
@@ -108,7 +109,7 @@ def create_private_channel(login_owner, channel_name):
     return r.json()
 
 # list channels function
-def list_channels(login_user):
+def list_channels(url, login_user):
     channels_list = {
         'token': login_user['token']
     }
@@ -116,7 +117,7 @@ def list_channels(login_user):
     return r.json()
 
 # list channels function
-def listall_channels(login_user):
+def listall_channels(url, login_user):
     channels_listall = {
         'token': login_user['token']
     }
@@ -132,20 +133,20 @@ def listall_channels(login_user):
 def test_http_channels_list_no_channels():
     clear()
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    channels_list = list_channels(login_user)
+    channels_list = list_channels(url, login_user)
 
-    assert channels_list == {"channels" : []}
+    assert channels_list == {"channels": []}
 
 # Owner creates one public channel
 def test_http_channels_list_create_one_public_channel():
     clear()
 
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_public_channel(login_owner, "channel")
-    channels_list = list_channels(login_owner)
+    channel_id = create_public_channel(url, login_owner, "channel")
+    channels_list = list_channels(url, login_owner)
 
     assert channels_list == {"channels" : [{"channel_id" : channel_id['channel_id'], "name" : "channel"}]}
 
@@ -153,10 +154,10 @@ def test_http_channels_list_create_one_public_channel():
 def test_http_channels_list_create_one_private_channel():
     clear()
 
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_private_channel(login_owner, "channel")
-    channels_list = list_channels(login_owner)
+    channel_id = create_private_channel(url, login_owner, "channel")
+    channels_list = list_channels(url, login_owner)
 
     assert channels_list == {"channels" : [{"channel_id" : channel_id['channel_id'], "name" : "channel"}]}
 
@@ -164,11 +165,11 @@ def test_http_channels_list_create_one_private_channel():
 def test_http_channels_list_create_one_public_one_private_channel():
     clear()
 
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id_1 = create_public_channel(login_owner, "channel 1")
-    channel_id_2 = create_private_channel(login_owner, "channel 2")
-    channels_list = list_channels(login_owner)
+    channel_id_1 = create_public_channel(url, login_owner, "channel 1")
+    channel_id_2 = create_private_channel(ur, login_owner, "channel 2")
+    channels_list = list_channels(url, login_owner)
 
     assert channels_list == {"channels" : [{"channel_id" : channel_id_1['channel_id'], "name" : "channel 1"}, {"channel_id" : channel_id_2['channel_id'], "name" : "channel 2"}]}
 
@@ -176,13 +177,13 @@ def test_http_channels_list_create_one_public_one_private_channel():
 def test_http_channels_list_not_join_one_public_channel():
     clear()
 
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    create_public_channel(login_owner, "channel 1")
+    create_public_channel(url, login_owner, "channel 1")
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    channels_list = list_channels(login_user)
+    channels_list = list_channels(url, login_user)
 
     assert channels_list == {"channels" : []}
 
@@ -190,47 +191,47 @@ def test_http_channels_list_not_join_one_public_channel():
 def test_http_channels_list_join_one_public_channel():
     clear()
 
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_public_channel(login_owner, "channel")
+    channel_id = create_public_channel(url, login_owner, "channel")
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    join_channel(login_user, channel_id)
+    join_channel(url, login_user, channel_id)
 
-    channels_list = list_channels(login_user)
+    channels_list = list_channels(url, login_user)
 
-    assert channels_list == {"channels" : [{"channel_id" : channel_id['channel_id'], "name" : "channel"}]}
+    assert channels_list == {"channels": [{"channel_id": channel_id['channel_id'], "name": "channel"}]}
 
 # Owner creates one private channel and user does not join that channel
 def test_http_channels_list_not_join_one_private_channel():
     clear()
 
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    create_private_channel(login_owner, "channel")
+    create_private_channel(url, login_owner, "channel")
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    channels_list = list_channels(login_user)
+    channels_list = list_channels(url, login_user)
 
-    assert channels_list == {"channels" : []}
+    assert channels_list == {"channels": []}
 
 # Owner creates one private channel and user joins that channel
 def test_http_channels_list_join_one_private_channel():
     clear()
 
-    login_owner = reg_owner()
+    login_owner = reg_owner(url)
 
-    channel_id = create_private_channel(login_owner, "channel")
+    channel_id = create_private_channel(url, login_owner, "channel")
 
-    login_user = reg_user()
+    login_user = reg_user(url)
 
-    inv_user(login_owner, channel_id, login_user)
+    inv_user(url, login_owner, channel_id, login_user)
 
-    channels_list = list_channels(login_user)
+    channels_list = list_channels(url, login_user)
 
-    assert channels_list == {"channels" : [{"channel_id" : channel_id['channel_id'], "name" : "channel"}]}
+    assert channels_list == {"channels" : [{"channel_id": channel_id['channel_id'], "name": "channel"}]}
 
 # Owner creates one public and one private channel and user joins the public channel
 def test_http_channels_list_join_one_public_not_join_one_private_channel():
