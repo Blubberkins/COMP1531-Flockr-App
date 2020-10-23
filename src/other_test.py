@@ -19,12 +19,12 @@ def test_users_all_invalid_token():
 def test_users_all_successful():
     """tests for user_all sucess"""
     other.clear()
-    first_user = auth.auth_register("user1@email.com", "password123", "First", "User")
-    assert other.users_all(first_user['token']) == [{'u_id' : first_user['u_id'], 'email' : "user1@email.com", 'name_first' : "First", 'name_last' : "User", 'handle_str' : "firstuser"}]
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    assert other.users_all(login_owner['token']) == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}]
 
-    second_user = auth.auth_register("user2@email.com", "password321", "Second", "User")
-    assert other.users_all(second_user['token']) == [{'u_id' : first_user['u_id'], 'email' : "user1@email.com", 'name_first' : "First", 'name_last' : "User", 'handle_str' : "firstuser"},
-                                                    {'u_id' : second_user['u_id'], 'email' : "user2@email.com", 'name_first' : "Second", 'name_last' : "User", 'handle_str' : "seconduser"}]
+    login_user = auth.auth_register("user@email.com", "password321", "User", "Test")
+    assert other.users_all(login_user['token']) == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"},
+                                                    {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest"}]
 
 # test functions for admin_userpermission_change
 def test_admin_userpermission_change_invalid_id():
