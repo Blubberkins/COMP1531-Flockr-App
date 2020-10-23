@@ -108,7 +108,7 @@ def channel_messages(token, channel_id, start):
     returnDict = {}
     returnDict["messages"] = []
     returnDict["start"] = start
-    returnDict["end"] = 50
+    returnDict["end"] = start + 50
     num_messages = 50
     if len(data["channels"][channel_index]["messages"]) <= 50:
         returnDict["end"] = -1

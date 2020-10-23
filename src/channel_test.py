@@ -142,21 +142,6 @@ def test_channel_messages_one_message_success():
     assert channel_messages['messages'][0]['u_id'] == login_owner['u_id']
     assert channel_messages['messages'][0]['message'] == 'example message'
 
-def test_channel_messages_multiple_messages_success():
-    clear()
-    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
-    channel_id = channels.channels_create(login_owner['token'], "channel", True)
-
-    message.message_send(login_owner['token'], channel_id['channel_id'], 'example message_1')
-    message.message_send(login_owner['token'], channel_id['channel_id'], 'example message_2')
-    message.message_send(login_owner['token'], channel_id['channel_id'], 'example message_3')
-    channel_messages = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0) 
-       
-    assert channel_messages['start'] == 0
-    assert channel_messages['end'] == -1
-    assert channel_messages['messages'] == [{'message_id': 1, 'u_id': login_owner['u_id'],'message': 'example message_1', 'time_created': 0}, {'message_id': 2, 'u_id': login_owner['u_id'],'message': 'example message_2', 'time_created': 0}
-    , {'message_id': 3, 'u_id': login_owner['u_id'],'message': 'example message_3', 'time_created': 0}]
-
 def test_channel_messages_max_messages_success():
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
