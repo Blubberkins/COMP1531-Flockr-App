@@ -45,7 +45,7 @@ def register_owner(url):
         "name_first": "Flock",
         "name_last": "Owner",
     }
-    r = requests.post(f"{url}/auth/register", json = register_owner)
+    r = requests.post(f"{url}/auth/register", json=register_owner)
     return r.json()
 
 # Register user function
@@ -57,7 +57,17 @@ def register_user(url):
         "name_first": "New",
         "name_last": "User",
     }
-    r = requests.post(f"{url}/auth/register", json = register_user)
+    r = requests.post(f"{url}/auth/register", json=register_user)
+    return r.json() 
+
+# Get user profile
+def get_user_profile(url, login_user):
+    """While logged in as a user, gets the user's profile."""
+    user_info = {
+        "token": login_user["token"],
+        "u_id": login_user["u_id"],
+    }
+    r = requests.get(f"{url}/user/profile", json=user_info)
     return r.json()
 
 # TEST FUNCTIONS FOR HTTP_USER_PROFILE
@@ -70,9 +80,9 @@ def test_http_user_profile_success1(url):
         "token": login_owner["token"],
         "u_id": login_owner["u_id"],
     }
-    r = requests.get(f"{url}/user/profile", json = owner_info)
+    r = requests.get(f"{url}/user/profile", json=owner_info)
     payload = r.json()
-    assert payload["user"] == [{"u_id": 1, "email": "owner@gmail.com", "name_first": "Flock", "name_last" : "Owner", "handle_str" : "flockowner"}]
+    assert payload["user"] == [{"u_id": 1, "email": "owner@gmail.com", "name_first": "Flock", "name_last": "Owner", "handle_str": "flockowner"}]
 
 def test_http_user_profile_success2(url):
     """Tests for success when a registered user can view another user's profile."""
@@ -83,9 +93,9 @@ def test_http_user_profile_success2(url):
         "token": login_owner["token"],
         "u_id": login_user["u_id"],
     }
-    r = requests.get(f"{url}/user/profile", json = user_info)
+    r = requests.get(f"{url}/user/profile", json=user_info)
     payload = r.json()
-    assert payload["user"] == [{"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last" : "User", "handle_str" : "newuser"}]
+    assert payload["user"] == [{"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last": "User", "handle_str": "newuser"}]
 
 # Failure for user profile
 def test_user_profile_invalid_u_id():
@@ -97,18 +107,121 @@ def test_user_profile_invalid_u_id():
         "token": login_owner["token"],
         "u_id": invalid_u_id,
     }
-    r = requests.get(f"{url}/user/profile", json = invalid_user_info)
+    r = requests.get(f"{url}/user/profile", json=invalid_user_info)
     payload = r.json()
     assert payload['message'] == "User does not exist"
     assert payload['code'] == 400
 
-    
+# TEST FUNCTIONS FOR HTTP_USER_PROFILE_SETNAME
+# Success for set name
+def test_http_user_profile_setname_success(url):
+    """Tests for success when a user changes their first and last name."""
+    clear()
+    login_user = register_user(url)
+    payload = get_user_profile(url, login_user)
+    assert payload["user"]["name_first"] == ["New"]
+    assert payload["user"]["name_last"] == ["User"]
 
-# put
-#def test_http_user_profile_setname():
+    new_name_first_last = {
+        "token": login_owner["token"],
+        "name_first": "Python",
+        "name_last": "Programmer",
+    }
+    requests.put(f"{url}/user/profile/setname", json=new_name_first_last)
+    r = requests.get(f"{url}/user/profile", json=user_info)
+    payload = r.json()
+    assert payload["user"]["name_first"] == ["Python"]
+    assert payload["user"]["name_last"] == ["Programmer"]
 
-# put
-#def test_http_user_profile_setemail():
+# Failure for set name
+def test_http_user_profile_setname_invalid_firstname(url):
+    """Tests for failure when a user inputs an invalid first name."""
+    clear()
+    login_user = register_user(url)
+    payload = get_user_profile(url, login_user)
+    assert payload["user"]["name_first"] == ["New"]
+    assert payload["user"]["name_last"] == ["User"]
 
-# put
-#def test_http_user_profile_sethandle():
+    empty_name_first = {
+        "token": login_user["token"],
+        "name_first": "",
+        "name_last": "Programmer",
+    }
+
+    invalid_name_first = {
+        "token": login_user["token"],
+        "name_first": "Pythonpythonpythonpythonpythonpythonpythonpythonpython",
+        "name_last": "Programmer",
+    }
+
+    requests.put(f"{url}/user/profile/setname", json=empty_name_first)
+    payload = get_user_profile(url, login_user)
+    assert payload["message"] == "Invalid first name"
+    assert payload["code"] == 400
+
+    requests.put(f"{url}/user/profile/setname", json=invalid_name_first)
+    payload = get_user_profile(url, login_user)
+    assert payload["message"] == "Invalid first name"
+    assert payload["code"] == 400
+
+def test_http_user_profile_setname_invalid_lastname(url):
+    """Tests for failure when a user inputs an invalid last name."""
+    clear()
+    login_user = register_user(url)
+    payload = get_user_profile(url, login_user)
+    assert payload["user"]["name_first"] == ["New"]
+    assert payload["user"]["name_last"] == ["User"]
+
+    empty_name_last = {
+        "token": login_user["token"],
+        "name_first": "Python",
+        "name_last": "",
+    }
+
+    invalid_name_first = {
+        "token": login_owner["token"],
+        "name_first": "Python",
+        "name_last": "Programmerprogrammerprogrammerprogrammerprogrammerprogrammer",
+    }
+
+    requests.put(f"{url}/user/profile/setname", json=empty_name_last)
+    payload = get_user_profile(url, login_user)
+    assert payload["message"] == "Invalid last name"
+    assert payload["code"] == 400
+
+    requests.put(f"{url}/user/profile/setname", json=invalid_name_last)
+    payload = get_user_profile(url, login_user)
+    assert payload["message"] == "Invalid last name"
+    assert payload["code"] == 400
+
+def test_http_user_profile_setname_invalid_firstlastname(url):
+    """Tests for failure when a user inputs an invalid firs and last name."""
+    clear()
+    login_user = register_user(url)
+    payload = get_user_profile(url, login_user)
+    assert payload["user"]["name_first"] == ["New"]
+    assert payload["user"]["name_last"] == ["User"]
+
+    empty_name = {
+        "token": login_user["token"],
+        "name_first": "",
+        "name_last": "",
+    }
+
+    invalid_name = {
+        "token": login_user["token"],
+        "name_first": "Pythonpythonpythonpythonpythonpythonpythonpythonpython",
+        "name_last": "Programmerprogrammerprogrammerprogrammerprogrammerprogrammer",
+    }
+
+    requests.put(f"{url}/user/profile/setname", json=empty_name)
+    payload = get_user_profile(url, login_user)
+    assert payload["message"] == "Invalid first name"
+    assert payload["code"] == 400
+
+    requests.put(f"{url}/user/profile/setname", json=invalid_name)
+    payload = get_user_profile(url, login_user)
+    assert payload["message"] == "Invalid first name"
+    assert payload["code"] == 400
+
+# TEST FUNCTIONS FOR HTTP_USER_PROFILE_SETEMAIL
