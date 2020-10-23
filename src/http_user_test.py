@@ -87,7 +87,7 @@ def test_http_user_profile_success2(url):
     assert payload["user"] == [{"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last": "User", "handle_str": "newuser"}]
 
 # Failure for user profile
-def test_user_profile_invalid_u_id():
+def test_user_profile_invalid_u_id(url):
     """Tests for failure to display a registered user's own profile."""
     clear()
     login_owner = register_owner(url)
@@ -203,7 +203,7 @@ def test_http_user_profile_setname_invalid_firstlastname(url):
 
 # TEST FUNCTIONS FOR HTTP_USER_PROFILE_SETEMAIL
 # Success for set email
-def test_http_user_profile_setemail_success():
+def test_http_user_profile_setemail_success(url):
     """Tests for success when a user changes their email."""
     clear()
     login_user = register_user(url)
@@ -219,7 +219,7 @@ def test_http_user_profile_setemail_success():
     assert payload["user"]["email"] == new_email["email"]
     
 # Failure for set email
-def test_http_user_profile_invalid_email():
+def test_http_user_profile_invalid_email(url):
     """Tests for failure when a user inputs an invalid email address."""
     clear()
     login_user = register_user(url)
@@ -244,7 +244,7 @@ def test_http_user_profile_invalid_email():
     assert payload["message"] == "Invalid email"
     assert payload["code"] == 400
         
-def test_http_user_profile_email_already_in_use():
+def test_http_user_profile_email_already_in_use(url):
     """Tests for failure when a user inputs a email that is already in use."""
     clear()
     register_owner(url)
@@ -261,7 +261,7 @@ def test_http_user_profile_email_already_in_use():
        
 # TEST FUNCTIONS FOR HTTP_USER_PROFILE_SETHANDLE
 # Success for set handle
-def test_http_user_profile_sethandle_success():
+def test_http_user_profile_sethandle_success(url):
     """Tests for success when a user changes their handle."""
     clear()
     login_user = register_user(url)
@@ -277,7 +277,7 @@ def test_http_user_profile_sethandle_success():
     assert payload["user"]["handle"] == new_handle["handle"]
     
 # Failure for set handle
-def test_http_user_profile_invalid_handle():
+def test_http_user_profile_invalid_handle(url):
     """Tests for failure when a user inputs an invalid handle."""
     clear()
     login_user = register_user(url)
@@ -302,7 +302,7 @@ def test_http_user_profile_invalid_handle():
     assert payload["message"] == "Invalid handle"
     assert payload["code"] == 400
 
-def test_user_profile_handle_already_in_use():
+def test_user_profile_handle_already_in_use(url):
     """Tests for failure when a user inputs a handle that is already in use."""
     clear()
     login_owner = register_user(url)
