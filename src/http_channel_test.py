@@ -634,5 +634,121 @@ def test_http_channel_leave_invalid_channel_id():
     clear()
     login_owner = reg_owner(url)
     create_unique_channel(login_owner, "channel", True)
-
     
+    invalid_channel = {
+        "token": login_owner["token"],
+        "channel_id": -1,
+    }
+
+    r = requests.post(f'{url}/channel/leave', json=invalid_channel)
+    payload = r.json()
+    assert payload["message"] == "Channel ID is not a valid channel"
+    assert payload["code"] == 400
+
+def test_http_channel_leave_not_in_channel():
+    clear()
+    login_owner = reg_owner(url)
+    login_user = reg_user(url)
+
+    owner_channel = create_unique_channel(login_owner, "channel_1", True)
+    user_channel = create_unique_channel(login_user, "channel_2", True)
+
+    invalid_user_1 = {
+        "token": login_owner["token"],
+        "channel_id": user_channel["channel_id"]
+    }
+
+    r = requests.post(f'{url}/channel/leave', json=invalid_user_1)
+    payload = r.json()
+    assert payload["message"] == "Authorised user is not a member of channel with channel_id"
+    assert payload["code"] == 400
+
+    invalid_user_2 = {
+        "token": user_owner["token"],
+        "channel_id": owner_channel["channel_id"]
+    }
+
+    r = requests.post(f'{url}/channel/leave', json=invalid_user_2)
+    payload = r.json()
+    assert payload["message"] == "Authorised user is not a member of channel with channel_id"
+    assert payload["code"] == 400
+
+def test_http_channel_leave_success():
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(login_owner, "channel", True)
+
+    user = {
+        "token": login_owner["token"],
+        "channel_id": channel_id["channel_id"]
+    }
+    
+    requests.post(f'{url}/channel/leave', json=user)
+
+    user = {
+        "token": login_owner["token"]
+    }
+
+    r = requests.get(f'{url}/channels/listall', json=user)
+    payload = r.json()
+    assert payload["channels"] == []
+
+#tests for channel_join
+def test_http_channel_join_invalid_channel_id():
+    clear()
+    login_owner = reg_owner(url)
+    login_user = reg_user(url)
+
+    channel_id = create_unique_channel(login_owner, "channel", True)
+
+    invalid_channel = {
+        "token": login_owner["token"],
+        "channel_id": -1
+    }
+
+    r = requests.post(f'{url}/channel/join', json=invalid_channel)
+    payload = r.json()
+
+    assert payload["message"] == "Channel ID is not a valid channel"
+    assert payload["code"] == 400
+
+def test_http_channel_join_private_channel():
+    clear()
+    login_owner = reg_owner(url)
+    login_user = reg_user(url)
+
+    channel_id = create_unique_channel(login_owner, "channel", False)
+
+    user = {
+        "token": login_user["token"],
+        "channel_id": channel_id["channel_id"]
+    }
+
+    r - requests.post(f'{url}/channel/join', json=user)
+    payload = r.json()
+
+    assert payload["message"] == "Channel is private"
+    assert payload["code"] == 400
+
+def test_http_public_channel_join_success():
+    clear()
+    login_owner = reg_owner(url)
+    login_user = reg_user(url)
+
+    channel_id = create_unique_channel(login_owner, "channel", True)
+    
+    user = {
+        "token": login_user["token"],
+        "channel_id": channel_id["channel_id"]
+    }
+    requests.post(f'{url}/channel/join', json=user)
+
+    channel_details = {
+        "token": login_user["token"],
+        "channel_id": channel_id["channel_id"]
+    }
+
+    r = requests.get(f'{url}/channel/details', json=channel_details)
+    payload = r.json()
+    
+    assert payload["channel_details"]["all_members"] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test"}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test"}]
