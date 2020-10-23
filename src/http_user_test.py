@@ -61,7 +61,7 @@ def register_user(url):
     return r.json()
 
 # TEST FUNCTIONS FOR HTTP_USER_PROFILE
-# Success for user_profile
+# Success for user profile
 def test_http_user_profile_success1(url):
     """Tests for success when a registered user can view own profile."""
     clear()
@@ -87,11 +87,28 @@ def test_http_user_profile_success2(url):
     payload = r.json()
     assert payload["user"] == [{"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last" : "User", "handle_str" : "newuser"}]
 
-# put
-def test_http_user_profile_setname():
+# Failure for user profile
+def test_user_profile_invalid_u_id():
+    """Tests for failure to display a registered user's own profile."""
+    clear()
+    login_owner = register_owner(url)
+    invalid_u_id = -1
+    invalid_user_info = {
+        "token": login_owner["token"],
+        "u_id": invalid_u_id,
+    }
+    r = requests.get(f"{url}/user/profile", json = invalid_user_info)
+    payload = r.json()
+    assert payload['message'] == "User does not exist"
+    assert payload['code'] == 400
+
+    
 
 # put
-def test_http_user_profile_setemail():
+#def test_http_user_profile_setname():
 
 # put
-def test_http_user_profile_sethandle():
+#def test_http_user_profile_setemail():
+
+# put
+#def test_http_user_profile_sethandle():
