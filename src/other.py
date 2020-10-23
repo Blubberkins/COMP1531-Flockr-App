@@ -85,6 +85,8 @@ def admin_userpermission_change(token, u_id, permission_id):
         raise InputError("Permission id is not valid")
 
     member['permission_id'] = permission_id
+    
+    return {}
 
 def search(token, query_str):
     """
