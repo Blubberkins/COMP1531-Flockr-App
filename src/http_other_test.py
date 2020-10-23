@@ -37,7 +37,11 @@ def test_url(url):
     '''
     assert url.startswith("http")
 
-#register owner function
+#
+# JSON FUNCTIONS USED FOR TESTING
+#
+
+# register owner function
 def reg_owner():
     register_owner = {
         'email': "owner@email.com",
@@ -48,7 +52,7 @@ def reg_owner():
     r = requests.post(f"{url}/auth/register", json=register_owner)
     return r.json()
 
-#register user function
+# register user function
 def reg_user():
     register_user = {
         'email': "user@email.com",
@@ -59,7 +63,47 @@ def reg_user():
     r = requests.post(f"{url}/auth/register", json=register_user)
     return r.json()
 
-#tests for users_all
+# join channel function
+def join_channel(login_user, channel_id):
+    join_public_channel = {
+        'token': login_user['token'],
+        'channel_id': channel_id['channel_id']
+    }
+    requests.post(f"{url}/channel/join", json=join_public_channel)
+
+# create public channel function
+def create_public_channel(login_owner, channel_name):
+    channels_create_public = {
+        'token': login_owner['token'],
+        'name': channel_name,
+        'is_public': True
+    }
+    r = requests.post(f"{url}/channels/create", json=channels_create_public)
+    return r.json()
+
+# send message function
+def send_message(login_user, channel_id, message):
+    message_send = {
+        'token': login_user['token'],
+        'channel_id': channel_id['channel_id'],
+        'message': message
+    }
+    r = requests.post(f"{url}/message/send", json=message_send)
+    return r.json()
+
+# search message function
+def search(login_user, query_str):
+    search_message = {
+        'token': login_user['token'],
+        'query_str': query_str
+    }
+    r = requests.post(f"{url}/search", json=search_message)
+    return r.json()
+
+#
+# TEST FUNCTIONS FOR USERS_ALL
+#
+
 def test_http_users_all_invalid_token(url):
     clear()
 
@@ -99,7 +143,10 @@ def test_http_users_all_successful(url):
     all_users = r.json()
     assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}, {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest"}]
 
-#tests for http_admin_userpermission_change
+#
+# TEST FUNCTIONS FOR ADMIN_USERPERMISSION_CHANGE
+#
+
 def test_http_admin_userpermission_change_invalid_id(url):
     clear()
 
@@ -186,3 +233,153 @@ def test_http_admin_userpermission_change_successful(url):
     payload = r.json()
     assert payload['message'] == "User is not authorised"
     assert payload['code'] == 400
+
+#
+# TEST FUNCTIONS FOR SEARCH
+#
+
+def test_http_search_empty():
+    """Checks that search returns nothing when given an empty string"""
+
+    clear()
+    login_owner = reg_owner()
+
+    channel_id = create_public_channel(login_owner, "channel")
+    send_message(login_owner, channel_id, "message")
+
+    search_results = search(login_owner, "")
+
+    assert search_results == {'messages': []}
+
+def test_http_search_own_channel_single_message_complete():
+    """Tests for success when user creates their own channel, sends a message, and searches for the complete message"""
+    
+    clear()
+    login_owner = reg_owner()
+
+    channel_id = create_public_channel(login_owner, "channel")
+    message_id = send_message(login_owner, channel_id, "message")
+
+    search_results = search(login_owner, "message")
+
+    assert search_results['messages'][0]['message_id'] == message_id['message_id']
+    assert search_results['messages'][0]['u_id'] == login_owner['u_id']
+    assert search_results['messages'][0]['message'] == "message"
+
+def test_http_search_own_channel_single_message_incomplete():
+    """Tests for success when user creates their own channel, sends a message, and searches for part of the message"""
+    
+    clear()
+    login_owner = reg_owner()
+
+    channel_id = create_public_channel(login_owner, "channel")
+    message_id = send_message(login_owner, channel_id, "message")
+
+    search_results = search(login_owner, "ess")
+
+    assert search_results['messages'][0]['message_id'] == message_id['message_id']
+    assert search_results['messages'][0]['u_id'] == login_owner['u_id']
+    assert search_results['messages'][0]['message'] == "message"
+
+def test_http_search_other_channel_single_message_complete():
+    """Tests for success when owner creates a channel, user joins the channel, owner sends a message, and user searches for the complete message"""
+    
+    clear()
+    login_owner = reg_owner()
+    login_user = reg_user()
+
+    channel_id = create_public_channel(login_owner, "channel")
+    join_channel(login_user, channel_id)
+
+    message_id = send_message(login_owner, channel_id, "message")
+
+    search_results = search(login_user, "message")
+
+    assert search_results['messages'][0]['message_id'] == message_id['message_id']
+    assert search_results['messages'][0]['u_id'] == login_owner['u_id']
+    assert search_results['messages'][0]['message'] == "message"
+
+def test_http_search_other_channel_single_message_incomplete():
+    """Tests for success when owner creates a channel, user joins the channel, owner sends a message, and user searches for part of the message"""
+    
+    clear()
+    login_owner = reg_owner()
+    login_user = reg_user()
+
+    channel_id = create_public_channel(login_owner, "channel")
+    join_channel(login_user, channel_id)
+
+    message_id = send_message(login_owner, channel_id, "message")
+
+    search_results = search(login_user, "ess")
+
+    assert search_results['messages'][0]['message_id'] == message_id['message_id']
+    assert search_results['messages'][0]['u_id'] == login_owner['u_id']
+    assert search_results['messages'][0]['message'] == "message"
+
+def test_http_search_both_channels_two_messages_complete():
+    """Tests for success when owner creates a channel, user joins the channel, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches for the complete messages"""
+    
+    clear()
+    login_owner = reg_owner()
+    login_user = reg_user()
+
+    channel_id1 = create_public_channel(login_owner, "channel 1")
+    join_channel(login_user, channel_id1)
+
+    channel_id2 = create_public_channel(login_owner, "channel 2")
+
+    message_id1 = send_message(login_owner, channel_id1, "message")
+    message_id2 = send_message(login_user, channel_id2, "message")
+
+    search_results = search(login_user, "message")
+
+    assert search_results['messages'][0]['message_id'] == message_id1['message_id']
+    assert search_results['messages'][0]['u_id'] == login_owner['u_id']
+    assert search_results['messages'][0]['message'] == "message"
+    assert search_results['messages'][1]['message_id'] == message_id2['message_id']
+    assert search_results['messages'][1]['u_id'] == login_user['u_id']
+    assert search_results['messages'][1]['message'] == "message"
+
+def test_http_search_both_channels_two_messages_incomplete():
+    """Tests for success when owner creates a channel, user joins the channel, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches for part of the messages"""
+    
+    clear()
+    login_owner = reg_owner()
+    login_user = reg_user()
+
+    channel_id1 = create_public_channel(login_owner, "channel 1")
+    join_channel(login_user, channel_id1)
+
+    channel_id2 = create_public_channel(login_owner, "channel 2")
+
+    message_id1 = send_message(login_owner, channel_id1, "message")
+    message_id2 = send_message(login_user, channel_id2, "message")
+
+    search_results = search(login_user, "ess")
+
+    assert search_results['messages'][0]['message_id'] == message_id1['message_id']
+    assert search_results['messages'][0]['u_id'] == login_owner['u_id']
+    assert search_results['messages'][0]['message'] == "message"
+    assert search_results['messages'][1]['message_id'] == message_id2['message_id']
+    assert search_results['messages'][1]['u_id'] == login_user['u_id']
+    assert search_results['messages'][1]['message'] == "message"
+
+def test_http_search_own_channel_single_message_excluding_other_channel():
+    """Tests for success when owner creates a channel but user does not join, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches the messages"""
+    
+    clear()
+    login_owner = reg_owner()
+    login_user = reg_user()
+
+    channel_id1 = create_public_channel(login_owner, "channel 1")
+    channel_id2 = create_public_channel(login_user, "channel 2")
+
+    send_message(login_owner, channel_id1, "message")
+    message_id2 = send_message(login_user, channel_id2, "message")
+
+    search_results = search(login_user, "message")
+
+    assert search_results['messages'][0]['message_id'] == message_id2['message_id']
+    assert search_results['messages'][0]['u_id'] == login_user['u_id']
+    assert search_results['messages'][0]['message'] == "message"
