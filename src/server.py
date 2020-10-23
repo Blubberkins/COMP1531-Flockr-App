@@ -44,5 +44,11 @@ def http_admin_userpermission_change():
     response = other.admin_userpermission_change(data['token'], data['u_id'], data['permission_id'])
     return dumps(response)
 
+@APP.route("/search", methods=['GET'])
+def http_search():
+    data = request.get_json()
+    response = other.search(data['token'], data['query_str'])
+    return dumps(response)
+
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port
