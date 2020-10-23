@@ -30,6 +30,7 @@ def url():
         server.kill()
         raise Exception("Couldn't get URL from local server")
 
+# Test for url
 def test_url(url):
     """Tests that the server has been set up properly."""
     assert url.startswith("http")
