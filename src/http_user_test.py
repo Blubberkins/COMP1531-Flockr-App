@@ -66,7 +66,7 @@ def get_user_profile(url, token, u_id):
         "token": token,
         "u_id": u_id,
     }
-    r = requests.get(f"{url}/user/profile", json=user_info)
+    r = requests.get(f"{url}/user/profile", params={user_info})
     return r.json()
 
 # TEST FUNCTIONS FOR HTTP_USER_PROFILE
