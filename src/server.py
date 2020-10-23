@@ -40,8 +40,7 @@ def http_channel_invite():
 
 @app.route('/channel/details', methods=['GET'])
 def http_channel_details():
-    data = request.get_json()
-    response = channel.channel_details(data['token'], data['channel_id'])
+    response = channel.channel_details(request.args.get('token'), request.args.get('channel_id'))
     return dumps(response)
 
 @app.route('/channel/addowner', methods=['POST'])
