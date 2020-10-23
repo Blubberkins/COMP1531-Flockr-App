@@ -23,6 +23,7 @@ def test_channel_invite_invalid_id():
         channel.channel_invite(login_owner['token'], invalid_channel_id, invalid_u_id)
 
 def test_channel_invite_already_member():
+    clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
 
@@ -246,6 +247,8 @@ def test_channel_addowner_invalid_id():
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
 
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_addowner(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
+    
     channel.channel_invite(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
 
     invalid_channel_id = -1
