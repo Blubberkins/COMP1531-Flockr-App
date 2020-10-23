@@ -81,8 +81,8 @@ def admin_userpermission_change(token, u_id, permission_id):
     if u_id_true == False:
         raise InputError("Target does not exist")
 
-    if permission_id != 1 and permission_id != 2:
-        raise InputError("Permission id does not exist")
+    if permission_id != 1 or permission_id != 2:
+        raise InputError("Permission id is not valid")
 
     member['permission_id'] = permission_id
 
