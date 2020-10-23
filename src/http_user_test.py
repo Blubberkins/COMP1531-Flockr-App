@@ -74,13 +74,13 @@ def test_http_user_profile_success1(url):
     """Tests for success when a registered user can view own profile."""
     clear()
     login_owner = register_owner(url)
-    payload = get_owner_profile(url, login_owner["token"], login_owner["u_id"])
+    payload = get_user_profile(url, login_owner["token"], login_owner["u_id"])
     assert payload["user"] == [{"u_id": 1, "email": "owner@gmail.com", "name_first": "Flock", "name_last": "Owner", "handle_str": "flockowner"}]
 
 def test_http_user_profile_success2(url):
     """Tests for success when a registered user can view another user's profile."""
     clear()
-    login_owner = register_owner(url)
+    register_owner(url)
     login_user = register_user(url)
     payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"] == [{"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last": "User", "handle_str": "newuser"}]
@@ -91,7 +91,7 @@ def test_user_profile_invalid_u_id():
     clear()
     login_owner = register_owner(url)
     invalid_u_id = -1
-    payload = get_user_profile(url, login_owner["token", invalid_u_id])
+    payload = get_user_profile(url, login_owner["token"], invalid_u_id)
     assert payload['message'] == "Invalid user_id"
     assert payload['code'] == 400
 
@@ -106,7 +106,7 @@ def test_http_user_profile_setname_success(url):
     assert payload["user"]["name_last"] == ["User"]
 
     new_name= {
-        "token": login_owner["token"],
+        "token": login_user["token"],
         "name_first": "Python",
         "name_last": "Programmer",
     }
@@ -162,8 +162,8 @@ def test_http_user_profile_setname_invalid_lastname(url):
     assert payload["message"] == "Invalid last name"
     assert payload["code"] == 400
 
-    invalid_name_first = {
-        "token": login_owner["token"],
+    invalid_name_last = {
+        "token": login_user["token"],
         "name_first": "Python",
         "name_last": "Programmerprogrammerprogrammerprogrammerprogrammerprogrammer",
     }
@@ -246,7 +246,7 @@ def test_http_user_profile_invalid_email():
 def test_http_user_profile_email_already_in_use():
     """Tests for failure when a user inputs a email that is already in use."""
     clear()
-    login_owner = register_owner(url)
+    register_owner(url)
     login_user = register_user(url)
 
     owner_email = {
@@ -322,7 +322,7 @@ def test_user_profile_handle_already_in_use():
         "token": login_user["user"]["token"],
         "handle": login_owner["user"]["handle"],
     }
-    requests.put(f"{url}/user/profile/sethandle", json=owner_handle)
+    requests.put(f"{url}/user/profile/sethandle", json=new_user_handle)
     payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["message"] == "Invalid handle"
     assert payload["code"] == 400
