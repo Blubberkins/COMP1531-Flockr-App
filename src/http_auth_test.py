@@ -213,7 +213,7 @@ def test_http_register_success(url):
 
     assert registered_user1["u_id"] == 1
 
-    register_user2 = register_user2
+    registered_user2 = register_user2(url)
 
     assert registered_user2["u_id"] == 2
 
@@ -238,7 +238,7 @@ def test_http_register_invalid_email(url):
 def test_http_register_already_used_email(url):
     clear()
 
-    registered_user1 = register_user1
+    registered_user1 = register_user1(url)
     assert registered_user1["u_id"] == 1
 
     register_existing_email = {
