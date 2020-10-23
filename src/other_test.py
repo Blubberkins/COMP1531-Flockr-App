@@ -25,8 +25,7 @@ def test_users_all_successful():
 
     login_user = auth.auth_register("user@email.com", "password321", "User", "Test")
     r = other.users_all(login_user['token'])
-    assert r['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"},
-                                                    {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest"}]
+    assert r['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}, {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest"}]
 
 # test functions for admin_userpermission_change
 def test_admin_userpermission_change_invalid_id():
