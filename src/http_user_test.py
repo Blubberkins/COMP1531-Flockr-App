@@ -31,9 +31,7 @@ def url():
         raise Exception("Couldn't get URL from local server")
 
 def test_url(url):
-    '''
-    A simple sanity test to check that your server is set up properly
-    '''
+    """Tests that the server has been set up properly."""
     assert url.startswith("http")
 
 # Register user function
@@ -61,11 +59,11 @@ def register_user(url):
     return r.json() 
 
 # Get user profile
-def get_user_profile(url, login_user):
-    """While logged in as a user, gets the user's profile."""
+def get_user_profile(url, token, u_id):
+    """Gets the user's profile."""
     user_info = {
-        "token": login_user["token"],
-        "u_id": login_user["u_id"],
+        "token": token,
+        "u_id": u_id,
     }
     r = requests.get(f"{url}/user/profile", json=user_info)
     return r.json()
@@ -76,12 +74,7 @@ def test_http_user_profile_success1(url):
     """Tests for success when a registered user can view own profile."""
     clear()
     login_owner = register_owner(url)
-    owner_info = {
-        "token": login_owner["token"],
-        "u_id": login_owner["u_id"],
-    }
-    r = requests.get(f"{url}/user/profile", json=owner_info)
-    payload = r.json()
+    payload = get_owner_profile(url, login_owner["token"], login_owner["u_id"])
     assert payload["user"] == [{"u_id": 1, "email": "owner@gmail.com", "name_first": "Flock", "name_last": "Owner", "handle_str": "flockowner"}]
 
 def test_http_user_profile_success2(url):
@@ -89,12 +82,7 @@ def test_http_user_profile_success2(url):
     clear()
     login_owner = register_owner(url)
     login_user = register_user(url)
-    user_info = {
-        "token": login_owner["token"],
-        "u_id": login_user["u_id"],
-    }
-    r = requests.get(f"{url}/user/profile", json=user_info)
-    payload = r.json()
+    payload = get_user_profile(url, login_user["token"], login_user["u_id"])
     assert payload["user"] == [{"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last": "User", "handle_str": "newuser"}]
 
 # Failure for user profile
@@ -278,48 +266,69 @@ def test_http_user_profile_email_already_in_use():
        
 # TEST FUNCTIONS FOR HTTP_USER_PROFILE_SETHANDLE
 # Success for set handle
-def test_user_profile_sethandle_success():
+def test_http_user_profile_sethandle_success():
     """Tests for success when a user changes their handle."""
     clear()
-    register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1["token"]
-    u_id = register_user1["u_id"]
-    user_info = user.user_profile(token, u_id) 
-    user_handle = user_info["user"]["handle_str"]
+    login_user = register_user(url)
+    payload = get_user_profile(url, login_user)
+    assert payload["user"]["handle"] == "newuser"
 
-    assert user_handle == "newuser"
-
-    user.user_profile_sethandle(token, "newhandle")
-    updated_user_info = user.user_profile(token, u_id) 
-    updated_handle = updated_user_info["user"]["handle_str"]
-    
-    assert updated_handle == "newhandle"
+    new_handle = {
+        "token": login_user["token"],
+        "handle": "pythonprogrammer",
+    }
+    requests.put(f"{url}/user/profile/sethandle", json=new_handle)
+    payload = get_user_profile(url, login_user)
+    assert payload["user"]["handle"] == new_handle["handle"]
     
 # Failure for set handle
-def test_user_profile_invalid_handle():
+def test_http_user_profile_invalid_handle():
     """Tests for failure when a user inputs an invalid handle."""
     clear()
-    register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token = register_user1["token"]
+    login_user = register_user(url)
+    payload = get_user_profile(url, login_user)
+    assert payload["user"]["handle"] == "newuser"
 
-    with pytest.raises(InputError):
-        user.user_profile_sethandle(token, "")
-        user.user_profile_sethandle(token, "12")
-        user.user_profile_sethandle(token, "abcdefghijklmnopqrstuvwxyz")
-        user.user_profile_sethandle(token, "                          ")
+    empty_handle = {
+        "token": login_user["token"],
+        "handle": "",
+    }
+    requests.put(f"{url}/user/profile/sethandle", json=empty_handle)
+    payload = get_user_profile(url, login_user)
+    assert payload["message"] == "Invalid handle"
+    assert payload["code"] == 400
+
+    invalid_handle = {
+        "token": login_user["token"],
+        "handle": "iamaprettygoodpythonprogrammer",
+    }
+    requests.put(f"{url}/user/profile/sethandle", json=invalid_handle)
+    payload = get_user_profile(url, login_user)
+    assert payload["message"] == "Invalid handle"
+    assert payload["code"] == 400
 
 def test_user_profile_handle_already_in_use():
     """Tests for failure when a user inputs a handle that is already in use."""
     clear()
-    register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    token1 = register_user1["token"]
-    register_user2 = auth.auth_register("differentemail@gmail.com", "321wordpass", "Different", "User")
-    token2 = register_user2["token"]
-    register_user3 = auth.auth_register("randomperson@gmail.com", "987drowssap", "Random", "User")
-    token3 = register_user3["token"]
+    login_owner = register_user(url)
+    login_user = register_user(url)
+    payload = get_user_profile(url, login_user)
+    assert payload["user"]["handle"] == "newuser"
 
-    with pytest.raises(InputError):
-        user.user_profile_sethandle(token2, "newuser")
-        user.user_profile_sethandle(token1, "differentuser")
-        user.user_profile_sethandle(token3, "newuser")
-        user.user_profile_sethandle(token3, "differentuser")
+    user_handle = {
+        "token": login_owner["user"]["token"],
+        "handle": login_user["user"]["handle"],
+    }
+    requests.put(f"{url}/user/profile/sethandle", json=user_handle)
+    payload = get_owner_profile(url, login_owner)
+    assert payload["message"] == "Invalid handle"
+    assert payload["code"] == 400
+
+    owner_handle = {
+        "token": login_user["user"]["token"],
+        "handle": login_owner["user"]["handle"],
+    }
+    requests.put(f"{url}/user/profile/sethandle", json=owner_handle)
+    payload = get_user_profile(url, login_user)
+    assert payload["message"] == "Invalid handle"
+    assert payload["code"] == 400
