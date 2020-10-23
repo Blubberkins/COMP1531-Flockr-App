@@ -107,20 +107,12 @@ def search(login_user, query_str):
 def test_http_users_all_invalid_token(url):
     clear()
 
-    invalid_token = {
-        'token': "invalid_token"
-    }
-
-    empty_token = {
-        'token' : ""
-    }
-
-    r = requests.get(f"{url}/users/all", json=invalid_token)
+    r = requests.get(f"{url}/users/all", params={'token': "invalid_token"})
     payload = r.json
     assert payload['message'] == "Token does not exist"
     assert payload['code'] == 400
 
-    r = requests.get(f"{url}/users/all", json=empty_token)
+    r = requests.get(f"{url}/users/all", params={'token': ""})
     payload = r.json
     assert payload['message'] == "Token does not exist"
     assert payload['code'] == 400
@@ -129,17 +121,14 @@ def test_http_users_all_successful(url):
     clear()
 
     login_owner = reg_owner()
-    owner_token = {
-        'token': login_owner['token']
-    }
 
-    r = requests.get(f"{url}/users/all", json=owner_token)
+    r = requests.get(f"{url}/users/all", params={'token': login_owner['token']})
     all_users = r.json()
     assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}]
 
     login_user = reg_user()
 
-    r = requests.get(f"{url}/users/all", json=owner_token)
+    r = requests.get(f"{url}/users/all", params={'token': login_owner['token']})
     all_users = r.json()
     assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}, {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest"}]
 
