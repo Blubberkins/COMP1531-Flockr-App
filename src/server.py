@@ -3,6 +3,7 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
+import user
 
 def defaultHandler(err):
     response = err.get_response()
@@ -30,6 +31,30 @@ def echo():
     return dumps({
         'data': data
     })
+
+@APP.route("/user/profile", methods = ["GET"])
+def http_user_profile():
+    token = request.args.get("token")
+    u_id = request.args.get("u_id")
+    return dumps(user.user_profile(token, u_id))
+
+@APP.route("/user/profile/setname", methods = ["PUT"])
+def http_user_profile_setname():
+    data = request.get_json()
+    response = user.user_profile_setname(data["token"], data["name_first"], data["name_last"])
+    return dumps(response)
+
+@APP.route("/user/profile/setemail", methods = ["PUT"])
+def http_user_profile_setemail():
+    data = request.get_json()
+    response = user.user_profile_setemail(data["token"], data["email"])
+    return dumps(response)
+
+@APP.route("/user/profile/sethandle", methods = ["PUT"])
+def http_user_profile_sethandle():
+    data = request.get_json()
+    response = user.user_profile_sethandle(data["token"], data["handle"])
+    return dumps(response)
 
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port
