@@ -40,8 +40,12 @@ def users_all(token):
             "handle_str": user['handle_str']
         }
         users_list.append(user_dict)
+        
+        all_users = {
+            'users': users_list
+        }
 
-    return users_list
+    return all_users
 
 def admin_userpermission_change(token, u_id, permission_id):
     """
