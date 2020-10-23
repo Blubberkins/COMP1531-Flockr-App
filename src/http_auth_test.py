@@ -181,7 +181,7 @@ def test_http_login_invalid_password(url):
 
 # TEST FUNCTIONS FOR HTTP_AUTH_LOGOUT
 # Success for logout
-def test_http_logout_success():
+def test_http_logout_success(url):
     clear()
 
     registered_user1 = register_user1(url)
@@ -202,3 +202,143 @@ def test_http_logout_failure(url):
     payload = r.json()
 
     assert payload["is_success"] == [False]
+
+# TEST FUNCTIONS FOR AUTH_REGISTER
+# Success for register
+
+def test_http_register_success(url):
+    clear()
+
+    registered_user1 = register_user1(url)
+
+    assert registered_user1["u_id"] == 1
+
+    register_user2 = register_user2
+
+    assert registered_user2["u_id"] == 2
+
+# Failure for register
+
+def test_http_register_invalid_email(url):
+    clear()
+
+    register_invalid_email = {
+        'email' : "invalidemail.com",
+        'password' : "python123",
+        'name_first' : "New",
+        'name_last' : "User",
+    }
+
+    r = requests.post(f"{url}/auth/register", json=register_invalid_email)
+    payload = r.json()
+
+    assert payload['message'] == "Invalid email"
+    assert payload['code'] == 400
+
+def test_http_register_already_used_email(url):
+    clear()
+
+    registered_user1 = register_user1
+    assert registered_user1["u_id"] == 1
+
+    register_existing_email = {
+        'email' : "validemail@gmail.com",
+        'password' : "differentpassword123",
+        'name_first' : "Old",
+        'name_last' : "User",
+    }
+    
+    r = requests.post(f"{url}/auth/register", json=register_existing_email)
+    payload = r.json()
+
+    assert payload['message'] == "Email is already in use"
+    assert payload['code'] == 400
+
+def test_http_register_invalid_password(url):
+    clear()
+
+    short_password = {
+        'email' : "validemail@gmail.com",
+        'password' : "pass",
+        'name_first' : "New",
+        'name_last' : "User",
+    }
+
+    r = requests.post(f"{url}/auth/register", json=short_password)
+    payload = r.json()
+
+    assert payload['message'] == "Invalid password"
+    assert payload['code'] == 400
+
+    no_password = {
+        'email' : "differentvalidemail@gmail.com",
+        'password' : "",
+        'name_first' : "New",
+        'name_last' : "User",
+    }
+
+    r = requests.post(f"{url}/auth/register", json=no_password)
+    payload = r.json()
+
+    assert payload['message'] == "Invalid password"
+    assert payload['code'] == 400
+
+def test_http_register_invalid_first_name(url):
+    clear()
+
+    short_first_name = {
+        'email' : "validemail@gmail.com",
+        'password' : "python123",
+        'name_first' : "",
+        'name_last' : "User",
+    }
+
+    r = requests.post(f"{url}/auth/register", json=short_first_name)
+    payload = r.json()
+
+    assert payload['message'] == "Invalid first name"
+    assert payload['code'] == 400
+
+
+    long_first_name = {
+        'email' : "notthesamevalidemail@gmail.com",
+        'password' : "python123",
+        'name_first' : "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
+        'name_last' : "User",
+    }
+
+    r = requests.post(f"{url}/auth/register", json=long_first_name)
+    payload = r.json()
+
+    assert payload['message'] == "Invalid first name"
+    assert payload['code'] == 400
+
+def test_http_register_invalid_last_name(url):
+    clear()
+
+    short_last_name = {
+        'email' : "validemail@gmail.com",
+        'password' : "python123",
+        'name_first' : "New",
+        'name_last' : "",
+    }
+
+    r = requests.post(f"{url}/auth/register", json=short_last_name)
+    payload = r.json()
+
+    assert payload['message'] == "Invalid last name"
+    assert payload['code'] == 400
+
+
+    long_last_name = {
+        'email' : "notthesamevalidemail@gmail.com",
+        'password' : "python123",
+        'name_first' : "New",
+        'name_last' : "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
+    }
+
+    r = requests.post(f"{url}/auth/register", json=long_last_name)
+    payload = r.json()
+
+    assert payload['message'] == "Invalid last name"
+    assert payload['code'] == 400
