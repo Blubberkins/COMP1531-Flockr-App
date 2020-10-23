@@ -221,7 +221,7 @@ def test_channels_listall_not_join_one_private_channel():
 
     channels_listall = channels.channels_listall(login_user['token'])
 
-    assert channels_listall == {"channels" : []}
+    assert channels_listall == {"channels" : [{"channel_id" : channel_id['channel_id'], "name" : "channel"}]}
 
 # Owner creates one private channel and user joins that channel
 def test_channels_listall_join_one_private_channel():
@@ -254,7 +254,7 @@ def test_channels_listall_join_one_public_not_join_one_private_channel():
 
     channels_listall = channels.channels_listall(login_user['token'])
 
-    assert channels_listall == {"channels" : [{"channel_id" : channel_id_1['channel_id'], "name" : "channel 1"}]}
+    assert channels_listall == {"channels" : [{"channel_id" : channel_id_1['channel_id'], "name" : "channel 1"}, {"channel_id" : channel_id_2['channel_id'], "name" : "channel 2"}]}
 
 # Owner creates one public and one private channel and user joins the private channel
 def test_channels_listall_not_join_one_public_join_one_private_channel():
