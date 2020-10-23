@@ -87,7 +87,7 @@ def test_http_user_profile_success2(url):
     assert payload["user"] == [{"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last": "User", "handle_str": "newuser"}]
 
 # Failure for user profile
-def test_user_profile_invalid_u_id(url):
+def test_http_user_profile_invalid_u_id(url):
     """Tests for failure to display a registered user's own profile."""
     clear()
     login_owner = register_owner(url)
@@ -302,7 +302,7 @@ def test_http_user_profile_invalid_handle(url):
     assert payload["message"] == "Invalid handle"
     assert payload["code"] == 400
 
-def test_user_profile_handle_already_in_use(url):
+def test_http_user_profile_handle_already_in_use(url):
     """Tests for failure when a user inputs a handle that is already in use."""
     clear()
     login_owner = register_user(url)
