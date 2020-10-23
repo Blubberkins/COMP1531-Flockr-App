@@ -45,13 +45,13 @@ def http_channel_details():
     return dumps(response)
 
 @app.route('/channel/addowner', methods=['POST'])
-def http_channel_invite():
+def http_channel_addowner():
     data = request.get_json()
     response = channel.channel_addowner(data['token'], data['channel_id'], data['u_id'])
     return dumps(response)
 
 @app.route('/channel/removeowner', methods=['POST'])
-def http_channel_invite():
+def http_channel_removeowner():
     data = request.get_json()
     response = channel.channel_removeowner(data['token'], data['channel_id'], data['u_id'])
     return dumps(response)
