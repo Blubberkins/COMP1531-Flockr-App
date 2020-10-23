@@ -247,7 +247,9 @@ def test_channel_addowner_invalid_id():
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
 
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
-    channel.channel_addowner(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
+    
+    with pytest.raises(InputError):
+        channel.channel_addowner(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
     
     channel.channel_invite(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
 
