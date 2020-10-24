@@ -337,8 +337,8 @@ def test_http_message_edit_owner_success():
     msg_send(url, login_user, channel_id, "example_message")
 
     edit = {
-        "token": login_owner("token")
-        "message_id": 0
+        "token": login_owner("token"),
+        "message_id": 0,
         "message": "edited message"
     }
     requests.put(f'{url}/message/edit', json=edit)
