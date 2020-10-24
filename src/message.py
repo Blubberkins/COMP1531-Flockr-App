@@ -29,7 +29,7 @@ def message_send(token, channel_id, message):
         if users["token"] == token:
             u_id = users["u_id"]
             break
-    for users in data["channels"][channel_index]:
+    for users in data["channels"][channel_index]["all_members"]:
         if users["u_id"] == u_id:
             valid_token = True
             break
