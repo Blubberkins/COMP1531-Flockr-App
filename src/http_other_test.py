@@ -223,7 +223,7 @@ def test_http_admin_userpermission_change_successful(url):
 # TEST FUNCTIONS FOR SEARCH
 #
 
-def test_http_search_empty():
+def test_http_search_empty(url):
     """Checks that search returns nothing when given an empty string"""
 
     clear()
@@ -236,7 +236,7 @@ def test_http_search_empty():
 
     assert search_results == {'messages': []}
 
-def test_http_search_own_channel_single_message_complete():
+def test_http_search_own_channel_single_message_complete(url):
     """Tests for success when user creates their own channel, sends a message, and searches for the complete message"""
     
     clear()
@@ -251,7 +251,7 @@ def test_http_search_own_channel_single_message_complete():
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
 
-def test_http_search_own_channel_single_message_incomplete():
+def test_http_search_own_channel_single_message_incomplete(url):
     """Tests for success when user creates their own channel, sends a message, and searches for part of the message"""
     
     clear()
@@ -266,7 +266,7 @@ def test_http_search_own_channel_single_message_incomplete():
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
 
-def test_http_search_other_channel_single_message_complete():
+def test_http_search_other_channel_single_message_complete(url):
     """Tests for success when owner creates a channel, user joins the channel, owner sends a message, and user searches for the complete message"""
     
     clear()
@@ -284,7 +284,7 @@ def test_http_search_other_channel_single_message_complete():
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
 
-def test_http_search_other_channel_single_message_incomplete():
+def test_http_search_other_channel_single_message_incomplete(url):
     """Tests for success when owner creates a channel, user joins the channel, owner sends a message, and user searches for part of the message"""
     
     clear()
@@ -302,7 +302,7 @@ def test_http_search_other_channel_single_message_incomplete():
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
 
-def test_http_search_both_channels_two_messages_complete():
+def test_http_search_both_channels_two_messages_complete(url):
     """Tests for success when owner creates a channel, user joins the channel, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches for the complete messages"""
     
     clear()
@@ -326,7 +326,7 @@ def test_http_search_both_channels_two_messages_complete():
     assert search_results['messages'][1]['u_id'] == login_user['u_id']
     assert search_results['messages'][1]['message'] == "message"
 
-def test_http_search_both_channels_two_messages_incomplete():
+def test_http_search_both_channels_two_messages_incomplete(url):
     """Tests for success when owner creates a channel, user joins the channel, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches for part of the messages"""
     
     clear()
@@ -350,7 +350,7 @@ def test_http_search_both_channels_two_messages_incomplete():
     assert search_results['messages'][1]['u_id'] == login_user['u_id']
     assert search_results['messages'][1]['message'] == "message"
 
-def test_http_search_own_channel_single_message_excluding_other_channel():
+def test_http_search_own_channel_single_message_excluding_other_channel(url):
     """Tests for success when owner creates a channel but user does not join, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches the messages"""
     
     clear()
