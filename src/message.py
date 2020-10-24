@@ -7,10 +7,15 @@ def message_send(token, channel_id, message):
     # Check InputError
     valid_channel_id = False
     channel_index = 0
-    for channels in data["channels"]:
+    '''for channels in data["channels"]:
         if channels["channel_id"] == channel_id:
             valid_channel_id = True
             channel_index = channels
+            break'''
+    for x in range(len(data["channels"])):
+        if data["channels"][x]["channel_id"] == channel_id:
+            valid_channel_id = True
+            channel_index = x
             break
     if not valid_channel_id:
         raise InputError("Invalid channel")
