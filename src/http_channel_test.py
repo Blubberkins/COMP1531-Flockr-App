@@ -476,26 +476,14 @@ def test_http_channel_messages_invalid_start_index(url):
     channel_id = create_unique_channel(login_owner, "channel", True)
     channel_id2 = create_unique_channel(login_owner, "channel2", True)
 
-    msg_send(login_owner, channel_id, "example message")
+    msg_send(login_owner, channel_id, "example message") 
 
-    invalid_start1 = {
-        "token": login_owner["token"],
-        "channel_id": channel_id["channel_id"],
-        "start": 0
-    }
-
-    r = requests.get(f"{url}/channel/messages", json=invalid_start1)
+    r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
     assert payload["message"] == "Start is greater than the total number of messages in the channel"
     assert payload["code"] == 400
 
-    invalid_start2 = {
-        "token": login_owner["token"],
-        "channel_id": channel_id2["channel_id"],
-        "start": 1
-    }
-
-    r = requests.get(f"{url}/channel/messages", json=invalid_start2)
+    r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"], "channel_id": channel_id2["channel_id"], "start": 1})
     payload = r.json()
     assert payload["message"] == "Start is greater than the total number of messages in the channel"
     assert payload["code"] == 400
@@ -505,13 +493,7 @@ def test_http_channel_messages_invalid_channel(url):
     login_owner = reg_owner(url)
     create_unique_channel(login_owner, "channel", True)
 
-    invalid_channel = {
-        "token": login_owner["token"],
-        "channel_id": -1,
-        "start": 0
-    }
-
-    r = requests.get(f"{url}/channel/messages", json=invalid_channel)
+    r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"], "channel_id": -1, "start": 0})
     payload = r.json()
     assert payload["message"] == "Channel ID is not a valid channel"
     assert payload["code"] == 400
@@ -523,24 +505,12 @@ def test_http_channel_messages_invalid_token(url):
     channel_id2 = create_unique_channel(login_owner, "channel2", True)
     login_user = reg_user(url)
 
-    invalid_token = {
-        "token": login_user["token"],
-        "channel_id": channel_id["channel_id"],
-        "start": 0
-    }
-
-    r = requests.get(f"{url}/channel/messages", json=invalid_token)
+    r = requests.get(f"{url}/channel/messages", params={"token": login_user["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
     assert payload["message"] == "Channel ID is not a valid channel"
     assert payload["code"] == 400
-
-    invalid_token2 = {
-        "token": login_user["token"],
-        "channel_id": channel_id2["channel_id"],
-        "start": 0
-    }
     
-    r = requests.get(f"{url}/channel/messages", json=invalid_token2)
+    r = requests.get(f"{url}/channel/messages", params={"token": login_user["token"],"channel_id": channel_id2["channel_id"],"start": 0})
     payload = r.json()
     assert payload["message"] == "Channel ID is not a valid channel"
     assert payload["code"] == 400
@@ -552,13 +522,7 @@ def test_http_channel_messages_one_message_success(url):
 
     msg_send(login_owner, channel_id, "example message")
 
-    messages = {
-        "token": login_owner["token"],
-        "channel_id": channel_id["channel_id"],
-        "start": 0
-    }
-
-    r = requests.get(f"{url}/channel/messages", json=messages)
+    r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     message = r.json
     assert message['start'] == 0
     assert message['end'] == -1
@@ -584,14 +548,8 @@ def test_http_channel_messages_max_messages_success():
     message = r.json
     assert message['start'] == 0
     assert message['end'] == 50
-    
-    messages = {
-        "token": login_owner["token"],
-        "channel_id": channel_id["channel_id"],
-        "start": 1
-    }
 
-    r = requests.get(f"{url}/channel/messages", json=messages)
+    r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"],"channel_id": channel_id["channel_id"],"start": 1})
     message = r.json
     assert message['start'] == 1
     assert message['end'] == -1
@@ -652,11 +610,7 @@ def test_http_channel_leave_success():
     
     requests.post(f'{url}/channel/leave', json=user)
 
-    user = {
-        "token": login_owner["token"]
-    }
-
-    r = requests.get(f'{url}/channels/listall', json=user)
+    r = requests.get(f'{url}/channels/listall', params={"token": login_owner["token"]})
     payload = r.json()
     assert payload["channels"] == []
 
@@ -710,12 +664,7 @@ def test_http_public_channel_join_success():
     }
     requests.post(f'{url}/channel/join', json=user)
 
-    channel_details = {
-        "token": login_user["token"],
-        "channel_id": channel_id["channel_id"]
-    }
-
-    r = requests.get(f'{url}/channel/details', json=channel_details)
+    r = requests.get(f'{url}/channel/details', params={"token": login_user["token"],"channel_id": channel_id["channel_id"]})
     payload = r.json()
     
     assert payload["channel_details"]["all_members"] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test"}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test"}]
