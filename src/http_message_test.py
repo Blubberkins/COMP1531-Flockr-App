@@ -102,7 +102,7 @@ def create_unique_channel(url, user, name, is_public):
 def test_http_message_send_input_error(url):
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
     
     large_string_1 = {
         "token": login_owner["token"],
@@ -216,7 +216,7 @@ def test_http_test_message_send_success(url):
 def test_message_remove_no_messages(url):
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    create_unique_channel(url, login_owner, "channel", True)
 
     no_messages = {
         "token": login_owner["token"],
@@ -229,7 +229,68 @@ def test_message_remove_no_messages(url):
     assert payload["message"] == "Message has already been deleted"
     assert payload["code"] == 400
 
-def test_http_message_remove_removed_message(url)
+def test_http_message_remove_removed_message(url):
     clear()
-    login_owner = reg_owner
+    login_owner = reg_owner(url)
     channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example message")
+    message_to_remove = {
+        "token": login_owner["token"],
+        "message_id": 0
+    }
+    requests.post(f'{url}/message/remove', json=message_to_remove)
+
+    removed_message = {
+        "token": login_owner["token"],
+        "message_id": 0
+    }
+
+    r = requests.post(f'{url}/message/remove', json=removed_message)
+    payload = r.json()
+    assert payload["message"] == "Message has already been deleted"
+    assert payload["code"] == 400
+
+def test_http_message_remove_not_message_sender():
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    login_user = reg_user(url)
+    msg_send(url, login_owner, channel_id, "example message")
+
+    message_to_remove = {
+        "token": login_user["token"],
+        "message_id": 0
+    }
+
+    r = requests.post(f'{url}/message/remove', json=message_to_remove)
+    payload = r.json()
+    assert payload["message"] == "User is not a flock owner or the original user who sent the message"
+    assert payload["code"] == 400 
+
+def test_http_message_remove_admin_remove_success(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    login_user = reg_user(url)
+    inv_user(url, login_owner, login_user, channel_id)
+    
+    msg_send(url, login_user, channel_id, "example_message")
+
+    message_to_remove = {
+        "token": login_owner["token"],
+        "message_id": 0
+    }
+
+    requests.post(f'{url}/message/remove', json=message_to_remove)
+
+    channel_messages = {
+        "token": login_owner["token"],
+        "channel_id": channel_id["channel_id"],
+        "start": 0
+    }
+
+    r = requests.post(f'{url}/channel/messages', json=channel_messages)
+    payload = r.json()
+    assert payload["messages"] == []
+
