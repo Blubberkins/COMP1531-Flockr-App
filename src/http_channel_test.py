@@ -80,7 +80,7 @@ def inv_user(url, login_owner, login_user, channel_id):
     requests.post(f"{url}/channel/invite", json=invite_user)
 
 #message send function
-def msg_send(user, channel, message):
+def msg_send(url, user, channel, message):
     message_send = {
         'token': user['token'],
         'channel_id': channel['channel_id'],
@@ -89,7 +89,7 @@ def msg_send(user, channel, message):
     requests.post(f"{url}/message/remove", json=message_send)
 
 #create unique channel function
-def create_unique_channel(user, name, is_public):
+def create_unique_channel(url, user, name, is_public):
     channel = {
         'token': user['token'],
         'name': name,
@@ -473,10 +473,10 @@ def test_http_channel_removeowner_success(url):
 def test_http_channel_messages_invalid_start_index(url):
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(login_owner, "channel", True)
-    channel_id2 = create_unique_channel(login_owner, "channel2", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    channel_id2 = create_unique_channel(url, login_owner, "channel2", True)
 
-    msg_send(login_owner, channel_id, "example message") 
+    msg_send(url, login_owner, channel_id, "example message") 
 
     r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
@@ -491,7 +491,7 @@ def test_http_channel_messages_invalid_start_index(url):
 def test_http_channel_messages_invalid_channel(url):
     clear()
     login_owner = reg_owner(url)
-    create_unique_channel(login_owner, "channel", True)
+    create_unique_channel(url, login_owner, "channel", True)
 
     r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"], "channel_id": -1, "start": 0})
     payload = r.json()
@@ -501,8 +501,8 @@ def test_http_channel_messages_invalid_channel(url):
 def test_http_channel_messages_invalid_token(url):
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(login_owner, "channel", True)
-    channel_id2 = create_unique_channel(login_owner, "channel2", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    channel_id2 = create_unique_channel(url, login_owner, "channel2", True)
     login_user = reg_user(url)
 
     r = requests.get(f"{url}/channel/messages", params={"token": login_user["token"], "channel_id": channel_id["channel_id"], "start": 0})
@@ -518,9 +518,9 @@ def test_http_channel_messages_invalid_token(url):
 def test_http_channel_messages_one_message_success(url):
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
 
-    msg_send(login_owner, channel_id, "example message")
+    msg_send(url, login_owner, channel_id, "example message")
 
     r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     message = r.json()
@@ -533,10 +533,10 @@ def test_http_channel_messages_one_message_success(url):
 def test_http_channel_messages_max_messages_success():
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
 
     for x in range(50):
-        msg_send(login_owner, channel_id, "example message")
+        msg_send(url, login_owner, channel_id, "example message")
 
     messages = {
         "token": login_owner["token"],
@@ -558,7 +558,7 @@ def test_http_channel_messages_max_messages_success():
 def test_http_channel_leave_invalid_channel_id():
     clear()
     login_owner = reg_owner(url)
-    create_unique_channel(login_owner, "channel", True)
+    create_unique_channel(url, login_owner, "channel", True)
     
     invalid_channel = {
         "token": login_owner["token"],
@@ -575,8 +575,8 @@ def test_http_channel_leave_not_in_channel():
     login_owner = reg_owner(url)
     login_user = reg_user(url)
 
-    owner_channel = create_unique_channel(login_owner, "channel_1", True)
-    user_channel = create_unique_channel(login_user, "channel_2", True)
+    owner_channel = create_unique_channel(url, login_owner, "channel_1", True)
+    user_channel = create_unique_channel(url, login_user, "channel_2", True)
 
     invalid_user_1 = {
         "token": login_owner["token"],
@@ -601,7 +601,7 @@ def test_http_channel_leave_not_in_channel():
 def test_http_channel_leave_success():
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
 
     user = {
         "token": login_owner["token"],
@@ -620,7 +620,7 @@ def test_http_channel_join_invalid_channel_id():
     login_owner = reg_owner(url)
     login_user = reg_user(url)
 
-    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
 
     invalid_channel = {
         "token": login_owner["token"],
@@ -638,7 +638,7 @@ def test_http_channel_join_private_channel():
     login_owner = reg_owner(url)
     login_user = reg_user(url)
 
-    channel_id = create_unique_channel(login_owner, "channel", False)
+    channel_id = create_unique_channel(url, login_owner, "channel", False)
 
     user = {
         "token": login_user["token"],
@@ -656,7 +656,7 @@ def test_http_public_channel_join_success():
     login_owner = reg_owner(url)
     login_user = reg_user(url)
 
-    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
     
     user = {
         "token": login_user["token"],
