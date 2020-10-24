@@ -317,8 +317,8 @@ def test_http_message_edit_not_message_sender(url):
     msg_send(url, login_owner, channel_id, "example_message")
 
     edit = {
-        "token": login_user("token")
-        "message_id": 0
+        "token": login_user("token"),
+        "message_id": 0,
         "message": "edited message"
     }
 
