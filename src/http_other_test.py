@@ -251,7 +251,7 @@ def test_http_search_own_channel_single_message_complete(url):
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
 
-def test_http_search_own_channel_single_message_incomplete():
+def test_http_search_own_channel_single_message_incomplete(url):
     """Tests for success when user creates their own channel, sends a message, and searches for part of the message"""
     
     clear()
