@@ -178,7 +178,7 @@ def test_http_test_message_send_success(url):
         "message": "sample message"
     }
 
-    r = requests.post(f"{url}/mesage/send", json=message_1)
+    r = requests.post(f"{url}/message/send", json=message_1)
     payload = r.json()
     assert payload["message_id"] == 0
 
@@ -188,7 +188,7 @@ def test_http_test_message_send_success(url):
         "message": "sample message"
     }
 
-    r = requests.post(f"{url}/mesage/send", json=message_2)
+    r = requests.post(f"{url}/message/send", json=message_2)
     payload = r.json()
     assert payload["message_id"] == 1
 
@@ -198,7 +198,7 @@ def test_http_test_message_send_success(url):
         "message": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores."
     }
 
-    r = requests.post(f"{url}/mesage/send", json=message_3)
+    r = requests.post(f"{url}/message/send", json=message_3)
     payload = r.json()
     assert payload["message_id"] == 2
 
@@ -208,7 +208,7 @@ def test_http_test_message_send_success(url):
         "message": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores."
     }
 
-    r = requests.post(f"{url}/mesage/send", json=message_4)
+    r = requests.post(f"{url}/message/send", json=message_4)
     payload = r.json()
     assert payload["message_id"] == 3
 
@@ -223,7 +223,7 @@ def test_message_remove_no_messages(url):
         "message_id": 1
     }
 
-    r = requests.post(f'{url}/message/remove', json=no_messages)
+    r = requests.delete(f'{url}/message/remove', json=no_messages)
     payload = r.json()
 
     assert payload["message"] == "Message has already been deleted"
@@ -239,14 +239,14 @@ def test_http_message_remove_removed_message(url):
         "token": login_owner["token"],
         "message_id": 0
     }
-    requests.post(f'{url}/message/remove', json=message_to_remove)
+    requests.delete(f'{url}/message/remove', json=message_to_remove)
 
     removed_message = {
         "token": login_owner["token"],
         "message_id": 0
     }
 
-    r = requests.post(f'{url}/message/remove', json=removed_message)
+    r = requests.delete(f'{url}/message/remove', json=removed_message)
     payload = r.json()
     assert payload["message"] == "Message has already been deleted"
     assert payload["code"] == 400
@@ -263,7 +263,7 @@ def test_http_message_remove_not_message_sender():
         "message_id": 0
     }
 
-    r = requests.post(f'{url}/message/remove', json=message_to_remove)
+    r = requests.delete(f'{url}/message/remove', json=message_to_remove)
     payload = r.json()
     assert payload["message"] == "User is not a flock owner or the original user who sent the message"
     assert payload["code"] == 400 
@@ -282,15 +282,70 @@ def test_http_message_remove_admin_remove_success(url):
         "message_id": 0
     }
 
-    requests.post(f'{url}/message/remove', json=message_to_remove)
+    requests.delete(f'{url}/message/remove', json=message_to_remove)
 
-    channel_messages = {
-        "token": login_owner["token"],
-        "channel_id": channel_id["channel_id"],
-        "start": 0
-    }
-
-    r = requests.post(f'{url}/channel/messages', json=channel_messages)
+    r = requests.post(f'{url}/channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
     assert payload["messages"] == []
+
+# Tests for message_edit
+def test_http_edit_1000_characters(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id["channel_id"], "example_message")
+
+    thousand_character = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "message": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure? On the other hand, we denounce"
+    }
+
+    r = requests.put(f'{url}/message/edit', json=thousand_character)
+    payload = r.json()
+    assert payload["message"] == "Message is larger than 1000 characters"
+    assert payload["code"] == 400
+
+def test_http_message_edit_not_message_sender(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    login_user = reg_user(url)
+    inv_user(url, login_owner, login_user, channel_id)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    edit = {
+        "token": login_user("token")
+        "message_id": 0
+        "message": "edited message"
+    }
+
+    r = requests.put(f'{url}/message/edit', json=edit)
+    payload = r.json()
+    assert payload["message"] == "User is not a flock owner or the original user who sent the message"
+    assert payload["code"] == 400
+
+def test_http_message_edit_owner_success():
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    login_user = reg_user(url)
+    inv_user(url, login_owner, login_user, channel_id)
+
+    msg_send(url, login_user, channel_id, "example_message")
+
+    edit = {
+        "token": login_owner("token")
+        "message_id": 0
+        "message": "edited message"
+    }
+    requests.put(f'{url}/message/edit', json=edit)
+
+    r = requests.get(f'{url}/channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
+    payload = r.json()
+    assert payload["messages"][0] == "edited message"
+
+
 
