@@ -80,7 +80,7 @@ def inv_user(url, login_owner, login_user, channel_id):
     requests.post(f"{url}/channel/invite", json=invite_user)
 
 #message send function
-def msg_send(user, channel, message):
+def msg_send(url, user, channel, message):
     message_send = {
         'token': user['token'],
         'channel_id': channel['channel_id'],
@@ -89,7 +89,7 @@ def msg_send(user, channel, message):
     requests.post(f"{url}/message/remove", json=message_send)
 
 #create unique channel function
-def create_unique_channel(user, name, is_public):
+def create_unique_channel(url, user, name, is_public):
     channel = {
         'token': user['token'],
         'name': name,
@@ -151,7 +151,7 @@ def test_http_message_send_input_error(url):
 def test_http_message_send_access_error(url):
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
     login_user = reg_user(url)
 
     invalid_user = {
@@ -168,7 +168,7 @@ def test_http_message_send_access_error(url):
 def test_http_test_message_send_success(url):
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(login_owner, "channel", True)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
     login_user = reg_user(url)
     inv_user(url, login_owner, login_user, channel_id["channel_id"])
 
@@ -212,3 +212,24 @@ def test_http_test_message_send_success(url):
     payload = r.json()
     assert payload["message_id"] == 3
 
+# Tests for message_remove
+def test_message_remove_no_messages(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    no_messages = {
+        "token": login_owner["token"],
+        "message_id": 1
+    }
+
+    r = requests.post(f'{url}/message/remove', json=no_messages)
+    payload = r.json()
+
+    assert payload["message"] == "Message has already been deleted"
+    assert payload["code"] == 400
+
+def test_http_message_remove_removed_message(url)
+    clear()
+    login_owner = reg_owner
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
