@@ -177,7 +177,7 @@ def test_http_channel_invite_success(url):
     requests.post(f"{url}/channel/invite", json=success_invite)
 
     r = requests.get(f"{url}/channel/details", params={'token': login_owner['token'], 'channel_id': channel_id['channel_id']})
-    channel_details = r.json
+    channel_details = r.json()
 
     assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
 
@@ -196,7 +196,7 @@ def test_http_channel_details_invalid_id(url):
     invalid_channel_id = -1
 
     r = requests.get(f"{url}/channel/details", params={'token': login_owner['token'], 'channel_id': invalid_channel_id})
-    payload = r.json
+    payload = r.json()
     assert payload['message'] == "Invalid channel id"
     assert payload['code'] == 400
 
@@ -209,12 +209,12 @@ def test_http_channel_details_invalid_token(url):
     login_user = reg_user(url)
 
     r = requests.get(f"{url}/channel/details", params={'token': "", 'channel_id': channel_id['channel_id']})
-    payload = r.json
+    payload = r.json()
     assert payload['message'] == "Token does not exist"
     assert payload['code'] == 400
 
     r = requests.get(f"{url}/channel/details", params={'token': login_user['token'], 'channel_id': channel_id['channel_id']})
-    payload = r.json
+    payload = r.json()
     assert payload['message'] == "User is not authorised"
     assert payload['code'] == 400
 
@@ -225,7 +225,7 @@ def test_http_channel_details_success(url):
     channel_id = create_channel(url, login_owner)
 
     r = requests.get(f"{url}/channel/details", params={'token': login_owner['token'], 'channel_id': channel_id['channel_id']})
-    channel_details = r.json
+    channel_details = r.json()
     assert channel_details['name'] == "channel"
     assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
     assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
@@ -235,7 +235,7 @@ def test_http_channel_details_success(url):
     inv_user(url, login_owner, login_user, channel_id)
 
     r = requests.get(f"{url}/channel/details", params={'token': login_owner['token'], 'channel_id': channel_id['channel_id']})
-    channel_details = r.json
+    channel_details = r.json()
     assert channel_details['name'] == "channel"
     assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
     assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
@@ -352,7 +352,7 @@ def test_http_channel_addowner_success(url):
     requests.post(f"{url}/channel/addowner", json=make_user_owner)
 
     r = requests.get(f"{url}/channel/details", params={'token': login_owner['token'], 'channel_id': channel_id['channel_id']})
-    channel_details = r.json
+    channel_details = r.json()
     assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
 
 #tests http_channel_removeowner
@@ -466,7 +466,7 @@ def test_http_channel_removeowner_success(url):
     requests.post(f"{url}/channel/removeowner", json=remove_owner)
 
     r = requests.get(f"{url}/channel/details", params={'token': login_user['token'], 'channel_id': channel_id['channel_id']})
-    channel_details = r.json
+    channel_details = r.json()
     assert channel_details['owner_members'] == [{'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
 
 # Tests for channel_messages   
@@ -523,7 +523,7 @@ def test_http_channel_messages_one_message_success(url):
     msg_send(login_owner, channel_id, "example message")
 
     r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
-    message = r.json
+    message = r.json()
     assert message['start'] == 0
     assert message['end'] == -1
     assert message['messages'][0]['message_id'] == 1
@@ -545,12 +545,12 @@ def test_http_channel_messages_max_messages_success():
     }
 
     r = requests.get(f"{url}/channel/messages", json=messages)
-    message = r.json
+    message = r.json()
     assert message['start'] == 0
     assert message['end'] == 50
 
     r = requests.get(f"{url}/channel/messages", params={"token": login_owner["token"],"channel_id": channel_id["channel_id"],"start": 1})
-    message = r.json
+    message = r.json()
     assert message['start'] == 1
     assert message['end'] == -1
 
