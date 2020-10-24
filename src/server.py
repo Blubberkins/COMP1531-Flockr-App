@@ -55,5 +55,22 @@ def http_channel_removeowner():
     response = channel.channel_removeowner(data['token'], data['channel_id'], data['u_id'])
     return dumps(response)
 
+@app.route('/channel/messages', methods=['GET'])
+def http_channel_messages():
+    response = channel.channel_messages(request.args.get("token"), request.args.get("channel_id"), request.args.get("start"))
+    return dumps(response)
+
+@app.route('/channel/leave', methods=['POST'])
+def http_channel_leave():
+    data = request.get_json()
+    response = channel.channel_leave(data["token"], data["channel_id"])
+    return dumps(response)
+
+@app.route('/channel/join', methods=["POST"])
+def http_channel_join():
+    data = request.get_json()
+    response = channel.channel_join(data["token"], data["channel_id"])
+    return dumps(response)
+
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port
