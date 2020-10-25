@@ -3,6 +3,7 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
+import channel
 
 import message
 import auth
@@ -28,7 +29,7 @@ APP.config['TRAP_HTTP_EXCEPTIONS'] = True
 APP.register_error_handler(Exception, defaultHandler)
 
 # Example
-@APP.route("/echo", methods=['GET'])
+@APP.route("/echo", methods=['GET']) 
 def echo():
     data = request.args.get('data')
     if data == 'echo':
@@ -37,7 +38,45 @@ def echo():
         'data': data
     })
 
-<<<<<<< src/server.py
+@APP.route('/channel/invite', methods=['POST'])
+def http_channel_invite():
+    data = request.get_json()
+    response = channel.channel_invite(data['token'], data['channel_id'], data['u_id'])
+    return dumps(response)
+
+@APP.route('/channel/details', methods=['GET'])
+def http_channel_details():
+    response = channel.channel_details(request.args.get('token'), request.args.get('channel_id'))
+    return dumps(response)
+
+@APP.route('/channel/addowner', methods=['POST'])
+def http_channel_addowner():
+    data = request.get_json()
+    response = channel.channel_addowner(data['token'], data['channel_id'], data['u_id'])
+    return dumps(response)
+
+@APP.route('/channel/removeowner', methods=['POST'])
+def http_channel_removeowner():
+    data = request.get_json()
+    response = channel.channel_removeowner(data['token'], data['channel_id'], data['u_id'])
+    return dumps(response)
+
+@APP.route('/channel/messages', methods=['GET'])
+def http_channel_messages():
+    response = channel.channel_messages(request.args.get("token"), request.args.get("channel_id"), request.args.get("start"))
+    return dumps(response)
+
+@APP.route('/channel/leave', methods=['POST'])
+def http_channel_leave():
+    data = request.get_json()
+    response = channel.channel_leave(data["token"], data["channel_id"])
+    return dumps(response)
+
+@APP.route('/channel/join', methods=["POST"])
+def http_channel_join():
+    data = request.get_json()
+    response = channel.channel_join(data["token"], data["channel_id"])
+
 @APP.route("/message/send", methods=["POST"])
 def http_message_send():
     data = request.get_json()

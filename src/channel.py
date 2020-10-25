@@ -66,7 +66,7 @@ def channel_details(token, channel_id):
             token_true = True
             break
     if token_true == False:
-        raise AccessError("Authorised user is not part of this channel")
+        raise AccessError("User is not authorised")
 
     channel_details_dict = {'name' : channel['name'], 'owner_members' : channel['owner_members'], 'all_members' : channel['all_members']}
 
@@ -220,11 +220,11 @@ def channel_addowner(token, channel_id, u_id):
             token_true = True
             break
     if token_true == False:
-        raise AccessError("Authorised user is not an owner")
+        raise AccessError("User is not authorised")
    
     for members in channel['owner_members']:
         if members['u_id'] == u_id:
-            raise InputError("User is already an owner of this channel")
+            raise InputError("Target is already an owner of this channel")
 
     u_id_true = False
     for member in channel['all_members']:
@@ -232,7 +232,7 @@ def channel_addowner(token, channel_id, u_id):
             u_id_true = True
             break
     if u_id_true == False:
-        raise InputError("User is not part of the channel")
+        raise InputError("Target is not part of the channel")
 
     member_info = {'u_id' : member['u_id'], 'name_first' : member['name_first'], 'name_last' : member['name_last']}
     channel['owner_members'].append(member_info)
@@ -264,7 +264,7 @@ def channel_removeowner(token, channel_id, u_id):
             token_true = True
             break
     if token_true == False:
-        raise AccessError("Authorised user is not an owner")
+        raise AccessError("User is not authorised")
     
     is_owner = False
     for member in channel['owner_members']:
@@ -272,7 +272,7 @@ def channel_removeowner(token, channel_id, u_id):
             is_owner = True
             break
     if is_owner == False:
-        raise InputError("User is not an owner of this channel")
+        raise InputError("Target is not an owner of this channel")
 
     channel['owner_members'].remove(member)
 
