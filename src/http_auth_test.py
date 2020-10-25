@@ -70,7 +70,6 @@ def logout_user1(url, registered_user1):
     logout_user1 = {
         'token': registered_user1['token'],
     }
-
     r = requests.post(url + "auth/logout", json=logout_user1)
     return r.json()
 
@@ -78,14 +77,11 @@ def logout_user2(url, registered_user2):
     logout_user2 = {
         'token': registered_user2['token'],
     }
-
     r = requests.post(url + "auth/logout", json=logout_user2)
     return r.json()
 
 def test_url(url):
-    '''
-    A simple sanity test to check that your server is set up properly
-    '''
+    """Tests that the server has been set up properly."""
     assert url.startswith("http")
 
 # TEST FUNCTIONS FOR HTTP_AUTH_LOGIN
@@ -93,24 +89,8 @@ def test_url(url):
 def test_http_login_success(url):
     clear()
 
-    register_user1 = {
-        'email': "validemail@gmail.com",
-        'password': "python123",
-        'name_first': "New",
-        'name_last': "User"
-    }
-    r = requests.post(url + "auth/register", json=register_user1)
-    payload = r.json()
-    assert payload['u_id'] == 1
-
-    logout_user1 = {
-        'token': registered_user1['token'],
-    }
-
-    r = requests.post(url + "auth/logout", json=logout_user1)
-    payload = r.json()
-
-
+    registered_user1 = register_user1(url)
+    logout_user1(url, registered_user1)
     loggedin_user1 = login_user1(url)
     assert registered_user1["u_id"] == loggedin_user1["u_id"]
     assert registered_user1["token"] == loggedin_user1["token"]
@@ -132,10 +112,9 @@ def test_http_login_empty(url):
         'email': '',
         'password': '',
     }
-
     r = requests.post(url + "auth/login", json=empty_login)
     payload = r.json()
-    assert payload['message'] == "Invalid email"
+    assert payload['message'] == "<p>Invalid email</p>"
     assert payload['code'] == 400
 
 def test_http_login_invalid_email(url):
@@ -148,20 +127,18 @@ def test_http_login_invalid_email(url):
         'email': 'email',
         'password': '',
     }
-
-    r = requests.post(f"{url}/auth/login", json=invalid_email1)
+    r = requests.post(url + "auth/login", json=invalid_email1)
     payload = r.json()
-    assert payload['message'] == "Invalid email"
+    assert payload['message'] == "<p>Invalid email</p>"
     assert payload['code'] == 400
 
     invalid_email2 = {
         'email': 'email.com',
         'password': '',
     }
-
-    r = requests.post(f"{url}/auth/login", json=invalid_email2)
+    r = requests.post(url + "auth/login", json=invalid_email2)
     payload = r.json()
-    assert payload['message'] == "Invalid email"
+    assert payload['message'] == "<p>Invalid email</p>"
     assert payload['code'] == 400
 
 def test_http_login_unregistered_email(url):
@@ -174,9 +151,9 @@ def test_http_login_unregistered_email(url):
         'email': 'unusedemail@gmail.com',
         'password': 'python123',
     }
-    r = requests.post(f"{url}/auth/login", json=unregistered_email)
+    r = requests.post(url + "auth/login", json=unregistered_email)
     payload = r.json()
-    assert payload['message'] == "Invalid email or password"
+    assert payload['message'] == "<p>Invalid email or password</p>"
     assert payload['code'] == 400
 
 def test_http_login_invalid_password(url):
@@ -190,9 +167,9 @@ def test_http_login_invalid_password(url):
         'password' : '123python',
     }
 
-    r = requests.post(f"{url}/auth/login", json=incorrect_password)
+    r = requests.post(url + "auth/login", json=incorrect_password)
     payload = r.json()
-    assert payload['message'] == "Invalid email or password"
+    assert payload['message'] == "<p>Invalid email or password</p>"
     assert payload['code'] == 400
 
 # TEST FUNCTIONS FOR HTTP_AUTH_LOGOUT
@@ -202,8 +179,7 @@ def test_http_logout_success(url):
 
     registered_user1 = register_user1(url)
     loggedout_user1 = logout_user1(url, registered_user1)
-
-    assert loggedout_user1["is_success"] == [True]
+    assert loggedout_user1["is_success"] == True
 
 # Failure for logout
 def test_http_logout_failure(url):
@@ -213,28 +189,22 @@ def test_http_logout_failure(url):
     invalid_logout = {
         'token' : "invalid_token"
     }
-
-    r = requests.post(f"{url}/auth/login", json=invalid_logout)
+    r = requests.post(url + "auth/logout", json=invalid_logout)
     payload = r.json()
-
-    assert payload["is_success"] == [False]
+    assert payload["is_success"] == False
 
 # TEST FUNCTIONS FOR AUTH_REGISTER
 # Success for register
-
 def test_http_register_success(url):
     clear()
 
     registered_user1 = register_user1(url)
-
     assert registered_user1["u_id"] == 1
 
     registered_user2 = register_user2(url)
-
     assert registered_user2["u_id"] == 2
 
 # Failure for register
-
 def test_http_register_invalid_email(url):
     clear()
 
@@ -244,10 +214,8 @@ def test_http_register_invalid_email(url):
         'name_first' : "New",
         'name_last' : "User",
     }
-
-    r = requests.post(f"{url}/auth/register", json=register_invalid_email)
+    r = requests.post(url + "auth/register", json=register_invalid_email)
     payload = r.json()
-
     assert payload['message'] == "<p>Invalid email</p>"
     assert payload['code'] == 400
 
@@ -263,10 +231,8 @@ def test_http_register_already_used_email(url):
         'name_first' : "Old",
         'name_last' : "User",
     }
-    
-    r = requests.post(f"{url}/auth/register", json=register_existing_email)
+    r = requests.post(url + "auth/register", json=register_existing_email)
     payload = r.json()
-
     assert payload['message'] == "Email is already in use"
     assert payload['code'] == 400
 
@@ -279,10 +245,8 @@ def test_http_register_invalid_password(url):
         'name_first' : "New",
         'name_last' : "User",
     }
-
-    r = requests.post(f"{url}/auth/register", json=short_password)
+    r = requests.post(url + "auth/register", json=short_password)
     payload = r.json()
-
     assert payload['message'] == "<p>Invalid password</p>"
     assert payload['code'] == 400
 
@@ -292,10 +256,8 @@ def test_http_register_invalid_password(url):
         'name_first' : "New",
         'name_last' : "User",
     }
-
     r = requests.post(f"{url}/auth/register", json=no_password)
     payload = r.json()
-
     assert payload['message'] == "<p>Invalid password</p>"
     assert payload['code'] == 400
 
@@ -308,10 +270,8 @@ def test_http_register_invalid_first_name(url):
         'name_first' : "",
         'name_last' : "User",
     }
-
-    r = requests.post(f"{url}/auth/register", json=short_first_name)
+    r = requests.post(url + "auth/register", json=short_first_name)
     payload = r.json()
-
     assert payload['message'] == "<p>Invalid first name</p>"
     assert payload['code'] == 400
 
@@ -322,10 +282,8 @@ def test_http_register_invalid_first_name(url):
         'name_first' : "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
         'name_last' : "User",
     }
-
-    r = requests.post(f"{url}/auth/register", json=long_first_name)
+    r = requests.post(url + "auth/register", json=long_first_name)
     payload = r.json()
-
     assert payload['message'] == "<p>Invalid first name</p>"
     assert payload['code'] == 400
 
@@ -338,10 +296,8 @@ def test_http_register_invalid_last_name(url):
         'name_first' : "New",
         'name_last' : "",
     }
-
-    r = requests.post(f"{url}/auth/register", json=short_last_name)
+    r = requests.post(url + "auth/register", json=short_last_name)
     payload = r.json()
-
     assert payload['message'] == "<p>Invalid last name</p>"
     assert payload['code'] == 400
 
@@ -352,9 +308,7 @@ def test_http_register_invalid_last_name(url):
         'name_first' : "New",
         'name_last' : "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz",
     }
-
-    r = requests.post(f"{url}/auth/register", json=long_last_name)
+    r = requests.post(url + "auth/register", json=long_last_name)
     payload = r.json()
-
     assert payload['message'] == "<p>Invalid last name</p>"
     assert payload['code'] == 400
