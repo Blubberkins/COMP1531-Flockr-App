@@ -530,7 +530,7 @@ def test_http_channel_messages_one_message_success(url):
     assert message['messages'][0]['u_id'] == login_owner['u_id']
     assert message['messages'][0][0]['message'] == 'example message'
 
-def test_http_channel_messages_max_messages_success():
+def test_http_channel_messages_max_messages_success(url):
     clear()
     login_owner = reg_owner(url)
     channel_id = create_unique_channel(url, login_owner, "channel", True)
@@ -555,7 +555,7 @@ def test_http_channel_messages_max_messages_success():
     assert message['end'] == -1
 
 #tests for channel_leave
-def test_http_channel_leave_invalid_channel_id():
+def test_http_channel_leave_invalid_channel_id(url):
     clear()
     login_owner = reg_owner(url)
     create_unique_channel(url, login_owner, "channel", True)
@@ -570,7 +570,7 @@ def test_http_channel_leave_invalid_channel_id():
     assert payload["message"] == "Channel ID is not a valid channel"
     assert payload["code"] == 400
 
-def test_http_channel_leave_not_in_channel():
+def test_http_channel_leave_not_in_channel(url):
     clear()
     login_owner = reg_owner(url)
     login_user = reg_user(url)
@@ -598,7 +598,7 @@ def test_http_channel_leave_not_in_channel():
     assert payload["message"] == "Authorised user is not a member of channel with channel_id"
     assert payload["code"] == 400
 
-def test_http_channel_leave_success():
+def test_http_channel_leave_success(url):
     clear()
     login_owner = reg_owner(url)
     channel_id = create_unique_channel(url, login_owner, "channel", True)
@@ -615,7 +615,7 @@ def test_http_channel_leave_success():
     assert payload["channels"] == []
 
 #tests for channel_join
-def test_http_channel_join_invalid_channel_id():
+def test_http_channel_join_invalid_channel_id(url):
     clear()
     login_owner = reg_owner(url)
     login_user = reg_user(url)
@@ -633,7 +633,7 @@ def test_http_channel_join_invalid_channel_id():
     assert payload["message"] == "Channel ID is not a valid channel"
     assert payload["code"] == 400
 
-def test_http_channel_join_private_channel():
+def test_http_channel_join_private_channel(url):
     clear()
     login_owner = reg_owner(url)
     login_user = reg_user(url)
@@ -651,7 +651,7 @@ def test_http_channel_join_private_channel():
     assert payload["message"] == "Channel is private"
     assert payload["code"] == 400
 
-def test_http_public_channel_join_success():
+def test_http_public_channel_join_success(url):
     clear()
     login_owner = reg_owner(url)
     login_user = reg_user(url)
