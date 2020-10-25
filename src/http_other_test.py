@@ -104,7 +104,7 @@ def test_http_users_all_invalid_token(url):
     clear()
 
     r = requests.get(f"{url}/users/all", params={'token': "invalid_token"})
-    payload = r.json
+    payload = r.json()
     assert payload['message'] == "Token does not exist"
     assert payload['code'] == 400
 

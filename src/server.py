@@ -111,6 +111,7 @@ def http_auth_logout():
 def http_auth_register():
     data = request.get_json()
     response = auth.auth_register(data['email'], data['password'], data['name_first'], data['name_last'])
+    return dumps(response)
 
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
