@@ -32,19 +32,19 @@ def echo():
         'data': data
     })
 
-@app.route("/message/send", methods=["POST"])
+@APP.route("/message/send", methods=["POST"])
 def http_message_send():
     data = request.get_json()
     response = message.message_send(data["token"], data["channel_id"], data["message"])
     return dumps(response)
 
-@app.route("/message/remove", methods=['DELETE'])
+@APP.route("/message/remove", methods=['DELETE'])
 def http_message_remove():
     data = request.get_json()
     response = message.message_remove(data["token"], data["message_id"])
     return dumps(response)
 
-@app.route("/message/edit", methods=['PUT'])
+@APP.route("/message/edit", methods=['PUT'])
 def http_message_edit():
     data = request.get_json()
     response = message.message_edit(data['token'], data['message_id'], data['message'])
