@@ -233,7 +233,7 @@ def test_http_register_already_used_email(url):
     }
     r = requests.post(url + "auth/register", json=register_existing_email)
     payload = r.json()
-    assert payload['message'] == "Email is already in use"
+    assert payload['message'] == "<p>Email is already in use</p>"
     assert payload['code'] == 400
 
 def test_http_register_invalid_password(url):
