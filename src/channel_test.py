@@ -1,8 +1,8 @@
+import pytest
 import channel
 import channels
 import auth
 import message
-import pytest
 from other import clear
 from error import InputError
 from error import AccessError
