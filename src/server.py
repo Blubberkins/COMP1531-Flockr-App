@@ -3,6 +3,7 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
+import other
 import user
 import channels
 
@@ -32,6 +33,21 @@ def echo():
     return dumps({
         'data': data
     })
+
+@APP.route("/users/all", methods=['GET'])
+def http_users_all():
+    response = other.users_all(request.args.get('token'))
+    return dumps(response)
+
+@APP.route("/admin/userpermission/change", methods=['POST'])
+def http_admin_userpermission_change():
+    data = request.get_json()
+    response = other.admin_userpermission_change(data['token'], data['u_id'], data['permission_id'])
+    return dumps(response)
+
+@APP.route("/search", methods=['GET'])
+def http_search():
+    response = other.search(request.args.get('token'), request.args.get('query_str'))
 
 @APP.route("/user/profile", methods = ["GET"])
 def http_user_profile():
