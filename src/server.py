@@ -3,7 +3,8 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
-<<<<<<< src/server.py
+
+import message
 import auth
 import other
 import user
@@ -36,19 +37,38 @@ def echo():
         'data': data
     })
 
-@app.route('/auth/login', methods=['POST'])
+<<<<<<< src/server.py
+@APP.route("/message/send", methods=["POST"])
+def http_message_send():
+    data = request.get_json()
+    response = message.message_send(data["token"], data["channel_id"], data["message"])
+    return dumps(response)
+
+@APP.route("/message/remove", methods=['DELETE'])
+def http_message_remove():
+    data = request.get_json()
+    response = message.message_remove(data["token"], data["message_id"])
+    return dumps(response)
+
+@APP.route("/message/edit", methods=['PUT'])
+def http_message_edit():
+    data = request.get_json()
+    response = message.message_edit(data['token'], data['message_id'], data['message'])
+    return dumps(response)
+
+@APP.route('/auth/login', methods=['POST'])
 def http_auth_login():
     data = request.get_json()
     response = auth.auth_login(data['email'], data['password'])
     return dumps(response)
 
-@app.route('/auth/logout', methods=['POST'])
+@APP.route('/auth/logout', methods=['POST'])
 def http_auth_logout():
     data = request.get_json()
     response = auth.auth_logout(data['token'])
     return dumps(response)
 
-@app.route('/auth/register', methods=['POST'])
+@APP.route('/auth/register', methods=['POST'])
 def http_auth_register():
     data = request.get_json()
     response = auth.auth_register(data['email'], data['password'], data['name_first'], data['name_last'])
