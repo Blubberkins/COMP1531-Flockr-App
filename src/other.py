@@ -1,5 +1,10 @@
+from data import data
+
 def clear():
-    pass
+    global data
+    data["users"].clear()
+    data["channels"].clear()
+    data["members"].clear()
 
 def users_all(token):
     return {
@@ -13,6 +18,9 @@ def users_all(token):
             },
         ],
     }
+
+def admin_userpermission_change(token, u_id, permission_id):
+    pass
 
 def search(token, query_str):
     return {
