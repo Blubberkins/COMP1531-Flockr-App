@@ -96,6 +96,7 @@ def http_channel_leave():
 def http_channel_join():
     data = request.get_json()
     response = channel.channel_join(data["token"], data["channel_id"])
+    return dumps(response)
 
 # CHANNELS FUNCTIONS
 @APP.route("/channels/list", methods=['GET'])
@@ -148,6 +149,7 @@ def http_admin_userpermission_change():
 @APP.route("/search", methods=['GET'])
 def http_search():
     response = other.search(request.args.get('token'), request.args.get('query_str'))
+    return dumps(response)
 
 # USER FUNCTIONS
 @APP.route("/user/profile", methods = ["GET"])
@@ -172,6 +174,7 @@ def http_user_profile_setemail():
 def http_user_profile_sethandle():
     data = request.get_json()
     response = user.user_profile_sethandle(data["token"], data["handle"])
+    return dumps(response)
 
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port
