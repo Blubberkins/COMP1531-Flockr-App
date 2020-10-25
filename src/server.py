@@ -3,6 +3,8 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
+<<<<<<< src/server.py
+import auth
 import other
 import user
 import channels
@@ -33,6 +35,23 @@ def echo():
     return dumps({
         'data': data
     })
+
+@app.route('/auth/login', methods=['POST'])
+def http_auth_login():
+    data = request.get_json()
+    response = auth.auth_login(data['email'], data['password'])
+    return dumps(response)
+
+@app.route('/auth/logout', methods=['POST'])
+def http_auth_logout():
+    data = request.get_json()
+    response = auth.auth_logout(data['token'])
+    return dumps(response)
+
+@app.route('/auth/register', methods=['POST'])
+def http_auth_register():
+    data = request.get_json()
+    response = auth.auth_register(data['email'], data['password'], data['name_first'], data['name_last'])
 
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
