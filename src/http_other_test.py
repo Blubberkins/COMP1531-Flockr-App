@@ -49,7 +49,7 @@ def reg_owner(url):
         'name_first': "Owner",
         'name_last': "Test"
     }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
+    r = requests.post(url + "auth/register", json=register_owner)
     return r.json()
 
 # register user function
@@ -60,7 +60,7 @@ def reg_user(url):
         'name_first': "User",
         'name_last': "Test"
     }
-    r = requests.post(f"{url}/auth/register", json=register_user)
+    r = requests.post(url + "auth/register", json=register_user)
     return r.json()
 
 # join channel function
@@ -69,7 +69,7 @@ def join_channel(url, login_user, channel_id):
         'token': login_user['token'],
         'channel_id': channel_id['channel_id']
     }
-    requests.post(f"{url}/channel/join", json=join_public_channel)
+    requests.post(url + "channel/join", json=join_public_channel)
 
 # create public channel function
 def create_public_channel(url, login_owner, channel_name):
@@ -78,7 +78,7 @@ def create_public_channel(url, login_owner, channel_name):
         'name': channel_name,
         'is_public': True
     }
-    r = requests.post(f"{url}/channels/create", json=channels_create_public)
+    r = requests.post(url + "channels/create", json=channels_create_public)
     return r.json()
 
 # send message function
@@ -88,12 +88,12 @@ def send_message(url, login_user, channel_id, message):
         'channel_id': channel_id['channel_id'],
         'message': message
     }
-    r = requests.post(f"{url}/message/send", json=message_send)
+    r = requests.post(url + "message/send", json=message_send)
     return r.json()
 
 # search message function
-def search(login_user, query_str):
-    r = requests.get(f"{url}/search", params={'token': login_user['token'], 'query_str': query_str})
+def search(url, login_user, query_str):
+    r = requests.get(url + "search", params={'token': login_user['token'], 'query_str': query_str})
     return r.json()
 
 #
@@ -103,14 +103,14 @@ def search(login_user, query_str):
 def test_http_users_all_invalid_token(url):
     clear()
 
-    r = requests.get(f"{url}/users/all", params={'token': "invalid_token"})
+    r = requests.get(url + "users/all", params={'token': "invalid_token"})
     payload = r.json()
-    assert payload['message'] == "Token does not exist"
+    assert payload['message'] == "<p>Token does not exist</p>"
     assert payload['code'] == 400
 
-    r = requests.get(f"{url}/users/all", params={'token': ""})
+    r = requests.get(url + "users/all", params={'token': ""})
     payload = r.json
-    assert payload['message'] == "Token does not exist"
+    assert payload['message'] == "<p>Token does not exist</p>"
     assert payload['code'] == 400
 
 def test_http_users_all_successful(url):
@@ -118,13 +118,13 @@ def test_http_users_all_successful(url):
 
     login_owner = reg_owner(url)
 
-    r = requests.get(f"{url}/users/all", params={'token': login_owner['token']})
+    r = requests.get(url + "users/all", params={'token': login_owner['token']})
     all_users = r.json()
     assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}]
 
     login_user = reg_user(url)
 
-    r = requests.get(f"{url}/users/all", params={'token': login_owner['token']})
+    r = requests.get(url + "users/all", params={'token': login_owner['token']})
     all_users = r.json()
     assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}, {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest"}]
 
@@ -151,14 +151,14 @@ def test_http_admin_userpermission_change_invalid_id(url):
         'permission_id': invalid_id
     }
 
-    r = requests.post(f"{url}/admin/userpermission/change", json=invalid_u_id)
-    payload = r.json
-    assert payload['message'] == "Target does not exist"
+    r = requests.post(url + "admin/userpermission/change", json=invalid_u_id)
+    payload = r.json()
+    assert payload['message'] == "<p>Target does not exist</p>"
     assert payload['code'] == 400
 
-    r = requests.post(f"{url}/admin/userpermission/change", json=invalid_permission_id)
-    payload = r.json
-    assert payload['message'] == "Permission id is not valid"
+    r = requests.post(url + "admin/userpermission/change", json=invalid_permission_id)
+    payload = r.json()
+    assert payload['message'] == "<p>Permission id is not valid</p>"
     assert payload['code'] == 400
 
 def test_http_admin_userpermission_change_invalid_token(url):
@@ -179,14 +179,14 @@ def test_http_admin_userpermission_change_invalid_token(url):
         'permission_id': 2
     }
 
-    r = requests.post(f"{url}/admin/userpermission/change", json=empty_token)
-    payload = r.json
-    assert payload['message'] == "Token does not exist"
+    r = requests.post(url + "admin/userpermission/change", json=empty_token)
+    payload = r.json()
+    assert payload['message'] == "<p>Token does not exist</p>"
     assert payload['code'] == 400
 
-    r = requests.post(f"{url}/admin/userpermission/change", json=invalid_token)
-    payload = r.json
-    assert payload['message'] == "User is not authorised"
+    r = requests.post(url + "admin/userpermission/change", json=invalid_token)
+    payload = r.json()
+    assert payload['message'] == "<p>User is not authorised</p>"
     assert payload['code'] == 400
 
 def test_http_admin_userpermission_change_successful(url):
@@ -200,23 +200,23 @@ def test_http_admin_userpermission_change_successful(url):
         'u_id': login_user['u_id'],
         'permission_id': 1
     }
-    requests.post(f"{url}/admin/userpermission/change", json=make_user_owner)
+    requests.post(url + "admin/userpermission/change", json=make_user_owner)
 
     make_owner_user = {
         'token': login_user['token'],
         'u_id': login_owner['u_id'],
         'permission_id': 2
     }
-    requests.post(f"{url}/admin/userpermission/change", json=make_owner_user)
+    requests.post(url + "admin/userpermission/change", json=make_owner_user)
 
     owner_denied = {
         'token': login_owner['token'],
         'u_id': login_user['u_id'],
         'permission_id': 2
     }
-    r = requests.post(f"{url}/admin/userpermission/change", json=owner_denied)
+    r = requests.post(url + "admin/userpermission/change", json=owner_denied)
     payload = r.json()
-    assert payload['message'] == "User is not authorised"
+    assert payload['message'] == "<p>User is not authorised</p>"
     assert payload['code'] == 400
 
 #
