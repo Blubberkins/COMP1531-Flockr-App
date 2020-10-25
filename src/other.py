@@ -149,7 +149,7 @@ def search(token, query_str):
                         'message_id': x['message_id'],
                         'u_id': x['u_id'],
                         'message': x['message'],
-                        'time_created': x['time_created'],
+                        'time_created': x['time_created']
                     })
                     break
 
