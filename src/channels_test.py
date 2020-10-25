@@ -215,13 +215,13 @@ def test_channels_listall_not_join_one_private_channel():
 
     login_owner = auth.auth_register("validemail1@gmail.com", "password123", "New", "Owner") 
 
-    channels.channels_create(login_owner['token'], "channel 1", False)
+    channel_id = channels.channels_create(login_owner['token'], "channel", False)
 
     login_user = auth.auth_register("validemail2@gmail.com", "password123", "New", "User") 
 
     channels_listall = channels.channels_listall(login_user['token'])
 
-    assert channels_listall == {"channels" : [{'channel_id': 1, 'name': 'channel 1'}]}
+    assert channels_listall == {"channels" : [{"channel_id" : channel_id['channel_id'], "name" : "channel"}]}
 
 # Owner creates one private channel and user joins that channel
 def test_channels_listall_join_one_private_channel():
@@ -314,7 +314,7 @@ def test_channels_create_public_unsuccess():
 
     login = auth.auth_register("validemail@gmail.com", "password123", "New", "Owner")
 
-    with pytest.raises(InputError):
+    with pytest.raises(InputError) as e:
         channels.channels_create(login['token'], "abcdefghijklmnopqrstu", True)
     
 # Create one private channel successfully with channel name 20 characters long
@@ -336,5 +336,5 @@ def test_channels_create_private_unsuccess():
 
     login = auth.auth_register("validemail@gmail.com", "password123", "New", "Owner")
 
-    with pytest.raises(InputError):
+    with pytest.raises(InputError) as e:
         channels.channels_create(login['token'], "abcdefghijklmnopqrstu", False)
