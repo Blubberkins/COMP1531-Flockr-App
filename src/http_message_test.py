@@ -31,9 +31,7 @@ def url():
         raise Exception("Couldn't get URL from local server")
 
 def test_url(url):
-    '''
-    A simple sanity test to check that your server is set up properly
-    '''
+    """Tests that the server has been set up properly."""
     assert url.startswith("http")
 
 # Register owner function
@@ -45,7 +43,7 @@ def reg_owner(url):
         'name_first': "Owner",
         'name_last': "Test"
     }
-    r = requests.post(f"{url}/auth/register", json=register_owner)
+    r = requests.post(url + "auth/register", json=register_owner)
     return r.json()
 
 # Register user function
@@ -57,7 +55,7 @@ def reg_user(url):
         'name_first': "User",
         'name_last': "Test"
     }
-    r = requests.post(f"{url}/auth/register", json=register_user)
+    r = requests.post(url + "auth/register", json=register_user)
     return r.json()
 
 #create channel function
@@ -67,7 +65,7 @@ def create_channel(url, login_owner):
         'name': "channel",
         'is_public': True
     }
-    r = requests.post(f"{url}/channels/create", json=channels_create)
+    r = requests.post(url + "channels/create", json=channels_create)
     return r.json()
 
 #invite user function
@@ -77,7 +75,7 @@ def inv_user(url, login_owner, login_user, channel_id):
         'channel_id': channel_id['channel_id'],
         'u_id': login_user['u_id']
     }
-    requests.post(f"{url}/channel/invite", json=invite_user)
+    requests.post(url + "channel/invite", json=invite_user)
 
 #message send function
 def msg_send(url, user, channel, message):
@@ -86,7 +84,7 @@ def msg_send(url, user, channel, message):
         'channel_id': channel['channel_id'],
         'message': message
     }
-    requests.post(f"{url}/message/remove", json=message_send)
+    requests.post(url + "message/remove", json=message_send)
 
 #create unique channel function
 def create_unique_channel(url, user, name, is_public):
@@ -95,7 +93,7 @@ def create_unique_channel(url, user, name, is_public):
         'name': name,
         'is_public': is_public
     }
-    r = requests.post(f"{url}/channels/create", json=channel)
+    r = requests.post(url + "channels/create", json=channel)
     return r.json()
 
 # Tests for message_send
@@ -110,9 +108,9 @@ def test_http_message_send_input_error(url):
         "message": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure? On the other hand, we denounce"
     }
 
-    r = requests.post(f"{url}/message/send", json=large_string_1)
+    r = requests.post(url + "message/send", json=large_string_1)
     payload = r.json()
-    assert payload["message"] == "Message is larger than 1000 characters"
+    assert payload["message"] == "<p>Message is larger than 1000 characters</p>"
     assert payload["code"] == 400
 
     large_string_2 = {
@@ -121,9 +119,9 @@ def test_http_message_send_input_error(url):
         "message": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores e"
     }
 
-    r = requests.post(f"{url}/message/send", json=large_string_2)
+    r = requests.post(url + "message/send", json=large_string_2)
     payload = r.json()
-    assert payload["message"] == "Message is larger than 1000 characters"
+    assert payload["message"] == "<p>Message is larger than 1000 characters</p>"
     assert payload["code"] == 400
 
     large_string_3 = {
@@ -132,9 +130,9 @@ def test_http_message_send_input_error(url):
         "message": "Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musica, sport etc, litot Europa usa li sam vocabular. Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov lingua franca: On refusa continuar payar custosi traductores. At solmen va esser necessi far uniform grammatica, pronunciation e plu sommun paroles. Ma quande lingues coalesce, li grammatica del resultant lingue es plu simplic e regulari quam ti del coalescent lingues. Li nov lingua franca va esser plu simplic e regulari quam li existent Europan lingues. It va esser tam simplic quam Occidental in fact, it va esser Occidental. A un Angleso it va semblar un simplificat Angles, quam un skeptic Cambridge amico dit me que Occidental es. Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musica, sport etc, litot Europa usa li sam vocabular. Li lingues differe solmen in li g"
     }
 
-    r = requests.post(f"{url}/message/send", json=large_string_3)
+    r = requests.post(url + "message/send", json=large_string_3)
     payload = r.json()
-    assert payload["message"] == "Message is larger than 1000 characters"
+    assert payload["message"] == "<p>Message is larger than 1000 characters</p>"
     assert payload["code"] == 400
 
     non_existent_channel_id = {
@@ -143,9 +141,9 @@ def test_http_message_send_input_error(url):
         "message": "sample message"
     }
 
-    r = requests.post(f"{url}/message/send", json=non_existent_channel_id)
+    r = requests.post(url + "message/send", json=non_existent_channel_id)
     payload = r.json()
-    assert payload["message"] == "Invalid channel"
+    assert payload["message"] == "<p>Invalid channel</p>"
     assert payload["code"] == 400
 
 def test_http_message_send_access_error(url):
@@ -160,12 +158,12 @@ def test_http_message_send_access_error(url):
         "message": "sample message"
     }
 
-    r = requests.post(f"{url}/message/send", json=invalid_user)
+    r = requests.post(url + "message/send", json=invalid_user)
     payload = r.json()
-    assert payload["message"] == "The user has not joined the channel they are trying to post to"
+    assert payload["message"] == "<p>The user has not joined the channel they are trying to post to</p>"
     assert payload["code"] == 400
 
-def test_http_test_message_send_success(url):
+def test_http_message_send_success(url):
     clear()
     login_owner = reg_owner(url)
     channel_id = create_unique_channel(url, login_owner, "channel", True)
@@ -178,7 +176,7 @@ def test_http_test_message_send_success(url):
         "message": "sample message"
     }
 
-    r = requests.post(f"{url}/message/send", json=message_1)
+    r = requests.post(url + "message/send", json=message_1)
     payload = r.json()
     assert payload["message_id"] == 0
 
@@ -188,7 +186,7 @@ def test_http_test_message_send_success(url):
         "message": "sample message"
     }
 
-    r = requests.post(f"{url}/message/send", json=message_2)
+    r = requests.post(url + "message/send", json=message_2)
     payload = r.json()
     assert payload["message_id"] == 1
 
@@ -198,7 +196,7 @@ def test_http_test_message_send_success(url):
         "message": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores."
     }
 
-    r = requests.post(f"{url}/message/send", json=message_3)
+    r = requests.post(url + "message/send", json=message_3)
     payload = r.json()
     assert payload["message_id"] == 2
 
@@ -208,7 +206,7 @@ def test_http_test_message_send_success(url):
         "message": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores."
     }
 
-    r = requests.post(f"{url}/message/send", json=message_4)
+    r = requests.post(url + "message/send", json=message_4)
     payload = r.json()
     assert payload["message_id"] == 3
 
@@ -223,7 +221,7 @@ def test_message_remove_no_messages(url):
         "message_id": 1
     }
 
-    r = requests.delete(f'{url}/message/remove', json=no_messages)
+    r = requests.delete(url + 'message/remove', json=no_messages)
     payload = r.json()
 
     assert payload["message"] == "Message has already been deleted"
@@ -239,16 +237,16 @@ def test_http_message_remove_removed_message(url):
         "token": login_owner["token"],
         "message_id": 0
     }
-    requests.delete(f'{url}/message/remove', json=message_to_remove)
+    requests.delete(url + 'message/remove', json=message_to_remove)
 
     removed_message = {
         "token": login_owner["token"],
         "message_id": 0
     }
 
-    r = requests.delete(f'{url}/message/remove', json=removed_message)
+    r = requests.delete(url + 'message/remove', json=removed_message)
     payload = r.json()
-    assert payload["message"] == "Message has already been deleted"
+    assert payload["message"] == "<p>Message has already been deleted</p>"
     assert payload["code"] == 400
 
 def test_http_message_remove_not_message_sender(url):
@@ -263,9 +261,9 @@ def test_http_message_remove_not_message_sender(url):
         "message_id": 0
     }
 
-    r = requests.delete(f'{url}/message/remove', json=message_to_remove)
+    r = requests.delete(url + 'message/remove', json=message_to_remove)
     payload = r.json()
-    assert payload["message"] == "User is not a flock owner or the original user who sent the message"
+    assert payload["message"] == "<p>User is not a flock owner or the original user who sent the message</p>"
     assert payload["code"] == 400 
 
 def test_http_message_remove_admin_remove_success(url):
@@ -282,9 +280,9 @@ def test_http_message_remove_admin_remove_success(url):
         "message_id": 0
     }
 
-    requests.delete(f'{url}/message/remove', json=message_to_remove)
+    requests.delete(url + 'message/remove', json=message_to_remove)
 
-    r = requests.post(f'{url}/channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
+    r = requests.post(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
     assert payload["messages"] == []
 
@@ -302,9 +300,9 @@ def test_http_edit_1000_characters(url):
         "message": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure? On the other hand, we denounce"
     }
 
-    r = requests.put(f'{url}/message/edit', json=thousand_character)
+    r = requests.put(url + 'message/edit', json=thousand_character)
     payload = r.json()
-    assert payload["message"] == "Message is larger than 1000 characters"
+    assert payload["message"] == "<p>Message is larger than 1000 characters</p>"
     assert payload["code"] == 400
 
 def test_http_message_edit_not_message_sender(url):
@@ -322,9 +320,9 @@ def test_http_message_edit_not_message_sender(url):
         "message": "edited message"
     }
 
-    r = requests.put(f'{url}/message/edit', json=edit)
+    r = requests.put(url + 'message/edit', json=edit)
     payload = r.json()
-    assert payload["message"] == "User is not a flock owner or the original user who sent the message"
+    assert payload["message"] == "<p>User is not a flock owner or the original user who sent the message</p>"
     assert payload["code"] == 400
 
 def test_http_message_edit_owner_success(url):
@@ -341,11 +339,8 @@ def test_http_message_edit_owner_success(url):
         "message_id": 0,
         "message": "edited message"
     }
-    requests.put(f'{url}/message/edit', json=edit)
+    requests.put(url + 'message/edit', json=edit)
 
-    r = requests.get(f'{url}/channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
+    r = requests.get(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
     assert payload["messages"][0] == "edited message"
-
-
-
