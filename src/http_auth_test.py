@@ -38,7 +38,8 @@ def register_user1(url):
         'name_last': "User"
     }
     r = requests.post(f"{url}/auth/register", json=register_user1)
-    return r.json()
+    user = r.json()
+    return user
 
 def register_user2(url):
     register_user2 = {
