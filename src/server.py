@@ -38,6 +38,26 @@ def echo():
         'data': data
     })
 
+# AUTH FUNCTIONS
+@APP.route('/auth/login', methods=['POST'])
+def http_auth_login():
+    data = request.get_json()
+    response = auth.auth_login(data['email'], data['password'])
+    return dumps(response)
+
+@APP.route('/auth/logout', methods=['POST'])
+def http_auth_logout():
+    data = request.get_json()
+    response = auth.auth_logout(data['token'])
+    return dumps(response)
+
+@APP.route('/auth/register', methods=['POST'])
+def http_auth_register():
+    data = request.get_json()
+    response = auth.auth_register(data['email'], data['password'], data['name_first'], data['name_last'])
+    return dumps(response)
+
+# CHANNEL FUNCTIONS
 @APP.route('/channel/invite', methods=['POST'])
 def http_channel_invite():
     data = request.get_json()
@@ -77,6 +97,24 @@ def http_channel_join():
     data = request.get_json()
     response = channel.channel_join(data["token"], data["channel_id"])
 
+# CHANNELS FUNCTIONS
+@APP.route("/channels/list", methods=['GET'])
+def http_channels_list():
+    response = channels.channels_list(request.args.get('token'))
+    return dumps(response)
+
+@APP.route("/channels/listall", methods=['GET'])
+def http_channels_listall():
+    response = channels.channels_listall(request.args.get('token'))
+    return dumps(response)
+
+@APP.route("/channels/create", methods=['POST'])
+def http_channels_create():
+    data = request.get_json()
+    response = channels.channels_create(data['token'], data['name'], data['is_public'])
+    return dumps(response)
+
+# MESSAGE FUNCTIONS
 @APP.route("/message/send", methods=["POST"])
 def http_message_send():
     data = request.get_json()
@@ -95,24 +133,7 @@ def http_message_edit():
     response = message.message_edit(data['token'], data['message_id'], data['message'])
     return dumps(response)
 
-@APP.route('/auth/login', methods=['POST'])
-def http_auth_login():
-    data = request.get_json()
-    response = auth.auth_login(data['email'], data['password'])
-    return dumps(response)
-
-@APP.route('/auth/logout', methods=['POST'])
-def http_auth_logout():
-    data = request.get_json()
-    response = auth.auth_logout(data['token'])
-    return dumps(response)
-
-@APP.route('/auth/register', methods=['POST'])
-def http_auth_register():
-    data = request.get_json()
-    response = auth.auth_register(data['email'], data['password'], data['name_first'], data['name_last'])
-    return dumps(response)
-
+# OTHER FUNCTIONS
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
     response = other.users_all(request.args.get('token'))
@@ -128,6 +149,7 @@ def http_admin_userpermission_change():
 def http_search():
     response = other.search(request.args.get('token'), request.args.get('query_str'))
 
+# USER FUNCTIONS
 @APP.route("/user/profile", methods = ["GET"])
 def http_user_profile():
     token = request.args.get("token")
@@ -151,22 +173,5 @@ def http_user_profile_sethandle():
     data = request.get_json()
     response = user.user_profile_sethandle(data["token"], data["handle"])
 
-@APP.route("/channels/list", methods=['GET'])
-def http_channels_list():
-    response = channels.channels_list(request.args.get('token'))
-    return dumps(response)
-
-@APP.route("/channels/listall", methods=['GET'])
-def http_channels_listall():
-    response = channels.channels_listall(request.args.get('token'))
-    return dumps(response)
-
-@APP.route("/channels/create", methods=['POST'])
-def http_channels_create():
-    data = request.get_json()
-    response = channels.channels_create(data['token'], data['name'], data['is_public'])
-    return dumps(response)
-
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port
-
