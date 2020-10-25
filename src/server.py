@@ -4,6 +4,7 @@ from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
 import user
+import channels
 
 def defaultHandler(err):
     response = err.get_response()
@@ -54,7 +55,23 @@ def http_user_profile_setemail():
 def http_user_profile_sethandle():
     data = request.get_json()
     response = user.user_profile_sethandle(data["token"], data["handle"])
+
+@APP.route("/channels/list", methods=['GET'])
+def http_channels_list():
+    response = channels.channels_list(request.args.get('token'))
+    return dumps(response)
+
+@APP.route("/channels/listall", methods=['GET'])
+def http_channels_listall():
+    response = channels.channels_listall(request.args.get('token'))
+    return dumps(response)
+
+@APP.route("/channels/create", methods=['POST'])
+def http_channels_create():
+    data = request.get_json()
+    response = channels.channels_create(data['token'], data['name'], data['is_public'])
     return dumps(response)
 
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port
+
