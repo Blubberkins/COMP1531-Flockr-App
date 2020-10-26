@@ -100,7 +100,7 @@ def test_channel_messages_invalid_start_index():
     
     message.message_send(login_owner['token'], channel_id2, 'example message')
 
-    with pytest.raises(InputError) as e:
+    with pytest.raises(InputError):
         channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0)
         channel.channel_messages(login_owner['token'], channel_id2['channel_id'], 1)
 
@@ -108,7 +108,7 @@ def test_channel_messages_invalid_start_index():
 def test_channel_messages_invalid_channel():
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
-    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    channels.channels_create(login_owner['token'], "channel", True)
     invalid_channel_id = 1
 
     with pytest.raises(InputError):
@@ -123,7 +123,7 @@ def test_channel_messages_invalid_token():
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
     channel_id2 = channels.channels_create(login_owner['token'], "channel", False)
 
-    with pytest.raises(AccessError) as e:
+    with pytest.raises(AccessError):
         channel.channel_messages(login_user['token'], channel_id['channel_id'], 0)
         channel.channel_messages(login_owner['token'], channel_id2['channel_id'], 0)
 
@@ -147,8 +147,10 @@ def test_channel_messages_max_messages_success():
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)   
 
-    for x in range(50):
+    x = 0
+    while x < 50:
         message.message_send(login_owner['token'], channel_id['channel_id'], 'example message')
+        x += 1
     
     channel_messages = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0) 
     channel_messages2 = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 1) 

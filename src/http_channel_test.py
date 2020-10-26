@@ -532,8 +532,10 @@ def test_http_channel_messages_max_messages_success(url):
     login_owner = reg_owner(url)
     channel_id = create_unique_channel(url, login_owner, "channel", True)
 
-    for x in range(50):
+    x = 0
+    while x < 50:
         msg_send(url, login_owner, channel_id, "example message")
+        x += 1
 
     messages = {
         "token": login_owner["token"],
@@ -586,7 +588,7 @@ def test_http_channel_leave_not_in_channel(url):
     assert payload["code"] == 400
 
     invalid_user_2 = {
-        "token": user_owner["token"],
+        "token": login_user["token"],
         "channel_id": owner_channel["channel_id"]
     }
 
@@ -615,9 +617,9 @@ def test_http_channel_leave_success(url):
 def test_http_channel_join_invalid_channel_id(url):
     clear()
     login_owner = reg_owner(url)
-    login_user = reg_user(url)
+    reg_user(url)
 
-    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    create_unique_channel(url, login_owner, "channel", True)
 
     invalid_channel = {
         "token": login_owner["token"],

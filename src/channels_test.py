@@ -314,7 +314,7 @@ def test_channels_create_public_unsuccess():
 
     login = auth.auth_register("validemail@gmail.com", "password123", "New", "Owner")
 
-    with pytest.raises(InputError) as e:
+    with pytest.raises(InputError):
         channels.channels_create(login['token'], "abcdefghijklmnopqrstu", True)
     
 # Create one private channel successfully with channel name 20 characters long
@@ -336,5 +336,5 @@ def test_channels_create_private_unsuccess():
 
     login = auth.auth_register("validemail@gmail.com", "password123", "New", "Owner")
 
-    with pytest.raises(InputError) as e:
+    with pytest.raises(InputError):
         channels.channels_create(login['token'], "abcdefghijklmnopqrstu", False)
