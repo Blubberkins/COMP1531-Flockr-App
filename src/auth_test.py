@@ -2,6 +2,7 @@ import auth
 import pytest
 from error import InputError
 from other import clear
+import jwt
 
 # TEST FUNCTIONS FOR AUTH_LOGIN
 # Success for login
@@ -84,11 +85,11 @@ def test_logout_failure():
 def test_register_success():
     clear()
     register_user1 = auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
-    assert register_user1["token"] == "validemail@gmail.com"
+    assert register_user1["u_id"] == 1
     register_user2 = auth.auth_register("validemail2@gmail.com", "           ", "Firstname", "Lastname")
-    assert register_user2["token"] == "validemail2@gmail.com"
+    assert register_user2["u_id"] == 2
     register_user3 = auth.auth_register("validemail3@ourearth.org", "password123", "Firstname", "Lastname")
-    assert register_user3["token"] == "validemail3@ourearth.org"
+    assert register_user3["u_id"] == 3
 
 # Failure for register
 def test_register_invalid_email():
