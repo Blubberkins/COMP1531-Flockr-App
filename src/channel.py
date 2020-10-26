@@ -115,6 +115,10 @@ def channel_messages(token, channel_id, start):
     returnDict["messages"] = []
     returnDict["start"] = start
     returnDict["end"] = start + 50
+    # Add items to dictionary
+    for message in data["messages"]:
+        if message["channel_id"] == channel_id:
+            returnDict["messages"].append(message)
     if len(returnDict["messages"]) < 50:
         returnDict["end"] = -1
 
