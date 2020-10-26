@@ -16,11 +16,11 @@ def test_user_profile_success1():
     user_info = user.user_profile(token, u_id)
     return_user = {
         "user": {
-            "u_id": 1,
-            "email": "validemail@gmail.com",
-            "name_first": "New",
-            "name_last": "User",
-            "handle_str": "newuser",
+            "u_id" : 1,
+            "email" : "validemail@gmail.com",
+            "name_first" : "New",
+            "name_last" : "User",
+            "handle_str" : "newuser",
         }
     }
     assert user_info["user"] == return_user["user"]
@@ -36,11 +36,11 @@ def test_user_profile_success2():
     user_info = user.user_profile(user1_token, user2_u_id) 
     return_user = {
         "user": {
-            "u_id": 2,
-            "email": "pythonthings@gmail.com",
-            "name_first": "Python",
-            "name_last": "Programmer",
-            "handle_str": "pythonprogrammer",
+            "u_id" : 2,
+            "email" : "pythonthings@gmail.com",
+            "name_first" : "Python",
+            "name_last" : "Programmer",
+            "handle_str" : "pythonprogrammer",
         }
     }
     assert user_info["user"] == return_user["user"]
