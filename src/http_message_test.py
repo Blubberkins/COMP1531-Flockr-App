@@ -211,7 +211,7 @@ def test_http_message_send_success(url):
     assert payload["message_id"] == 3
 
 # Tests for message_remove
-def test_message_remove_no_messages(url):
+def test_http_message_remove_no_messages(url):
     clear()
     login_owner = reg_owner(url)
     create_unique_channel(url, login_owner, "channel", True)
@@ -224,7 +224,7 @@ def test_message_remove_no_messages(url):
     r = requests.delete(url + 'message/remove', json=no_messages)
     payload = r.json()
 
-    assert payload["message"] == "Message has already been deleted"
+    assert payload["message"] == "<p>Message has already been deleted</p>"
     assert payload["code"] == 400
 
 def test_http_message_remove_removed_message(url):

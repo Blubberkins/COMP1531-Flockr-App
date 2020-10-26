@@ -148,7 +148,7 @@ def test_channel_messages_max_messages_success():
     channel_id = channels.channels_create(login_owner['token'], "channel", True)   
 
     x = 0
-    while x < 49:
+    while x < 50:
         message.message_send(login_owner['token'], channel_id['channel_id'], 'example message')
         x += 1
     
