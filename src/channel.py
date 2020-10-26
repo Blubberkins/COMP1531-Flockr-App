@@ -89,7 +89,7 @@ def channel_messages(token, channel_id, start):
     # Check token
     isValidToken = False
     u_id = -1
-    for user in data["user"]:
+    for user in data["users"]:
         if user["token"] == token:
             u_id = user["u_id"]
             break
