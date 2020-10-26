@@ -464,7 +464,7 @@ def test_http_channel_removeowner_success(url):
 
     r = requests.get(url + "channel/details", params={'token': login_user['token'], 'channel_id': channel_id['channel_id']})
     channel_details = r.json()
-    assert channel_details['owner_members'] == [{'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id': login_user['u_id'], 'name_first': 'User', 'name_last': 'Test'}]
 
 # Tests for channel_messages   
 def test_http_channel_messages_invalid_start_index(url):

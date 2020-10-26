@@ -70,11 +70,7 @@ def inv_user(url, login_owner, channel_id, login_user):
 
 # show channel details function
 def chan_details(url, login_user, channel_id):
-    channel_details = {
-        'token': login_user['token'],
-        'channel_id': channel_id['channel_id']
-    }
-    r = requests.get(url + "channel/details", json=channel_details)
+    r = requests.get(url + "channel/details", params={'token': login_user['token'],'channel_id': channel_id['channel_id']})
     return r.json()
 
 # join channel function
@@ -107,19 +103,13 @@ def create_private_channel(url, login_owner, channel_name):
     return r.json()
 
 # list channels function
-def list_channels(url, login_user):
-    channels_list = {
-        'token': login_user['token']
-    }
-    r = requests.get(url + "channels/list", json=channels_list)
+def list_channels(url, login_user): 
+    r = requests.get(url + "channels/list", params={'token': login_user['token']})
     return r.json()
 
 # list all channels function
 def listall_channels(url, login_user):
-    channels_listall = {
-        'token': login_user['token']
-    }
-    r = requests.get(url + "channels/listall", json=channels_listall)
+    r = requests.get(url + "channels/listall", params={'token': login_user['token']})
     return r.json()
 
 
@@ -146,7 +136,7 @@ def test_http_channels_list_create_one_public_channel(url):
     channel_id = create_public_channel(url, login_owner, "channel")
     channels_list = list_channels(url, login_owner)
 
-    assert channels_list == {"channels" : [{"channel_id" : channel_id['channel_id'], "name" : "channel"}]}
+    assert channels_list["channels"] == [{"channel_id": channel_id['channel_id'], "name": "channel"}]
 
 # Owner creates one private channel
 def test_http_channels_list_create_one_private_channel(url):
