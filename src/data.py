@@ -12,29 +12,29 @@ data = {
         #}
     ],
     "channels" : [
-        {
+        #{
             # "channel_id": 1,
             # "name" : 'channel1',
             # "is_public" : True
             # "owner_members" : [{u_id : , name_first : , name_last : },...]
             # "all_members" : [{u_id : , name_first : , name_last : },...]
-        }
+        #}
     ],
     "members" : [
-        {
+        #{
             # "u_id" :,
             # "name_first" :,
             # "name_last" :,
-        }
+        #}
     ],
     "messages": [
-        {
+        #{
             # "message_id":,
             # "u_id":,
             # "message":,
             # "time_created":,
             # "channel_id":,
-        }    
+        #}    
     ],
-    "num_messages":
+    "num_messages": 0,
 }
