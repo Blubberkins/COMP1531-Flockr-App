@@ -30,6 +30,7 @@ def url():
         server.kill()
         raise Exception("Couldn't get URL from local server")
 
+# Register users
 def register_user1(url):
     register_user1 = {
         'email': "validemail@gmail.com",
