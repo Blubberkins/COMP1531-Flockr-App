@@ -138,7 +138,7 @@ def test_channel_messages_one_message_success():
 
     assert channel_messages['start'] == 0
     assert channel_messages['end'] == -1
-    assert channel_messages['messages'][0]['message_id'] == 1
+    assert channel_messages['messages'][0]['message_id'] == 0
     assert channel_messages['messages'][0]['u_id'] == login_owner['u_id']
     assert channel_messages['messages'][0]['message'] == 'example message'
 
@@ -148,7 +148,7 @@ def test_channel_messages_max_messages_success():
     channel_id = channels.channels_create(login_owner['token'], "channel", True)   
 
     x = 0
-    while x < 50:
+    while x < 49:
         message.message_send(login_owner['token'], channel_id['channel_id'], 'example message')
         x += 1
     
