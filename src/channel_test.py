@@ -156,7 +156,7 @@ def test_channel_messages_max_messages_success():
     assert channel_messages['start'] == 0
     assert channel_messages['end'] == 50
     assert channel_messages2['start'] == 1
-    assert channel_messages2['end'] == 51
+    assert channel_messages2['end'] == -1
 
 
 # Tests for channel_leave
