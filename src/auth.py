@@ -19,7 +19,6 @@ def encode_jwt(email):
     non_encoded_token = {'email' : email}
     token = jwt.encode(non_encoded_token, SECRET, algorithm ='HS256').decode('utf-8')
     return token
-#print(encode_jwt("hi"))
 
 def decode_jwt(token):
     SECRET = "COMP1531"
