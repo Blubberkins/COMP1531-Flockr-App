@@ -48,7 +48,7 @@ def message_send(token, channel_id, message):
     return_dict["channel_id"] = channel_id
     data["messages"].append(return_dict)
     # Remove channel_id key for return value
-    return_dict.pop("channel_id")
+    #return_dict.pop("channel_id")
     data["num_messages"] += 1
     return return_dict
 

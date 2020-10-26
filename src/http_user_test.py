@@ -128,6 +128,7 @@ def test_http_user_profile_setname_invalid_firstname(url):
     }
     requests.put(url + "user/profile/setname", json=empty_name_first)
     payload = get_user_profile(url, login_user["token"], login_user["u_id"])
+    print(payload)
     assert payload["message"] == "<p>Invalid first name</p>"
     assert payload["code"] == 400
 

@@ -8,6 +8,7 @@ import requests
 from error import InputError
 from error import AccessError
 from other import clear
+import data
 
 # Use this fixture to get the URL of the server.
 @pytest.fixture

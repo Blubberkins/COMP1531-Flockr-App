@@ -3,13 +3,16 @@ from json import dumps
 from flask import Flask, request
 from flask_cors import CORS
 from error import InputError
-import channel
 
-import message
+import data 
+
 import auth
+import channel
+import channels
+import message
 import other
 import user
-import channels
+
 
 def defaultHandler(err):
     response = err.get_response()
@@ -66,7 +69,9 @@ def http_channel_invite():
 
 @APP.route('/channel/details', methods=['GET'])
 def http_channel_details():
-    response = channel.channel_details(request.args.get('token'), request.args.get('channel_id'))
+    token = request.args.get('token')
+    channel_id = int(request.args.get('channel_id'))
+    response = channel.channel_details(token, channel_id)
     return dumps(response)
 
 @APP.route('/channel/addowner', methods=['POST'])
@@ -83,7 +88,10 @@ def http_channel_removeowner():
 
 @APP.route('/channel/messages', methods=['GET'])
 def http_channel_messages():
-    response = channel.channel_messages(request.args.get("token"), request.args.get("channel_id"), request.args.get("start"))
+    token = request.args.get("token")
+    channel_id = int(request.args.get("channel_id"))
+    start =  int(request.args.get("start"))
+    response = channel.channel_messages(token, channel_id, start)
     return dumps(response)
 
 @APP.route('/channel/leave', methods=['POST'])
@@ -155,7 +163,7 @@ def http_search():
 @APP.route("/user/profile", methods = ["GET"])
 def http_user_profile():
     token = request.args.get("token")
-    u_id = request.args.get("u_id")
+    u_id = int(request.args.get("u_id"))
     return dumps(user.user_profile(token, u_id))
 
 @APP.route("/user/profile/setname", methods = ["PUT"])

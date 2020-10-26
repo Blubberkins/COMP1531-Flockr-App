@@ -98,7 +98,7 @@ def test_channel_messages_invalid_start_index():
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
     channel_id2 = channels.channels_create(login_owner['token'], "channel", True)
     
-    message.message_send(login_owner['token'], channel_id2, 'example message')
+    message.message_send(login_owner['token'], channel_id2["channel_id"], 'example message')
 
     with pytest.raises(InputError):
         channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0)
