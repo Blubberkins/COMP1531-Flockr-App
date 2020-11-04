@@ -71,9 +71,9 @@ def test_search_empty():
     login = auth.auth_register("user@email.com", "password123", "User", "Test")
 
     channel_id = channels.channels_create(login['token'], "channel", True)
-    message.message_send(login['token'], channel_id, "message")
+    message.message_send(login['token'], channel_id["channel_id"], "message")
 
-    assert other.search(login['token'], "") == {'messages': []}
+    assert other.search(login['token'], " ") == {'messages': []}
 
 def test_search_own_channel_single_message_complete():
     """Tests for success when user creates their own channel, sends a message, and searches for the complete message"""
@@ -82,11 +82,11 @@ def test_search_own_channel_single_message_complete():
     login = auth.auth_register("user@email.com", "password123", "User", "Test")
 
     channel_id = channels.channels_create(login['token'], "channel", True)
-    message_id = message.message_send(login['token'], channel_id, "message")
+    message_id = message.message_send(login['token'], channel_id["channel_id"], "message")
 
     search_results = other.search(login['token'], "message")
 
-    assert search_results['messages'][0]['message_id'] == message_id
+    assert search_results['messages'][0]['message_id'] == message_id["message_id"]
     assert search_results['messages'][0]['u_id'] == login['u_id']
     assert search_results['messages'][0]['message'] == "message"
 
@@ -97,11 +97,11 @@ def test_search_own_channel_single_message_incomplete():
     login = auth.auth_register("user@email.com", "password123", "User", "Test")
 
     channel_id = channels.channels_create(login['token'], "channel", True)
-    message_id = message.message_send(login['token'], channel_id, "message")
+    message_id = message.message_send(login['token'], channel_id["channel_id"], "message")
 
     search_results = other.search(login['token'], "ess")
 
-    assert search_results['messages'][0]['message_id'] == message_id
+    assert search_results['messages'][0]['message_id'] == message_id["message_id"]
     assert search_results['messages'][0]['u_id'] == login['u_id']
     assert search_results['messages'][0]['message'] == "message"
 
@@ -115,11 +115,11 @@ def test_search_other_channel_single_message_complete():
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
     channel.channel_join(login_user['token'], channel_id['channel_id'])
 
-    message_id = message.message_send(login_owner['token'], channel_id, "message")
+    message_id = message.message_send(login_owner['token'], channel_id["channel_id"], "message")
 
     search_results = other.search(login_user['token'], "message")
 
-    assert search_results['messages'][0]['message_id'] == message_id
+    assert search_results['messages'][0]['message_id'] == message_id["message_id"]
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
 
@@ -133,11 +133,11 @@ def test_search_other_channel_single_message_incomplete():
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
     channel.channel_join(login_user['token'], channel_id['channel_id'])
 
-    message_id = message.message_send(login_owner['token'], channel_id, "message")
+    message_id = message.message_send(login_owner['token'], channel_id["channel_id"], "message")
 
     search_results = other.search(login_user['token'], "ess")
 
-    assert search_results['messages'][0]['message_id'] == message_id
+    assert search_results['messages'][0]['message_id'] == message_id["message_id"]
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
 
@@ -153,15 +153,15 @@ def test_search_both_channels_two_messages_complete():
 
     channel_id2 = channels.channels_create(login_user['token'], "channel2", True)
 
-    message_id1 = message.message_send(login_owner['token'], channel_id1, "message")
-    message_id2 = message.message_send(login_user['token'], channel_id2, "message")
+    message_id1 = message.message_send(login_owner['token'], channel_id1["channel_id"], "message")
+    message_id2 = message.message_send(login_user['token'], channel_id2["channel_id"], "message")
 
     search_results = other.search(login_user['token'], "message")
 
-    assert search_results['messages'][0]['message_id'] == message_id1
+    assert search_results['messages'][0]['message_id'] == message_id1["message_id"]
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
-    assert search_results['messages'][1]['message_id'] == message_id2
+    assert search_results['messages'][1]['message_id'] == message_id2["message_id"]
     assert search_results['messages'][1]['u_id'] == login_user['u_id']
     assert search_results['messages'][1]['message'] == "message"
 
@@ -177,17 +177,17 @@ def test_search_both_channels_two_messages_incomplete():
 
     channel_id2 = channels.channels_create(login_user['token'], "channel2", True)
 
-    message_id1 = message.message_send(login_owner['token'], channel_id1, "message")
-    message_id2 = message.message_send(login_user['token'], channel_id2, "messages")
+    message_id1 = message.message_send(login_owner['token'], channel_id1["channel_id"], "message")
+    message_id2 = message.message_send(login_user['token'], channel_id2["channel_id"], "messages")
 
     search_results = other.search(login_user['token'], "ess")
 
-    assert search_results['messages'][0]['message_id'] == message_id1
+    assert search_results['messages'][0]['message_id'] == message_id1["message_id"]
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
-    assert search_results['messages'][1]['message_id'] == message_id2
+    assert search_results['messages'][1]['message_id'] == message_id2["message_id"]
     assert search_results['messages'][1]['u_id'] == login_user['u_id']
-    assert search_results['messages'][1]['message'] == "message"
+    assert search_results['messages'][1]['message'] == "messages"
 
 def test_search_own_channel_single_message_excluding_other_channel():
     """Tests for success when owner creates a channel but user does not join, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches the messages"""
@@ -199,11 +199,11 @@ def test_search_own_channel_single_message_excluding_other_channel():
     channel_id1 = channels.channels_create(login_owner['token'], "channel1", True)
     channel_id2 = channels.channels_create(login_user['token'], "channel2", True)
 
-    message.message_send(login_owner['token'], channel_id1, "message")
-    message_id2 = message.message_send(login_user['token'], channel_id2, "message")
+    message.message_send(login_owner['token'], channel_id1["channel_id"], "message")
+    message_id2 = message.message_send(login_user['token'], channel_id2["channel_id"], "message")
 
     search_results = other.search(login_user['token'], "message")
 
-    assert search_results['messages'][0]['message_id'] == message_id2
+    assert search_results['messages'][0]['message_id'] == message_id2["message_id"]
     assert search_results['messages'][0]['u_id'] == login_user['u_id']
     assert search_results['messages'][0]['message'] == "message"

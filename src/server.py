@@ -181,7 +181,7 @@ def http_user_profile_setemail():
 @APP.route("/user/profile/sethandle", methods = ["PUT"])
 def http_user_profile_sethandle():
     data = request.get_json()
-    response = user.user_profile_sethandle(data["token"], data["handle"])
+    response = user.user_profile_sethandle(data["token"], data["handle_str"])
     return dumps(response)
 
 if __name__ == "__main__":

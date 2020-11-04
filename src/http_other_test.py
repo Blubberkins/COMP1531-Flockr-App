@@ -312,7 +312,7 @@ def test_http_search_both_channels_two_messages_complete(url):
     channel_id1 = create_public_channel(url, login_owner, "channel 1")
     join_channel(url, login_user, channel_id1)
 
-    channel_id2 = create_public_channel(url, login_owner, "channel 2")
+    channel_id2 = create_public_channel(url, login_user, "channel 2")
 
     message_id1 = send_message(url, login_owner, channel_id1, "message")
     message_id2 = send_message(url, login_user, channel_id2, "message")
@@ -322,9 +322,9 @@ def test_http_search_both_channels_two_messages_complete(url):
     assert search_results['messages'][0]['message_id'] == message_id1['message_id']
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
-    assert search_results['messages'][0]['message_id'] == message_id2['message_id']
-    assert search_results['messages'][0]['u_id'] == login_user['u_id']
-    assert search_results['messages'][0]['message'] == "message"
+    assert search_results['messages'][1]['message_id'] == message_id2['message_id']
+    assert search_results['messages'][1]['u_id'] == login_user['u_id']
+    assert search_results['messages'][1]['message'] == "message"
 
 def test_http_search_both_channels_two_messages_incomplete(url):
     """Tests for success when owner creates a channel, user joins the channel, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches for part of the messages"""
@@ -336,7 +336,7 @@ def test_http_search_both_channels_two_messages_incomplete(url):
     channel_id1 = create_public_channel(url, login_owner, "channel 1")
     join_channel(url, login_user, channel_id1)
 
-    channel_id2 = create_public_channel(url, login_owner, "channel 2")
+    channel_id2 = create_public_channel(url, login_user, "channel 2")
 
     message_id1 = send_message(url, login_owner, channel_id1, "message")
     message_id2 = send_message(url, login_user, channel_id2, "message")
@@ -346,9 +346,9 @@ def test_http_search_both_channels_two_messages_incomplete(url):
     assert search_results['messages'][0]['message_id'] == message_id1['message_id']
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
-    assert search_results['messages'][0]['message_id'] == message_id2['message_id']
-    assert search_results['messages'][0]['u_id'] == login_user['u_id']
-    assert search_results['messages'][0]['message'] == "message"
+    assert search_results['messages'][1]['message_id'] == message_id2['message_id']
+    assert search_results['messages'][1]['u_id'] == login_user['u_id']
+    assert search_results['messages'][1]['message'] == "message"
 
 def test_http_search_own_channel_single_message_excluding_other_channel(url):
     """Tests for success when owner creates a channel but user does not join, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches the messages"""
