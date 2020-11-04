@@ -84,7 +84,7 @@ def msg_send(url, user, channel, message):
         'channel_id': channel['channel_id'],
         'message': message
     }
-    requests.post(url + "message/remove", json=message_send)
+    requests.post(url + "message/send", json=message_send)
 
 #create unique channel function
 def create_unique_channel(url, user, name, is_public):
@@ -168,7 +168,7 @@ def test_http_message_send_success(url):
     login_owner = reg_owner(url)
     channel_id = create_unique_channel(url, login_owner, "channel", True)
     login_user = reg_user(url)
-    inv_user(url, login_owner, login_user, channel_id["channel_id"])
+    inv_user(url, login_owner, login_user, channel_id)
 
     message_1 = {
         "token": login_owner["token"],
@@ -282,9 +282,11 @@ def test_http_message_remove_admin_remove_success(url):
 
     requests.delete(url + 'message/remove', json=message_to_remove)
 
-    r = requests.post(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
+    r = requests.get(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
-    assert payload["messages"] == []
+    print(payload)
+    assert payload["message"] == "<p>Start is greater than the total number of messages in the channel</p>"
+    assert payload["code"] == 400
 
 # Tests for message_edit
 def test_http_edit_1000_characters(url):
@@ -292,7 +294,7 @@ def test_http_edit_1000_characters(url):
     login_owner = reg_owner(url)
     channel_id = create_unique_channel(url, login_owner, "channel", True)
 
-    msg_send(url, login_owner, channel_id["channel_id"], "example_message")
+    msg_send(url, login_owner, channel_id, "example_message")
 
     thousand_character = {
         "token": login_owner["token"],
@@ -315,7 +317,7 @@ def test_http_message_edit_not_message_sender(url):
     msg_send(url, login_owner, channel_id, "example_message")
 
     edit = {
-        "token": login_user("token"),
+        "token": login_user["token"],
         "message_id": 0,
         "message": "edited message"
     }
@@ -335,7 +337,7 @@ def test_http_message_edit_owner_success(url):
     msg_send(url, login_user, channel_id, "example_message")
 
     edit = {
-        "token": login_owner("token"),
+        "token": login_owner["token"],
         "message_id": 0,
         "message": "edited message"
     }
@@ -343,4 +345,5 @@ def test_http_message_edit_owner_success(url):
 
     r = requests.get(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
-    assert payload["messages"][0] == "edited message"
+    print(payload)
+    assert payload["messages"][0]["message"] == "edited message"
