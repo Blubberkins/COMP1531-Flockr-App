@@ -37,16 +37,18 @@ def message_send(token, channel_id, message):
         raise AccessError("The user has not joined the channel they are trying to post to")
 
     # Add message
-    return_dict = {}
+    message_dict = {}
     current_time = datetime.now()
     current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
-    return_dict["time_created"] = current_time
+    message_dict["time_created"] = current_time
+    message_dict["message_id"] = data["num_messages"]
+    return_dict = {}
     return_dict["message_id"] = data["num_messages"]
-    return_dict["u_id"] = u_id
-    return_dict["message"] = message
+    message_dict["u_id"] = u_id
+    message_dict["message"] = message
     # Add channel_id data for database
-    return_dict["channel_id"] = channel_id
-    data["messages"].append(return_dict)
+    message_dict["channel_id"] = channel_id
+    data["messages"].append(message_dict)
     # Remove channel_id key for return value
     #return_dict.pop("channel_id")
     data["num_messages"] += 1
@@ -57,10 +59,10 @@ def message_remove(token, message_id):
     # Check Input Error
     does_message_exist = False
     message_index = 0
-    for messages in data["messages"]:
-        if messages["message_id"] == message_id:
+    for x in range(len(data["messages"])):
+        if data["messages"][x]["message_id"] == message_id:
             does_message_exist = True
-            message_index = messages
+            message_index = x
             break
     if not does_message_exist:
         raise InputError("Message has already been deleted")
@@ -100,9 +102,10 @@ def message_edit(token, message_id, message):
             break
     message_owner_or_flock_owner = False
     message_index = -1
-    for messages in data["messages"]:
-        if messages["message_id"] == message_id:
-            message_index = messages
+    for x in range(len(data["messages"])):
+        if data["messages"][x]["message_id"] == message_id:
+            does_message_exist = True
+            message_index = x
             break
     if data["messages"][message_index]["u_id"] == u_id:
         message_owner_or_flock_owner = True
