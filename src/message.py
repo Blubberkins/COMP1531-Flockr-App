@@ -84,8 +84,7 @@ def message_remove(token, message_id):
         raise AccessError("User is not a flock owner or the original user who sent the message")
 
     data["messages"].pop(message_index)
-    return {
-    }
+    return {}
 
 def message_edit(token, message_id, message):
     # Check message length
@@ -104,7 +103,6 @@ def message_edit(token, message_id, message):
     message_index = -1
     for x in range(len(data["messages"])):
         if data["messages"][x]["message_id"] == message_id:
-            does_message_exist = True
             message_index = x
             break
     if data["messages"][message_index]["u_id"] == u_id:
@@ -117,6 +115,5 @@ def message_edit(token, message_id, message):
     if message == "":
         return message_remove(token, message_id)
     data["messages"][message_index]["message"] = message
-    return {
-    }
+    return {}
     

@@ -76,11 +76,9 @@ def channel_messages(token, channel_id, start):
     global data
     # Check channel_id
     isValidChannel = False
-    channel_index = -1
     for x in range(len(data["channels"])):
         if data["channels"][x]["channel_id"] == channel_id:
             isValidChannel = True
-            channel_index = x 
             break
 
     if not isValidChannel:
