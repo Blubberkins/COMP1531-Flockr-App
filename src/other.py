@@ -63,7 +63,7 @@ def admin_userpermission_change(token, u_id, permission_id):
     """
     global data
 
-    if permission_id != 1 or permission_id != 2:
+    if permission_id != 1 and permission_id != 2:
         raise InputError("Permission id is not valid")
 
     token_exist = False
