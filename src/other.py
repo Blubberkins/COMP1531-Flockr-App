@@ -63,6 +63,9 @@ def admin_userpermission_change(token, u_id, permission_id):
     """
     global data
 
+    if permission_id != 1 and permission_id != 2:
+        raise InputError("Permission id is not valid")
+
     token_exist = False
     for user in data['users']:
         if user['token'] == token:
@@ -71,10 +74,7 @@ def admin_userpermission_change(token, u_id, permission_id):
     if token_exist == False:
         raise AccessError("Token does not exist")
     
-    token_true = False
-    if user['permission_id'] == 1:
-        token_true = True
-    if token_true == False:
+    if user['permission_id'] == 2:
         raise AccessError("User is not authorised")
     
     u_id_true = False
@@ -84,9 +84,6 @@ def admin_userpermission_change(token, u_id, permission_id):
             break
     if u_id_true == False:
         raise InputError("Target does not exist")
-
-    if permission_id != 1 or permission_id != 2:
-        raise InputError("Permission id is not valid")
 
     member['permission_id'] = permission_id
     

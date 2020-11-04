@@ -109,7 +109,7 @@ def test_http_users_all_invalid_token(url):
     assert payload['code'] == 400
 
     r = requests.get(url + "users/all", params={'token': ""})
-    payload = r.json
+    payload = r.json()
     assert payload['message'] == "<p>Token does not exist</p>"
     assert payload['code'] == 400
 
@@ -232,7 +232,7 @@ def test_http_search_empty(url):
     channel_id = create_public_channel(url, login_owner, "channel")
     send_message(url, login_owner, channel_id, "message")
 
-    search_results = search(url, login_owner, "")
+    search_results = search(url, login_owner, " ")
 
     assert search_results == {'messages': []}
 
@@ -322,9 +322,9 @@ def test_http_search_both_channels_two_messages_complete(url):
     assert search_results['messages'][0]['message_id'] == message_id1['message_id']
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
-    assert search_results['messages'][1]['message_id'] == message_id2['message_id']
-    assert search_results['messages'][1]['u_id'] == login_user['u_id']
-    assert search_results['messages'][1]['message'] == "message"
+    assert search_results['messages'][0]['message_id'] == message_id2['message_id']
+    assert search_results['messages'][0]['u_id'] == login_user['u_id']
+    assert search_results['messages'][0]['message'] == "message"
 
 def test_http_search_both_channels_two_messages_incomplete(url):
     """Tests for success when owner creates a channel, user joins the channel, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches for part of the messages"""
@@ -346,9 +346,9 @@ def test_http_search_both_channels_two_messages_incomplete(url):
     assert search_results['messages'][0]['message_id'] == message_id1['message_id']
     assert search_results['messages'][0]['u_id'] == login_owner['u_id']
     assert search_results['messages'][0]['message'] == "message"
-    assert search_results['messages'][1]['message_id'] == message_id2['message_id']
-    assert search_results['messages'][1]['u_id'] == login_user['u_id']
-    assert search_results['messages'][1]['message'] == "message"
+    assert search_results['messages'][0]['message_id'] == message_id2['message_id']
+    assert search_results['messages'][0]['u_id'] == login_user['u_id']
+    assert search_results['messages'][0]['message'] == "message"
 
 def test_http_search_own_channel_single_message_excluding_other_channel(url):
     """Tests for success when owner creates a channel but user does not join, user creates a channel, owner sends a message in their channel, user sends a message in their channel, and user searches the messages"""
