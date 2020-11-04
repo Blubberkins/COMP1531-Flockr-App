@@ -71,10 +71,7 @@ def admin_userpermission_change(token, u_id, permission_id):
     if token_exist == False:
         raise AccessError("Token does not exist")
     
-    token_true = False
-    if user['permission_id'] == 1:
-        token_true = True
-    if token_true == False:
+    if user['permission_id'] == 2:
         raise AccessError("User is not authorised")
     
     u_id_true = False
