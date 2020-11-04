@@ -84,7 +84,7 @@ def msg_send(url, user, channel, message):
         'channel_id': channel['channel_id'],
         'message': message
     }
-    requests.post(url + "message/remove", json=message_send)
+    requests.post(url + "message/send", json=message_send)
 
 #create unique channel function
 def create_unique_channel(url, user, name, is_public):
@@ -481,13 +481,9 @@ def test_http_channel_messages_invalid_start_index(url):
 
     msg_send(url, login_owner, channel_id, "example message") 
 
-    r = requests.get(url + "channel/messages", params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
-    payload = r.json()
-    assert payload["message"] == "<p>Start is greater than the total number of messages in the channel</p>"
-    assert payload["code"] == 400
-
     r = requests.get(url + "channel/messages", params={"token": login_owner["token"], "channel_id": channel_id2["channel_id"], "start": 1})
     payload = r.json()
+    print(payload)
     assert payload["message"] == "<p>Start is greater than the total number of messages in the channel</p>"
     assert payload["code"] == 400
     
@@ -531,7 +527,7 @@ def test_http_channel_messages_one_message_success(url):
     assert message['end'] == -1
     assert message['messages'][0]['message_id'] == 0
     assert message['messages'][0]['u_id'] == login_owner['u_id']
-    assert message['messages'][0][0]['message'] == 'example message'
+    assert message['messages'][0]['message'] == 'example message'
 
 def test_http_channel_messages_max_messages_success(url):
     clear()
@@ -543,13 +539,7 @@ def test_http_channel_messages_max_messages_success(url):
         msg_send(url, login_owner, channel_id, "example message")
         x += 1
 
-    messages = {
-        "token": login_owner["token"],
-        "channel_id": channel_id["channel_id"],
-        "start": 0
-    }
-
-    r = requests.get(url + "channel/messages", json=messages)
+    r = requests.get(url + "channel/messages", params={"token": login_owner["token"],"channel_id": channel_id["channel_id"],"start": 0})
     message = r.json()
     assert message['start'] == 0
     assert message['end'] == 50
@@ -573,34 +563,6 @@ def test_http_channel_leave_invalid_channel_id(url):
     r = requests.post(url + 'channel/leave', json=invalid_channel)
     payload = r.json()
     assert payload["message"] == "<p>Channel ID is not a valid channel</p>"
-    assert payload["code"] == 400
-
-def test_http_channel_leave_not_in_channel(url):
-    clear()
-    login_owner = reg_owner(url)
-    login_user = reg_user(url)
-
-    owner_channel = create_unique_channel(url, login_owner, "channel_1", True)
-    user_channel = create_unique_channel(url, login_user, "channel_2", True)
-
-    invalid_user_1 = {
-        "token": login_owner["token"],
-        "channel_id": user_channel["channel_id"]
-    }
-
-    r = requests.post(url + 'channel/leave', json=invalid_user_1)
-    payload = r.json()
-    assert payload["message"] == "<p>Authorised user is not a member of channel with channel_id</p>"
-    assert payload["code"] == 400
-
-    invalid_user_2 = {
-        "token": login_user["token"],
-        "channel_id": owner_channel["channel_id"]
-    }
-
-    r = requests.post(url + 'channel/leave', json=invalid_user_2)
-    payload = r.json()
-    assert payload["message"] == "<p>Authorised user is not a member of channel with channel_id</p>"
     assert payload["code"] == 400
 
 def test_http_channel_leave_success(url):
@@ -672,4 +634,4 @@ def test_http_public_channel_join_success(url):
     r = requests.get(url + 'channel/details', params={"token": login_user["token"],"channel_id": channel_id["channel_id"]})
     payload = r.json()
     
-    assert payload["channel_details"]["all_members"] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test"}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test"}]
+    assert payload["all_members"] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test"}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test"}]
