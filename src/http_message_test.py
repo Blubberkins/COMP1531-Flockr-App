@@ -345,5 +345,4 @@ def test_http_message_edit_owner_success(url):
 
     r = requests.get(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
-    print(payload)
     assert payload["messages"][0]["message"] == "edited message"

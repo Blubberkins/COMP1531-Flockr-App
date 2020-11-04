@@ -73,7 +73,7 @@ def message_remove(token, message_id):
     for users in data["users"]:
         if users["token"] == token:
             u_id = users["u_id"]
-            users["permission_id"] = u_id_permission
+            u_id_permission = users["permission_id"]
             break
     message_owner_or_flock_owner = False
     if data["messages"][message_index]["u_id"] == u_id:
@@ -98,7 +98,7 @@ def message_edit(token, message_id, message):
     for users in data["users"]:
         if users["token"] == token:
             u_id = users["u_id"]
-            users["permission_id"] = u_id_permission
+            u_id_permission = users["permission_id"] 
             break
     message_owner_or_flock_owner = False
     message_index = -1
