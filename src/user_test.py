@@ -208,3 +208,4 @@ def test_user_profile_handle_already_in_use():
         user.user_profile_sethandle(token1, "differentuser")
         user.user_profile_sethandle(token3, "newuser")
         user.user_profile_sethandle(token3, "differentuser")
+        

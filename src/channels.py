@@ -3,9 +3,18 @@ import auth
 from error import InputError
 
 def channels_list(token):
+    """
+    Provide a list of all channels (and their associated details) that the authorised user is part of
+        Args:
+            token: String which is used as an authorisation hash
+        Return:
+            channels: List of dictionaries, where each dictionary contains types { channel_id, name }
+    """
+
     global data
-    u_id = 0
+
     # retrieve and store the u_id of the user
+    u_id = 0
     for x in data['users']:
 
         if x['token'] == token:
@@ -37,6 +46,14 @@ def channels_list(token):
     return channels
 
 def channels_listall(token):
+    """
+    Provide a list of all channels (and their associated details)
+        Args:
+            token: String which is used as an authorisation hash
+        Return:
+            all_channels: List of dictionaries, where each dictionary contains types { channel_id, name }
+    """
+
     global data
 
     # create the dictionary to be returned by the function
@@ -53,29 +70,46 @@ def channels_listall(token):
     return all_channels
 
 def channels_create(token, name, is_public):
+    """
+    Creates a new channel with that name that is either a public or private channel
+        Args:
+            token: String which is used as an authorisation hash
+            name: Name of the channel
+            is_public: Boolean which states whether the channel is public or not
+        Return:
+            channels: List of dictionaries, where each dictionary contains types { channel_id, name }
+        Raises:
+            InputError: An error that occurs when the channel name is longer than 20 characters
+    """
+
     global data
+
     # raises InputError if channel name is longer than 20 characters
     if len(name) > 20:
         raise InputError("Name is more than 20 characters long.")
-    # find corresponding u_id, first name and last name of token
-    num_users = len (data["users"])
+    
+    # initialising variables
     u_id = -1
     name_first = ''
     name_last = ''
-    for x in range(num_users):
-        if data["users"][x]["token"] == token:
-            u_id = data['users'][x]['u_id']
-            name_first = data['users'][x]['name_first']
-            name_last = data['users'][x]['name_last']
+
+    # find corresponding u_id, first name and last name of token
+    for x in data['users']:
+
+        if x["token"] == token:
+            u_id = x['u_id']
+            name_first = x['name_first']
+            name_last = x['name_last']
             break
 
-    new_channel = {}
-    new_channel['channel_id'] = len(data['channels']) + 1
-    new_channel['name'] = name 
-    new_channel['is_public'] = is_public
-    new_channel['owner_members'] = [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}]
-    new_channel['all_members'] = [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}]
-    new_channel['messages'] = [{}]
+    # adding channel info
+    new_channel = {
+        'channel_id': len(data['channels']) + 1,
+        'name': name,
+        'is_public': is_public,
+        'owner_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}],
+        'all_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}]
+    }
 
     # add the new channel to the data file
     data['channels'].append(new_channel)
@@ -83,3 +117,4 @@ def channels_create(token, name, is_public):
     return {
         'channel_id' : new_channel["channel_id"]
     }
+
