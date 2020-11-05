@@ -6,6 +6,7 @@ import pytest
 from error import AccessError, InputError
 from other import clear
 
+
 # Tests for message_send
 def test_message_send_input_error():
     clear()
@@ -157,7 +158,7 @@ def test_message_react_message_in_private_channel():
     with pytest.raises(InputError):
         message.message_react(login_user["token"], 0, 1)
 
-def test_message_react_0_react_id():
+def test_message_react_react_id_0():
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -202,4 +203,120 @@ def test_message_react_already_reacted():
     with pytest.raises(InputError):
         message.message_react(login_owner["token"], 0, 1)
 
+def test_message_react_blackbox_success():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
 
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
+    assert message.message_react(login_owner["token"], 0, 1) == {}
+
+def test_message_react_whitebox_success():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
+    message.message_react(login_owner["token"], 0, 1)
+    message_data = channel.channel_messages(login_owner["token"], channel_id["channel_id"], 0)
+    assert message_data["messages"][0]["reacts"]["react_id"] == 1
+    assert message_data["messages"][0]["reacts"]["u_ids"] == [login_owner["u_id"]]
+    assert message_data["messages"][0]["reacts"]["is_this_user_reacted"] == True
+
+# Tests for message_unreact
+
+def test_message_unreact_message_does_not_exist():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    with pytest.raises(InputError):
+        message.message_unreact(login_owner["token"], 0, 1)
+
+def test_message_unreact_removed_message():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
+    message.message_remove(login_owner["token"], 0)
+
+    with pytest.raises(InputError):
+        message.message_unreact(login_owner["token"], 0, 1)
+
+def test_message_unreact_message_in_private_channel():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", False)
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
+
+    with pytest.raises(InputError):
+        message.message_unreact(login_user["token"], 0, 1)
+
+def test_message_unreact_react_id_0():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
+
+    with pytest.raises(InputError):
+        message.message_unreact(login_owner["token"], 0, 0)
+
+def test_message_unreact_negative_react_id():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
+
+    with pytest.raises(InputError):
+        message.message_unreact(login_owner["token"], 0, -1)
+        message.message_unreact(login_owner["token"], 0, -100)
+        message.message_unreact(login_owner["token"], 0, -100000)
+
+def test_message_unreact_invalid_positive_react_id():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
+
+    with pytest.raises(InputError):
+        message.message_unreact(login_owner["token"], 0, 2)
+        message.message_unreact(login_owner["token"], 0, 100)
+        message.message_unreact(login_owner["token"], 0, 100000)
+
+def test_message_unreact_message_has_no_reacts():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    with pytest.raises(InputError):
+        message.message_unreact(login_owner["token"], 0, 1)
+
+def test_message_unreact_blackbox_success():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
+    message.message_react(login_owner["token"], 0, 1)
+    assert message.message_unreact(login_owner["token"], 0, 1) == {}
+
+def test_message_unreact_whitebox_success():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+
+    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
+    message.message_react(login_owner["token"], 0, 1)
+    message.message_unreact(login_owner["token"], 0, 1)
+    message_data = channel.channel_messages(login_owner["token"], channel_id["channel_id"], 0)
+    assert message_data["messages"][0]["reacts"]["react_id"] == 1
+    assert message_data["messages"][0]["reacts"]["u_ids"] == []
+    assert message_data["messages"][0]["reacts"]["is_this_user_reacted"] == False
