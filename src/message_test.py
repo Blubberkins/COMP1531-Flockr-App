@@ -126,21 +126,6 @@ def test_message_edit_empty_edit():
     assert message.message_edit(login_owner["token"], 0, "") == {}
 
 # TEST FUNCTIONS FOR MESSAGE_SENDLATER
-# Success for send later
-def test_message_send_later_invalid_channel():
-    clear()
-    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
-    owner_token = login_owner["token"]
-    channel_info = channels.channels_create(owner_token, "channel", True)
-    channel_id = channel_info["channel_id"]
-    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
-    user_token = login_user["token"]
-    channel.channel_join(user_token, channel_id)
-
-    assert message.message_sendlater(owner_token, channel_id, "Hello World", 1609459200) == {"message_id": 0}
-    assert message.message_sendlater(owner_token, channel_id, "Python is cool Python is cool Python is cool Python is cool Python is cool Python is cool Python is cool Python is cool", 3376684800) == {"message_id": 1}
-    assert message.message_sendlater(user_token, channel_id, "123456789", 2208988800) == {"message_id": 2}
-
 # Failure for send later 
 def test_message_send_later_invalid_channel():
     clear()
