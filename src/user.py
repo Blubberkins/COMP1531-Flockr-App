@@ -4,6 +4,7 @@ from error import AccessError
 import re
 import urllib.request
 from PIL import Image
+import validators
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -171,7 +172,7 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
     Raises:
         InputError: When the img_url is invalid.
                     When any of the x and y coordinates are not within the image's dimensions.
-                    When the image uploaded is not a jpeg.
+                    When the image uploaded is not a jpg.
         AccessError: When the user's token is invalid.
     """
 
@@ -181,11 +182,21 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
     if token == "invalid_token":
         raise AccessError("Invalid permissions")
 
-    if "jpeg" not in img_url:
+    is_valid = validators.url(img_url)
+    if not is_valid:
         raise InputError("Invalid img_url")
 
     # Saves the image at the img_url locally with the following filename
     urllib.request.urlretrieve(img_url, "profile_picture.jpg")
+
+    if "jpg" not in img_url:
+        raise InputError("Image is not in jpg format")
+
+    open_image = Image.open("profile_picture.jpg")
+    width, height = open_image.size
+
+    if x_start < 0 or x_start > width or x_end < 0 or x_end > width or y_start < 0 or y_start > height or y_end < 0 or y_end > height:
+        raise InputError("Coordinates out of bounds")
 
     # Puts the passed in x and y positions into a tuple
     crop_dimensions = (x_start, y_start, x_end, y_end)

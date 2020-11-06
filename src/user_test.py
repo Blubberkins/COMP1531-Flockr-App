@@ -271,7 +271,7 @@ def test_user_profile_all_out_of_bounds():
         user.user_profile_uploadphoto(token, img_url, -1, -1, -1, -1)
         user.user_profile_uploadphoto(token, img_url, 3000, 3000, 3000, 3000)
 
-def test_user_profile_image_not_jpeg():
+def test_user_profile_image_not_jpg():
     clear()
     register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     token = register_user["token"]
