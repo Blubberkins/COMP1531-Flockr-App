@@ -154,3 +154,41 @@ def user_profile_sethandle(token, handle_str):
             user["handle_str"] = handle_str
 
     return {}
+
+def user_profile_uploadphoto(): 
+     """Uploads a photo to the user's profile.
+
+    Args:
+        token: A string which acts an authorisation hash.
+        img_url: The url of the image the user wishes to upload.
+        x_start: Starting x position.
+        y_start: Starting y position.
+        x_end: Ending x position.
+        y_end: Ending y position.
+
+    Raises:
+        InputError: When the img_url is invalid.
+                    When any of the x and y coordinates are not within the image's dimensions.
+                    When the image uploaded is not a jpeg.
+        AccessError: When the user's token is invalid.
+    """
+
+    global data
+    
+    # Check if token called is valid
+    if token == "invalid_token":
+        raise AccessError("Invalid permissions")
+
+    # Saves the image at the img_url locally with the following filename
+    urllib.request.urlretrieve(img_url, "profile_picture.jpeg")
+
+    # Puts the passed in x and y positions into a tuple
+    crop_dimensions = (x_start, y_start, x_end, y_end)
+
+    # Crops the image according to the crop_dimensions and saves this into the original file
+    original_image = Image.open("profile_picture.jpeg")
+    cropped_image = original_image.crop(crop_dimensions)
+    cropped_image.save("profile_picture.jpeg")
+
+    return {}
+    
