@@ -215,7 +215,7 @@ def test_user_profile_invalid_img_url():
     clear()
     register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     token = register_user["token"]
-    img_url = "ilikepython.jpeg"
+    img_url = "ilikepython.jpg"
 
     with pytest.raises(InputError):
         user.user_profile_uploadphoto(token, img_url, 0, 0, 500, 500)
@@ -258,8 +258,18 @@ def test_user_profile_y_end_out_of_bounds():
     img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
 
     with pytest.raises(InputError):
-        user.user_profile_uploadphoto(token, img_url, 0, 0, 500, )
+        user.user_profile_uploadphoto(token, img_url, 0, 0, 500, -100)
         user.user_profile_uploadphoto(token, img_url, 0, 0, 500, 500)
+
+def test_user_profile_all_out_of_bounds():
+    clear()
+    register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
+    token = register_user["token"]
+    img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
+
+    with pytest.raises(InputError):
+        user.user_profile_uploadphoto(token, img_url, -1, -1, -1, -1)
+        user.user_profile_uploadphoto(token, img_url, 3000, 3000, 3000, 3000)
 
 def test_user_profile_image_not_jpeg():
     clear()

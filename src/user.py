@@ -2,6 +2,8 @@ from data import data
 from error import InputError
 from error import AccessError
 import re
+import urllib.request
+from PIL import Image
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -155,8 +157,8 @@ def user_profile_sethandle(token, handle_str):
 
     return {}
 
-def user_profile_uploadphoto(token, img_url, x_start, y_Start, x_end, y_end): 
-     """Uploads a photo to the user's profile.
+def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end): 
+    """Uploads a photo to the user's profile.
 
     Args:
         token: A string which acts an authorisation hash.
@@ -173,22 +175,25 @@ def user_profile_uploadphoto(token, img_url, x_start, y_Start, x_end, y_end):
         AccessError: When the user's token is invalid.
     """
 
-    global data
-    
+    global data 
+
     # Check if token called is valid
     if token == "invalid_token":
         raise AccessError("Invalid permissions")
 
+    if "jpeg" not in img_url:
+        raise InputError("Invalid img_url")
+
     # Saves the image at the img_url locally with the following filename
-    urllib.request.urlretrieve(img_url, "profile_picture.jpeg")
+    urllib.request.urlretrieve(img_url, "profile_picture.jpg")
 
     # Puts the passed in x and y positions into a tuple
     crop_dimensions = (x_start, y_start, x_end, y_end)
 
     # Crops the image according to the crop_dimensions and saves this into the original file
-    original_image = Image.open("profile_picture.jpeg")
+    original_image = Image.open("profile_picture.jpg")
     cropped_image = original_image.crop(crop_dimensions)
-    cropped_image.save("profile_picture.jpeg")
+    cropped_image.save("profile_picture.jpg")
 
     return {}
     
