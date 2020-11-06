@@ -116,4 +116,143 @@ def message_edit(token, message_id, message):
         return message_remove(token, message_id)
     data["messages"][message_index]["message"] = message
     return {}
+
+def message_pin(token, message_id):
+    """
+    Given a message within a channel, mark it as "pinned" to be given special display treatment by the frontend
+        Args:
+            token: String which is used as an authorisation hash
+            message_id: Integer which is used as a unique identifier for a message
+        Raises:
+            InputError: An error that occurs when message_id is not a valid message or message with ID message_id is already pinned
+            AccessError: An error that occurs when the user is not a member of the channel that the message is within or the user is not an owner of the channel
+    """
+
+    # checking for valid token and retrieving user id
+    token_exist = False
+    u_id = -1
+    for user in data["users"]:
+
+        if user["token"] == token:
+            u_id = user["u_id"]
+            break
+
+    if token_exist == False:
+        raise AccessError("Token does not exist")
+
+    # checking for valid message and whether message is already pinned, and retrieving channel id for the channel the message is sent in
+    message_exist = False
+    is_pinned = False
+    for message in data['messages']:
+
+        if message_id == message['message_id']:
+
+            if message['is_pinned'] == True:
+                is_pinned = True
+
+            message_exist = True
+            channel_id = message['channel_id']
+            break
+
+    if message_exist == False:
+        raise InputError("Message is not a valid message")
+
+    if is_pinned == True:
+        raise InputError("Message is already pinned")
+
+    # checking if user is an owner in the channel the message is in
+    is_owner = False
+    for channel in data['channels']:
+
+        if channel_id == channel['channel_id']:
+            
+            for user in channel['owner_members']:
+
+                if u_id == user['u_id']:
+                    is_owner = True
+                    break
+
+            break
+
+    if is_owner == False:
+        raise AccessError("User is not a member of the channel or an owner in the channel")
+
+    # pin message if above errors aren't raised
+    for message in data['messages']:
+
+        if message_id == message['message_id']:
+            message['is_pinned'] = True
+            break
+
+    return {}
+
+def message_unpin(token, message_id):
+    """
+    Given a message within a channel, remove it's mark as unpinned
+        Args:
+            token: String which is used as an authorisation hash
+            message_id: Integer which is used as a unique identifier for a message
+        Raises:
+            InputError: An error that occurs when message_id is not a valid message or message with ID message_id is already unpinned
+            AccessError: An error that occurs when the user is not a member of the channel that the message is within or the user is not an owner of the channel
+    """
+
+    # checking for valid token and retrieving user id
+    token_exist = False
+    u_id = -1
+    for user in data["users"]:
+
+        if user["token"] == token:
+            u_id = user["u_id"]
+            break
+
+    if token_exist == False:
+        raise AccessError("Token does not exist")
+
+    # checking for valid message and whether message is already pinned, and retrieving channel id for the channel the message is sent in
+    message_exist = False
+    is_unpinned = False
+    for message in data['messages']:
+
+        if message_id == message['message_id']:
+
+            if message['is_pinned'] == False:
+                is_unpinned = True
+
+            message_exist = True
+            channel_id = message['channel_id']
+            break
+
+    if message_exist == False:
+        raise InputError("Message is not a valid message")
+
+    if is_unpinned == True:
+        raise InputError("Message is already unpinned")
+
+    # checking if user is an owner in the channel the message is in
+    is_owner = False
+    for channel in data['channels']:
+
+        if channel_id == channel['channel_id']:
+            
+            for user in channel['owner_members']:
+
+                if u_id == user['u_id']:
+                    is_owner = True
+                    break
+
+            break
+
+    if is_owner == False:
+        raise AccessError("User is not a member of the channel or an owner in the channel")
+
+    # unpin message if above errors aren't raised
+    for message in data['messages']:
+
+        if message_id == message['message_id']:
+            message['is_pinned'] = False
+            break
+
+    return {}
+
     
