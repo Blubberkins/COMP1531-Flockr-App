@@ -155,7 +155,7 @@ def user_profile_sethandle(token, handle_str):
 
     return {}
 
-def user_profile_uploadphoto(): 
+def user_profile_uploadphoto(token, img_url, x_start, y_Start, x_end, y_end): 
      """Uploads a photo to the user's profile.
 
     Args:
