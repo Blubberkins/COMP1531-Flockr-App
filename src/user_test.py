@@ -209,3 +209,66 @@ def test_user_profile_handle_already_in_use():
         user.user_profile_sethandle(token3, "newuser")
         user.user_profile_sethandle(token3, "differentuser")
         
+# TEST FUNCTIONS FOR USER_PROFILE_UPLOADPHOTO
+# Failure for upload photo
+def test_user_profile_invalid_img_url():
+    clear()
+    register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
+    token = register_user["token"]
+    img_url = "ilikepython.jpeg"
+
+    with pytest.raises(InputError):
+        user.user_profile_uploadphoto(token, img_url, 0, 0, 500, 500)
+        user.user_profile_uploadphoto(token, img_url, 0, 0, 500, 500)
+
+def test_user_profile_x_start_out_of_bounds():
+    clear()
+    register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
+    token = register_user["token"]
+    img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
+
+    with pytest.raises(InputError):
+        user.user_profile_uploadphoto(token, img_url, -100, 0, 500, 500)
+        user.user_profile_uploadphoto(token, img_url, 2000, 0, 500, 500)
+
+def test_user_profile_y_start_out_of_bounds():  
+    clear()
+    register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
+    token = register_user["token"]
+    img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
+
+    with pytest.raises(InputError):
+        user.user_profile_uploadphoto(token, img_url, 0, -100, 500, 500)
+        user.user_profile_uploadphoto(token, img_url, 0, 2500, 500, 500)
+
+def test_user_profile_x_end_out_of_bounds():
+    clear()
+    register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
+    token = register_user["token"]
+    img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
+
+    with pytest.raises(InputError):
+        user.user_profile_uploadphoto(token, img_url, 0, 0, 500, -100)
+        user.user_profile_uploadphoto(token, img_url, 0, 0, 500, 2500)
+
+def test_user_profile_y_end_out_of_bounds():
+    clear()
+    register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
+    token = register_user["token"]
+    img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
+
+    with pytest.raises(InputError):
+        user.user_profile_uploadphoto(token, img_url, 0, 0, 500, )
+        user.user_profile_uploadphoto(token, img_url, 0, 0, 500, 500)
+
+def test_user_profile_image_not_jpeg():
+    clear()
+    register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
+    token = register_user["token"]
+
+    png = "https://static.wikia.nocookie.net/hellokitty/images/3/33/Sanrio_Characters_My_Melody_Image029.png/revision/latest/top-crop/width/360/height/450?cb=20170407005355"
+    gif = "https://media1.tenor.com/images/b996ab4668b7bf2babacc91484b0d223/tenor.gif?itemid=10838396"
+
+    with pytest.raises(InputError):
+        user.user_profile_uploadphoto(token, png, 0, 0, 200, 200)
+        user.user_profile_uploadphoto(token, gif, 50, 50, 200, 200)
