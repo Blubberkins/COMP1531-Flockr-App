@@ -167,17 +167,16 @@ def message_sendlater(token, channel_id, message, time_sent):
     # Check if user is part of the channel they want to send a message to
     valid_token = False
     u_id = -1
-    for users in data["users"]:
-        if users["token"] == token:
-            u_id = users["u_id"]
+    for user in data["users"]:
+        if user["token"] == token:
+            u_id = user["u_id"]
             break
     for x in range(len(data["channels"])):
         if data["channels"][x]["channel_id"] == channel_id:
-            valid_channel_id = True
             channel_index = x
             break
-    for users in data["channels"][channel_index]["all_members"]:
-        if users["u_id"] == u_id:
+    for user in data["channels"][channel_index]["all_members"]:
+        if user["u_id"] == u_id:
             valid_token = True
             break
     if not valid_token:
@@ -187,7 +186,7 @@ def message_sendlater(token, channel_id, message, time_sent):
     current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
 
     time_period = time_sent - current_time
-    timer = threading.Timer(time_period, message_send, [token, channel_id, message, time_sent])
+    timer = threading.Timer(time_period, message_send, [token, channel_id, message])
     timer.start()
 
     message_id = data["num_messages"] - 1
