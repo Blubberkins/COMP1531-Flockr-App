@@ -127,6 +127,16 @@ def test_message_edit_empty_edit():
 
 # TEST FUNCTIONS FOR MESSAGE_SENDLATER
 # Failure for send later 
+def test_message_sendlater_invalid_token():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    token = "invalid_token"
+    channel_info = channels.channels_create(token, "channel", True)
+    channel_id = channel_info["channel_id"]
+
+    with pytest.raises(AccessError):
+         message.message_sendlater(token, channel_id, "Hello World", 1609459200)
+
 def test_message_send_later_invalid_channel():
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
