@@ -60,6 +60,18 @@ def http_auth_register():
     response = auth.auth_register(data['email'], data['password'], data['name_first'], data['name_last'])
     return dumps(response)
 
+@APP.route('/auth/passwordreset/request', methods=['POST'])
+def http_auth_passwordreset_request():
+    data = request.get_json()
+    response = auth.auth_passwordreset_request(data['email'])
+    return dumps(response)
+
+@APP.route('/auth/passwordreset/reset', methods=['POST'])
+def http_auth_passwordreset_reset():
+    data = request.get_json()
+    response = auth.auth_passwordreset_request(data['reset_code'], data['new_password'])
+    return dumps(response)
+
 # CHANNEL FUNCTIONS
 @APP.route('/channel/invite', methods=['POST'])
 def http_channel_invite():
