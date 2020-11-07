@@ -16,6 +16,16 @@ def test_standup_start_invalid_id():
 
     with pytest.raises(InputError):
         standup.standup_start(login_owner['token'], invalid_channel_id, 10)
+        
+def test_standup_start_invalid_length():
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    
+    with pytest.raises(InputError):
+        standup.standup_start(login_owner['token'], channel_id, -1)
+        standup.standup_start(login_owner['token'], channel_id, 0)
+        standup.standup_start(login_owner['token'], channel_id, -10)
 
 def test_standup_start_invalid_token():
     clear()
