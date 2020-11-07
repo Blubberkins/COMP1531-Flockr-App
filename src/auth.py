@@ -181,7 +181,7 @@ def auth_passwordreset_reset(reset_code, new_password):
     if len(new_password) < 6:
         raise InputError("Invalid password")
     if len(reset_code) != 8:
-        raise InputError("reset code is not a valid reset code")
+        raise InputError("Reset code is not a valid reset code")
     # Assumes the caller of this function is the reset_code they enter in
     for user in data["users"]:
         if "reset_code" in user.keys():
