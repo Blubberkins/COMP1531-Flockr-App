@@ -327,7 +327,7 @@ def test_http_passwordreset_reset_invalid_reset_code(url):
     }
     r = requests.post(url + "auth/passwordreset/reset", json=invalid_reset_code)
     payload = r.json()
-    assert payload['message'] == "<p>reset code is not a valid reset code<p>"
+    assert payload['message'] == "<p>Reset code is not a valid reset code<p>"
     assert payload['code'] == 400
 
 def test_http_passwordreset_reset_invalid_password(url):
