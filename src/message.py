@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from data import data
 from error import AccessError, InputError
+import time
+import threading
 
 def message_send(token, channel_id, message):
     global data
@@ -169,20 +171,27 @@ def message_sendlater(token, channel_id, message, time_sent):
         if users["token"] == token:
             u_id = users["u_id"]
             break
+    for x in range(len(data["channels"])):
+        if data["channels"][x]["channel_id"] == channel_id:
+            valid_channel_id = True
+            channel_index = x
+            break
     for users in data["channels"][channel_index]["all_members"]:
         if users["u_id"] == u_id:
             valid_token = True
             break
     if not valid_token:
         raise AccessError("The user has not joined the channel they are trying to post to")
-
-    # Get current time again
+    
     current_time = datetime.now()
     current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
 
-    if time_sent == current_time:
-        message_sent = message_send(token, channel_id, message)
+    time_period = time_sent - current_time
+    timer = threading.Timer(time_period, message_send, [token, channel_id, message, time_sent])
+    timer.start()
+
+    message_id = data["num_messages"] - 1
 
     return {
-        "message_id": message_sent["message_id"]
+        "message_id": message_id
     }
