@@ -59,7 +59,7 @@ def standup_start(token, channel_id, length):
     channel['stand_up']['is_active'] = True
     channel['stand_up']['time_finish'] = end_standup
 
-    start_standup = threading.Timer(length, standup_timer(channel))
+    start_standup = threading.Timer(length, standup_timer, [channel])
     start_standup.start()
 
     return {"time_finish": end_standup}
