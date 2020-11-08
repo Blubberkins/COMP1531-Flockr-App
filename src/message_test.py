@@ -124,4 +124,127 @@ def test_message_edit_empty_edit():
 
     message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
     assert message.message_edit(login_owner["token"], 0, "") == {}
-    
+
+# Tests for message_pin
+
+def test_message_pin_success():
+    '''test for successful pin'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    message_id = message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    assert message.message_pin(login_owner['token'], message_id['message_id']) == {}
+
+def test_message_pin_invalid_message_id():
+    '''test for input error due to invalid message id'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channels.channels_create(login_owner['token'], "channel", True)
+    invalid_message_id = -1
+
+    with pytest.raises(InputError):
+        message.message_pin(login_owner['token'], invalid_message_id)
+
+def test_message_pin_already_pinned():
+    '''test for input error due to message already being pinned'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    message_id = message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    message.message_pin(login_owner['token'], message_id['message_id'])
+
+    with pytest.raises(InputError):
+        message.message_pin(login_owner['token'], message_id['message_id'])
+
+def test_message_pin_invalid_channel():
+    '''test for access error due to user not being in the channel the message is in'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    message_id = message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    channel.channel_leave(login_owner["token"], channel_id["channel_id"])
+
+    with pytest.raises(AccessError):
+        message.message_pin(login_owner['token'], message_id['message_id'])
+
+def test_message_pin_not_owner():
+    '''test for access error due to user not being an owner in the channel'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    message_id = message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_join(login_user["token"], channel_id["channel_id"])
+
+    with pytest.raises(AccessError):
+        message.message_pin(login_user['token'], message_id['message_id'])
+
+# Tests for message_unpin
+
+def test_message_unpin_success():
+    '''test for successful pin'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    message_id = message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    message.message_pin(login_owner['token'], message_id['message_id'])
+
+    assert message.message_unpin(login_owner['token'], message_id['message_id']) == {}
+
+def test_message_unpin_invalid_message_id():
+    '''test for input error due to invalid message id'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channels.channels_create(login_owner['token'], "channel", True)
+    invalid_message_id = -1
+
+    with pytest.raises(InputError):
+        message.message_unpin(login_owner['token'], invalid_message_id)
+
+def test_message_unpin_already_unpinned():
+    '''test for input error due to message already being unpinned'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    message_id = message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    message.message_pin(login_owner['token'], message_id['message_id'])
+
+    message.message_unpin(login_owner['token'], message_id['message_id'])
+
+    with pytest.raises(InputError):
+        message.message_unpin(login_owner['token'], message_id['message_id'])
+
+def test_message_unpin_invalid_channel():
+    '''test for access error due to user not being in the channel the message is in'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    message_id = message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    message.message_pin(login_owner['token'], message_id['message_id'])
+
+    channel.channel_leave(login_owner["token"], channel_id["channel_id"])
+
+    with pytest.raises(AccessError):
+        message.message_unpin(login_owner['token'], message_id['message_id'])
+
+def test_message_unpin_not_owner():
+    '''test for access error due to user not being an owner in the channel'''
+    clear()
+    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    message_id = message.message_send(login_owner["token"], channel_id["channel_id"], "sample message")
+
+    login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
+    channel.channel_join(login_user["token"], channel_id["channel_id"])
+
+    message.message_pin(login_owner['token'], message_id['message_id'])
+
+    with pytest.raises(AccessError):
+        message.message_unpin(login_user['token'], message_id['message_id'])
