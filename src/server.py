@@ -12,6 +12,7 @@ import channels
 import message
 import other
 import user
+import standup
 
 
 def defaultHandler(err):
@@ -182,6 +183,25 @@ def http_user_profile_setemail():
 def http_user_profile_sethandle():
     data = request.get_json()
     response = user.user_profile_sethandle(data["token"], data["handle_str"])
+    return dumps(response)
+
+# STANDUP FUNCTIONS
+@APP.route("/standup/start", methods=['POST'])
+def http_standup_start():
+    data = request.get_json()
+    response = standup.standup_start(data['token'], data['channel_id'], data['length'])
+    return dumps(response)
+
+@APP.route("/standup/active", methods=['GET'])
+def http_standup_active():
+    token = request.args.get("token")
+    channel_id = int(request.args.get("channel_id"))
+    return dumps(standup.standup_active(token, channel_id))
+
+@APP.route("/standup/send", methods=['POST'])
+def http_standup_send():
+    data = request.get_json()
+    response = standup.standup_start(data['token'], data['channel_id'], data['message'])
     return dumps(response)
 
 if __name__ == "__main__":
