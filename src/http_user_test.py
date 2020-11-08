@@ -328,3 +328,142 @@ def test_http_user_profile_handle_already_in_use(url):
     payload = r.json()
     assert payload["message"] == "<p>Handle is already in use</p>"
     assert payload["code"] == 400
+
+# TEST FUNCTIONS FOR HTTP_USER_PROFILE_UPLOADPHOTO
+# Failure for upload photo
+def test_http_user_profile_invalid_img_url(url):
+    "Tests for failure when the user inputs an invalid img_url"
+    clear()
+    login_user = register_user(url)
+
+    empty_url = {
+        "token" : login_user["token"],
+        "img_url": "",
+        "x_start": 0,
+        "y_start": 0, 
+        "x_end": 500, 
+        "y_end":500
+    }
+    r = requests.post(url + "user/profile/uploadphoto", json=empty_url)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid url</p>"
+    assert payload["code"] == 400
+
+    invalid_img_url2 = {
+        "token" : login_user["token"],
+        "img_url": "ilikepython.jpeg",
+        "x_start": 0,
+        "y_start": 0, 
+        "x_end": 500, 
+        "y_end":500
+    }
+    r = requests.post(url + "user/profile/uploadphoto", json=invalid_url)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid url</p>"
+    assert payload["code"] == 400
+
+def test_http_user_profile_x_start_out_of_bounds(url):
+    clear()
+    login_user = register_user(url)
+    height = 1200 
+    width = 2134
+
+    invalid_x_start1 = {
+        "token" : login_user["token"],
+        "img_url": "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg",
+        "x_start": -100,
+        "y_start": 0, 
+        "x_end": 500, 
+        "y_end":500
+    }
+    r = requests.post(url + "user/profile/uploadphoto", json=invalid_x_start1)
+    payload = r.json()
+    assert payload["message"] == "<p>x1 out of bounds</p>"
+    assert payload["code"] == 400
+
+    invalid_x_start2 = {
+        "token" : login_user["token"],
+        "img_url": "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg",
+        "x_start": 2000,
+        "y_start": 0, 
+        "x_end": 500, 
+        "y_end":500
+    }
+    r = requests.post(url + "user/profile/uploadphoto", json=invalid_x_start2)
+    payload = r.json()
+    assert payload["message"] == "<p>x1 out of bounds</p>"
+    assert payload["code"] == 400
+
+    invalid_x_start3 = {
+        "token" : login_user["token"],
+        "img_url": "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg",
+        "x_start": width,
+        "y_start": 0, 
+        "x_end": 500, 
+        "y_end":500
+    }
+    r = requests.post(url + "user/profile/uploadphoto", json=invalid_x_start3)
+    payload = r.json()
+    assert payload["message"] == "<p>x1 out of bounds</p>"
+    assert payload["code"] == 400
+
+def test_user_profile_y_start_out_of_bounds(url):  
+    clear()
+    login_user = register_user(url)
+
+    invalid_y_start1 = {
+        "token" : login_user["token"],
+        "img_url": "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg",
+        "x_start": 0,
+        "y_start": -100, 
+        "x_end": 500, 
+        "y_end":500
+    }
+    r = requests.post(url + "user/profile/uploadphoto", json=invalid_y_start1)
+    payload = r.json()
+    assert payload["message"] == "<p>y1 out of bounds</p>"
+    assert payload["code"] == 400
+
+    invalid_y_start2 = {
+        "token" : login_user["token"],
+        "img_url": "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg",
+        "x_start": 0,
+        "y_start": 2500, 
+        "x_end": 500, 
+        "y_end":500
+    }
+    r = requests.post(url + "user/profile/uploadphoto", json=invalid_y_start2)
+    payload = r.json()
+    assert payload["message"] == "<p>y1 out of bounds</p>"
+    assert payload["code"] == 400
+
+def test_http_user_profile_x_end_out_of_bounds(url):
+    clear()
+    login_user = register_user(url)
+
+    invalid_x_end1 = {
+        "token" : login_user["token"],
+        "img_url": "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg",
+        "x_start": -100,
+        "y_start": 0, 
+        "x_end": 500, 
+        "y_end":500
+    }
+    r = requests.post(url + "user/profile/uploadphoto", json=invalid_x_end1)
+    payload = r.json()
+    assert payload["message"] == "<p>x2 out of bounds</p>"
+    assert payload["code"] == 400
+
+    invalid_x_end2 = {
+        "token" : login_user["token"],
+        "img_url": "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg",
+        "x_start": 2000,
+        "y_start": 0, 
+        "x_end": 500, 
+        "y_end":500
+    }
+    r = requests.post(url + "user/profile/uploadphoto", json=invalid_x_end2)
+    payload = r.json()
+    assert payload["message"] == "<p>x2 out of bounds</p>"
+    assert payload["code"] == 400
+
