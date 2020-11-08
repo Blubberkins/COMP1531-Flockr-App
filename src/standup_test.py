@@ -120,22 +120,3 @@ def test_standup_send_invalid_token():
         standup.standup_send("", channel_id["channel_id"], "sample message")
         standup.standup_send(login_user['token'], channel_id["channel_id"], "sample message")
 
-def test_standup_send_successful():
-    clear()
-    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
-    channel_id = channels.channels_create(login_owner['token'], "channel", True)
-
-    standup.standup_start(login_owner['token'], channel_id["channel_id"], 10)
-
-    standup.standup_send(login_owner['token'], channel_id["channel_id"], "sample message")
-    standup.standup_send(login_owner['token'], channel_id["channel_id"], "example message")
-
-    with pytest.raises(InputError):
-        channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0)
-
-    time.sleep(10)
-
-    channel_messages = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0)
-    assert channel_messages['messages'][0]['message'] == 'sample message'
-    assert channel_messages['messages'][1]['message'] == 'example message'
-    
