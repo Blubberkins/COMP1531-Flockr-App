@@ -143,6 +143,17 @@ def http_message_edit():
     response = message.message_edit(data['token'], data['message_id'], data['message'])
     return dumps(response)
 
+@APP.route("/message/sendlater", methods=['POST'])
+def http_message_sendlater():
+    data = request.get_json()
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
+    time_sent = int(data["time_sent"])
+
+    response = message.message_edit(token, channel_id, message, time_sent)
+    return dumps(response)
+
 # OTHER FUNCTIONS
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
@@ -185,23 +196,16 @@ def http_user_profile_sethandle():
     response = user.user_profile_sethandle(data["token"], data["handle_str"])
     return dumps(response)
 
-# STANDUP FUNCTIONS
-@APP.route("/standup/start", methods=['POST'])
-def http_standup_start():
+@APP.route("/user/profile/uploadphoto", methods = ["POST"])
+def http_user_profile_uploadphoto():
     data = request.get_json()
-    response = standup.standup_start(data['token'], data['channel_id'], data['length'])
-    return dumps(response)
-
-@APP.route("/standup/active", methods=['GET'])
-def http_standup_active():
-    token = request.args.get("token")
-    channel_id = int(request.args.get("channel_id"))
-    return dumps(standup.standup_active(token, channel_id))
-
-@APP.route("/standup/send", methods=['POST'])
-def http_standup_send():
-    data = request.get_json()
-    response = standup.standup_start(data['token'], data['channel_id'], data['message'])
+    token = data["token"]
+    img_url = data["img_url"]
+    x_start = data["x_start"]
+    y_start = data["y_start"]
+    x_end = data["x_end"]
+    y_end = data["y_end"]
+    response = user.user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end)
     return dumps(response)
 
 if __name__ == "__main__":
