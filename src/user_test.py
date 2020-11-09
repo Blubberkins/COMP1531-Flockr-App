@@ -260,6 +260,7 @@ def test_user_profile_x_start_out_of_bounds():
         user.user_profile_uploadphoto(token, img_url, width, 0, 500, 500)
 
 def test_user_profile_y_start_out_of_bounds():  
+    "Tests for failure when the user inputs an invalid y1 value"
     clear()
     register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     token = register_user["token"]
@@ -272,6 +273,7 @@ def test_user_profile_y_start_out_of_bounds():
         user.user_profile_uploadphoto(token, img_url, 0, height, 500, 500)
 
 def test_user_profile_x_end_out_of_bounds():
+    "Tests for failure when the user inputs an invalid x2 value"
     clear()
     register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     token = register_user["token"]
@@ -283,6 +285,7 @@ def test_user_profile_x_end_out_of_bounds():
         user.user_profile_uploadphoto(token, img_url, 0, 0, 0, 500)
 
 def test_user_profile_y_end_out_of_bounds():
+    "Tests for failure when the user inputs an invalid y2 value"
     clear()
     register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     token = register_user["token"]
@@ -294,6 +297,7 @@ def test_user_profile_y_end_out_of_bounds():
         user.user_profile_uploadphoto(token, img_url, 0, 0, 500, 0)
 
 def test_user_profile_all_out_of_bounds():
+    "Tests for failure when the user inputs invalid x1, y1, x2, y2 values"
     clear()
     register_user = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
     token = register_user["token"]
