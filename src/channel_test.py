@@ -109,7 +109,7 @@ def test_channel_messages_invalid_channel():
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channels.channels_create(login_owner['token'], "channel", True)
-    invalid_channel_id = 1
+    invalid_channel_id = -1
 
     with pytest.raises(InputError):
         channel.channel_messages(login_owner['token'], invalid_channel_id, 0)

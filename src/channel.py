@@ -100,8 +100,38 @@ def channel_messages(token, channel_id, start):
     if not isValidToken:
         raise AccessError("User is not a member of the channel")
 
+    messages_in_channel = []
+    for message in data["messages"]:
+        if message["channel_id"] == channel_id:
+            temp = message
+            temp.pop("channel_id")
+            temp["reacts"]["react_id"] = 1
+            temp["reacts"]["u_ids"] = message["reacted_by"]
+            temp["reacts"]["is_this_user_reacted"] = False
+            if u_id in message["reacted_by"]:
+                temp["reacts"]["is_this_user_reacted"] = True
+            temp.pop("reacted_by")
+            messages_in_channel.append(temp)
+
+    if start > len(messages_in_channel) + 1:
+        raise InputError("Start is greater than the total number of messages in the channel")
+    
+    for index in range(0, start):
+        messages_in_channel.pop(index)
+    
+    return_dict = {}
+    return_dict["start"] = start
+    return_dict["end"] = 50
+    if len(messages_in_channel) < 50:
+        return_dict["end"] = -1
+    if len(messages_in_channel) > 50:
+        for index in range(50, -1):
+            messages_in_channel.pop(index)
+    return_dict["messages"] = messages_in_channel
+    '''
     # Check if start index is valid
     counter = 0
+    # Skip forward until the given start index
     for message in data["messages"]:
         if message["channel_id"] == channel_id:
             counter += 1
@@ -122,8 +152,8 @@ def channel_messages(token, channel_id, start):
             counter += 1
     if len(returnDict["messages"]) < 50:
         returnDict["end"] = -1
-
-    return returnDict
+    '''
+    return return_dict
 
 def channel_leave(token, channel_id):
     global data
