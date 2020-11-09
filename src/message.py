@@ -392,7 +392,7 @@ def message_sendlater(token, channel_id, message, time_sent):
 
     # Check if token is valid
     if token == "invalid_token":
-        raise InputError("Invalid permissions")
+        raise AccessError("Invalid permissions")
     
     # Check if channel_id is valid
     channel_found = False
