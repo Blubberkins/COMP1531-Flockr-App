@@ -184,7 +184,7 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
 
     is_valid = validators.url(img_url)
     if not is_valid:
-        raise InputError("Invalid img_url")
+        raise InputError("Invalid url")
 
     # Saves the image at the img_url locally with the following filename
     urllib.request.urlretrieve(img_url, "profile_picture.jpg")
