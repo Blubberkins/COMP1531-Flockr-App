@@ -250,6 +250,7 @@ def message_pin(token, message_id):
     for user in data["users"]:
 
         if user["token"] == token:
+            token_exist = True
             u_id = user["u_id"]
             break
 
