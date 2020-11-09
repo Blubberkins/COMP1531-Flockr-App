@@ -1,7 +1,7 @@
 import auth
 import user
 import pytest
-from error import InputError
+from error import InputError, AccessError
 from other import clear
 
 # TEST FUNCTIONS FOR USER_PROFILE
