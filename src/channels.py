@@ -109,7 +109,7 @@ def channels_create(token, name, is_public):
         'is_public': is_public,
         'owner_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}],
         'all_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}],
-        'stand_up' : {'is_active': False, 'time_finish': None, 'message_queue': []}
+        'stand_up' : {'is_active': False, 'time_finish': None}
     }
 
     # add the new channel to the data file
