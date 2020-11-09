@@ -1,7 +1,6 @@
 from datetime import datetime, timezone
 from data import data
 from error import AccessError, InputError
-<<<<<<< src/message.py
 import time
 import threading
 from channel import channel_messages
