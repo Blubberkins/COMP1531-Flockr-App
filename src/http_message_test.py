@@ -434,13 +434,13 @@ def test_http_message_sendlater_access_error(url):
     channel_info = create_channel(url, login_owner)
     login_user = reg_user(url)
 
-    access_error = {
+    invalid_access = {
         "token": login_user["token"],
         "channel_id": channel_info["channel_id"],
         "message": "Hello World",
         "time_sent": 1609459200
     }
-    r = requests.post(url + 'message/sendlater', json=access_error)
+    r = requests.post(url + 'message/sendlater', json=invalid_access)
     payload = r.json()
     assert payload["message"] == "<p>The user has not joined the channel they are trying to post to</p>"
     assert payload["code"] == 400
