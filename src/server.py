@@ -237,6 +237,7 @@ def http_standup_active():
 def http_standup_send():
     data = request.get_json()
     response = standup.standup_start(data['token'], data['channel_id'], data['message'])
+    return dumps(response)
 
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port
