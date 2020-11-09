@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from data import data
 from error import AccessError, InputError
+import time
+import threading
 from channel import channel_messages
 
 def message_send(token, channel_id, message):
@@ -118,7 +120,7 @@ def message_edit(token, message_id, message):
         return message_remove(token, message_id)
     data["messages"][message_index]["message"] = message
     return {}
-    
+
 def message_react(token, message_id, react_id):
     global data
 
@@ -369,3 +371,79 @@ def message_unpin(token, message_id):
 
     return {}
 
+def message_sendlater(token, channel_id, message, time_sent):
+    """Sends a message later at a time specified by the user.
+
+    Args:
+        token: A string which acts an authorisation hash.
+        channel_id: An integer associated with a particular channel.
+        message: A string which the user wants to send to a particular channel.
+        time_sent: An integer representing a specific time which a message will be sent at.
+
+    Raises:
+        InputError: When channel ID is not a valid channel.
+                    When message is more than 1000 characters.
+                    When time sent is a time in the past.
+        AccessError: When the user's token is invalid.
+                     When the authorised user has not joined the channel they are trying to post to.
+    """
+
+    global data
+
+    # Check if token is valid
+    if token == "invalid_token":
+        raise InputError("Invalid permissions")
+    
+    # Check if channel_id is valid
+    channel_found = False
+    for channel in data["channels"]:
+        if channel_id == channel["channel_id"]:
+            channel_found = True
+            break
+    
+    if not channel_found:
+        raise InputError("Invalid channel")
+
+    # Check message length
+    if len(message) > 1000:
+        raise InputError("Message is larger than 1000 characters")
+    
+    # Check time_sent is not in the past 
+    # Get the current time
+    current_time = datetime.now()
+    current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
+
+    if time_sent < current_time:
+        raise InputError("Time has already passed")
+
+    # Check if user is part of the channel they want to send a message to
+    valid_token = False
+    u_id = -1
+    for user in data["users"]:
+        if user["token"] == token:
+            u_id = user["u_id"]
+            break
+    for x in range(len(data["channels"])):
+        if data["channels"][x]["channel_id"] == channel_id:
+            channel_index = x
+            break
+    for user in data["channels"][channel_index]["all_members"]:
+        if user["u_id"] == u_id:
+            valid_token = True
+            break
+    if not valid_token:
+        raise AccessError("The user has not joined the channel they are trying to post to")
+    
+    current_time = datetime.now()
+    current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
+
+    time_period = time_sent - current_time
+    timer = threading.Timer(time_period, message_send, [token, channel_id, message])
+    timer.start()
+
+    message_id = data["num_messages"] - 1
+
+    return {
+        "message_id": message_id
+    }
+    
