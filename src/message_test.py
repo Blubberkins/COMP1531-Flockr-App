@@ -186,7 +186,7 @@ def test_message_pin_not_owner():
 # Tests for message_unpin
 
 def test_message_unpin_success():
-    '''test for successful pin'''
+    '''test for successful unpin'''
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
