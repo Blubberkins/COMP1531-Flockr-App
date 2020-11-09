@@ -220,5 +220,23 @@ def http_user_profile_uploadphoto():
     response = user.user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end)
     return dumps(response)
 
+# STANDUP FUNCTIONS
+@APP.route("/standup/start", methods=['POST'])
+def http_standup_start():
+    data = request.get_json()
+    response = standup.standup_start(data['token'], data['channel_id'], data['length'])
+    return dumps(response)
+
+@APP.route("/standup/active", methods=['GET'])
+def http_standup_active():
+    token = request.args.get("token")
+    channel_id = int(request.args.get("channel_id"))
+    return dumps(standup.standup_active(token, channel_id))
+
+@APP.route("/standup/send", methods=['POST'])
+def http_standup_send():
+    data = request.get_json()
+    response = standup.standup_start(data['token'], data['channel_id'], data['message'])
+
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port
