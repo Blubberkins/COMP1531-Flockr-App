@@ -195,5 +195,17 @@ def http_user_profile_sethandle():
     response = user.user_profile_sethandle(data["token"], data["handle_str"])
     return dumps(response)
 
+@APP.route("/user/profile/uploadphoto", methods = ["POST"])
+def http_user_profile_uploadphoto():
+    data = request.get_json()
+    token = data["token"]
+    img_url = data["img_url"]
+    x_start = data["x_start"]
+    y_start = data["y_start"]
+    x_end = data["x_end"]
+    y_end = data["y_end"]
+    response = user.user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end)
+    return dumps(response)
+
 if __name__ == "__main__":
     APP.run(port=0) # Do not edit this port
