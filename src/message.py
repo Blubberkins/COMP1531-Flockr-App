@@ -1,8 +1,10 @@
 from datetime import datetime, timezone
 from data import data
 from error import AccessError, InputError
+<<<<<<< src/message.py
 import time
 import threading
+from channel import channel_messages
 
 def message_send(token, channel_id, message):
     global data
@@ -89,6 +91,7 @@ def message_remove(token, message_id):
     return {}
 
 def message_edit(token, message_id, message):
+    global data
     # Check message length
     if len(message) > 1000:
         raise InputError("Message is larger than 1000 characters")
@@ -117,6 +120,256 @@ def message_edit(token, message_id, message):
     if message == "":
         return message_remove(token, message_id)
     data["messages"][message_index]["message"] = message
+    return {}
+
+def message_react(token, message_id, react_id):
+    global data
+
+    # Test whether the react_id is 1
+    if react_id != 1:
+        raise InputError("Invalid react ID")
+
+    # Test whether message exists
+    message_index = -1
+    message_channel_id = -1
+    is_real_message = False
+    for x in range(len(data["messages"])):
+        if data["messages"][x]["message_id"] == message_id:
+            is_real_message = True
+            message_index = x
+            message_channel_id = data["messages"][x]["channel_id"]
+            break
+    if not is_real_message:
+        raise InputError("Specified message does not exist")
+
+    # Test whether the user is allowed to react to that message
+    u_id = -1
+    for user in data["users"]:
+        if user["token"] == token:
+            user["u_id"] = u_id
+            break
+    
+    is_in_channel = False
+    for x in range(len(data["channels"])):
+        if data["channels"][x]["channel_id"] == message_channel_id:
+            for index in range(len(data["channels"][x]["all_members"])):
+                if data["channels"][x]["all_members"][index]["u_id"] == u_id:
+                    is_in_channel = True
+                    break
+            break
+    if not is_in_channel:
+        raise InputError("User is not currently in the channel of the message they are trying to react to")
+
+    # Test whether the message is already reacted by the user
+    is_reacted = False
+    for message in data["messages"]:
+        if message["message_id"] == message_id:
+            if u_id in message["reacted_by"]:
+                is_reacted = True
+                break
+    if is_reacted:
+        raise InputError("User has already reacted to this message")
+
+    # Add user to reacted_by
+    for message in data["messages"]:
+        if message["message_id"] == message_id:
+            message["reacted_by"].append(u_id)
+            break
+    
+    return {}
+
+def message_unreact(token, message_id, react_id):
+    global data
+
+    # Test whether the react_id is 1
+    if react_id != 1:
+        raise InputError("Invalid react ID")
+
+    # Test whether message exists
+    message_index = -1
+    message_channel_id = -1
+    is_real_message = False
+    for x in range(len(data["messages"])):
+        if data["messages"][x]["message_id"] == message_id:
+            is_real_message = True
+            message_index = x
+            message_channel_id = data["messages"][x]["channel_id"]
+            break
+    if not is_real_message:
+        raise InputError("Specified message does not exist")
+
+    # Test whether the user is allowed to react to that message
+    u_id = -1
+    for user in data["users"]:
+        if user["token"] == token:
+            user["u_id"] = u_id
+            break
+    
+    is_in_channel = False
+    for x in range(len(data["channels"])):
+        if data["channels"][x]["channel_id"] == message_channel_id:
+            for index in range(len(data["channels"][x]["all_members"])):
+                if data["channels"][x]["all_members"][index]["u_id"] == u_id:
+                    is_in_channel = True
+                    break
+            break
+    if not is_in_channel:
+        raise InputError("User is not currently in the channel of the message they are trying to react to")
+
+    # Test whether the message is already reacted by the user
+    is_reacted = False
+    for message in data["messages"]:
+        if message["message_id"] == message_id:
+            if u_id in message["reacted_by"]:
+                is_reacted = True
+                break
+    if not is_reacted:
+        raise InputError("User has not reacted to this message yet")
+
+    # Remove user from reacted_by
+    for message in data["messages"]:
+        if message["message_id"] == message_id:
+            message["reacted_by"].remove(u_id)
+            break
+
+    return {}
+
+def message_pin(token, message_id):
+    """
+    Given a message within a channel, mark it as "pinned" to be given special display treatment by the frontend
+        Args:
+            token: String which is used as an authorisation hash
+            message_id: Integer which is used as a unique identifier for a message
+        Raises:
+            InputError: An error that occurs when message_id is not a valid message or message with ID message_id is already pinned
+            AccessError: An error that occurs when the user is not a member of the channel that the message is within or the user is not an owner of the channel
+    """
+
+    # checking for valid token and retrieving user id
+    token_exist = False
+    u_id = -1
+    for user in data["users"]:
+
+        if user["token"] == token:
+            u_id = user["u_id"]
+            break
+
+    if token_exist == False:
+        raise AccessError("Token does not exist")
+
+    # checking for valid message and whether message is already pinned, and retrieving channel id for the channel the message is sent in
+    message_exist = False
+    is_pinned = False
+    for message in data['messages']:
+
+        if message_id == message['message_id']:
+
+            if message['is_pinned'] == True:
+                is_pinned = True
+
+            message_exist = True
+            channel_id = message['channel_id']
+            break
+
+    if message_exist == False:
+        raise InputError("Message is not a valid message")
+
+    if is_pinned == True:
+        raise InputError("Message is already pinned")
+
+    # checking if user is an owner in the channel the message is in
+    is_owner = False
+    for channel in data['channels']:
+
+        if channel_id == channel['channel_id']:
+            
+            for user in channel['owner_members']:
+
+                if u_id == user['u_id']:
+                    is_owner = True
+                    break
+
+            break
+
+    if is_owner == False:
+        raise AccessError("User is not a member of the channel or an owner in the channel")
+
+    # pin message if above errors aren't raised
+    for message in data['messages']:
+
+        if message_id == message['message_id']:
+            message['is_pinned'] = True
+            break
+
+    return {}
+
+def message_unpin(token, message_id):
+    """
+    Given a message within a channel, remove it's mark as unpinned
+        Args:
+            token: String which is used as an authorisation hash
+            message_id: Integer which is used as a unique identifier for a message
+        Raises:
+            InputError: An error that occurs when message_id is not a valid message or message with ID message_id is already unpinned
+            AccessError: An error that occurs when the user is not a member of the channel that the message is within or the user is not an owner of the channel
+    """
+
+    # checking for valid token and retrieving user id
+    token_exist = False
+    u_id = -1
+    for user in data["users"]:
+
+        if user["token"] == token:
+            u_id = user["u_id"]
+            break
+
+    if token_exist == False:
+        raise AccessError("Token does not exist")
+
+    # checking for valid message and whether message is already pinned, and retrieving channel id for the channel the message is sent in
+    message_exist = False
+    is_unpinned = False
+    for message in data['messages']:
+
+        if message_id == message['message_id']:
+
+            if message['is_pinned'] == False:
+                is_unpinned = True
+
+            message_exist = True
+            channel_id = message['channel_id']
+            break
+
+    if message_exist == False:
+        raise InputError("Message is not a valid message")
+
+    if is_unpinned == True:
+        raise InputError("Message is already unpinned")
+
+    # checking if user is an owner in the channel the message is in
+    is_owner = False
+    for channel in data['channels']:
+
+        if channel_id == channel['channel_id']:
+            
+            for user in channel['owner_members']:
+
+                if u_id == user['u_id']:
+                    is_owner = True
+                    break
+
+            break
+
+    if is_owner == False:
+        raise AccessError("User is not a member of the channel or an owner in the channel")
+
+    # unpin message if above errors aren't raised
+    for message in data['messages']:
+
+        if message_id == message['message_id']:
+            message['is_pinned'] = False
+            break
+
     return {}
 
 def message_sendlater(token, channel_id, message, time_sent):
@@ -194,3 +447,4 @@ def message_sendlater(token, channel_id, message, time_sent):
     return {
         "message_id": message_id
     }
+    

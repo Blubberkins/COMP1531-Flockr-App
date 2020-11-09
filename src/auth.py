@@ -4,6 +4,11 @@ from error import AccessError
 import re
 import hashlib
 import jwt
+import random
+import string
+import smtplib
+import threading
+import time
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -17,13 +22,20 @@ def valid_email(email):
 def encode_jwt(email):
     SECRET = "COMP1531"
     non_encoded_token = {'email' : email}
-    token = jwt.encode(non_encoded_token, SECRET, algorithm ='HS256').decode('utf-8')
+    token = jwt.encode(non_encoded_token, SECRET, algorithm ='HS256')
     return token
 
 def decode_jwt(token):
     SECRET = "COMP1531"
     email = jwt.decode(token, SECRET, algorithm = 'HS256')
     return email[("email")]
+
+def get_reset_code():
+    # Creates a random string of letters and numbers to be used for resetting password
+    chars = string.ascii_letters + string.digits
+    result = ''.join(random.choice(chars) for char in range(8))
+    return result
+
 
 def auth_login(email, password):
     global data
@@ -127,3 +139,52 @@ def auth_register(email, password, name_first, name_last):
         "u_id": u_id,
         "token": encode_jwt(email),
     }
+
+def auth_passwordreset_request(email):
+    global data
+    # This code is influenced by "https://stackabuse.com/how-to-send-emails-with-gmail-using-python/"
+    generatedcode = get_reset_code()
+    message = "Your reset code is:\n" + generatedcode
+
+    gmail_user = 'bigmanthebiggerman@gmail.com'
+    gmail_password = 'python123!'
+
+    sent_from = gmail_user
+    to = [email]
+    subject = "Reset password"
+    body = message
+
+    email_text = """\
+    From: %s
+    To: %s
+    Subject: %s
+
+    %s
+    """ % (sent_from, ", ".join(to), subject, body)
+
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(gmail_user, gmail_password)
+        server.sendmail(sent_from, to, email_text)
+        server.close()
+
+        for user in data["users"]: 
+            if email == user["email"]:
+                user["reset_code"] = generatedcode
+    
+    except:
+        raise InputError("Unable to send reset code")
+
+
+def auth_passwordreset_reset(reset_code, new_password):
+    if len(new_password) < 6:
+        raise InputError("Invalid password")
+    if len(reset_code) != 8:
+        raise InputError("Reset code is not a valid reset code")
+    # Assumes the caller of this function is the reset_code they enter in
+    for user in data["users"]:
+        if "reset_code" in user.keys():
+            if reset_code == user["reset_code"]:
+                user["password"] = new_password
+                del user["reset_code"]
