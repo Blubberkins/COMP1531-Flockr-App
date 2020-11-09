@@ -189,22 +189,22 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
     # Saves the image at the img_url locally with the following filename
     urllib.request.urlretrieve(img_url, "profile_picture.jpg")
 
-    if "jpg" not in img_url or "jpeg" not in img_url:
+    if ".jpg" not in img_url or ".jpeg" not in img_url:
         raise InputError("Image is not in jpg/jpeg format")
 
     open_image = Image.open("profile_picture.jpg")
     width, height = open_image.size
 
-    if x_start < 0 or x_start > width:
+    if x_start < 0 or x_start >= width:
         raise InputError("x1 out of bounds")
         
-    if  x_end < 0 or x_end > width:
+    if  x_end <= 0 or x_end > width:
         raise InputError("x2 out of bounds")
     
-    if y_start < 0 or y_start > height:
+    if y_start < 0 or y_start >= height:
         raise InputError("y1 out of bounds")
         
-    if y_end < 0 or y_end > height:
+    if y_end <= 0 or y_end > height:
         raise InputError("y2 out of bounds")
         
     # Puts the passed in x and y positions into a tuple
