@@ -35,7 +35,7 @@ def test_standup_start_invalid_token():
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
 
     with pytest.raises(AccessError):
-        standup.standup_start("", channel_id, 10)
+        standup.standup_start("", channel_id["channel_id"], 10)
         standup.standup_start(login_user['token'], channel_id["channel_id"], 10)
 
 def test_standup_start_success():
@@ -87,7 +87,7 @@ def test_standup_send_invalid_id():
     invalid_channel_id = -1
 
     with pytest.raises(InputError):
-        standup.standup_active(login_owner['token'], invalid_channel_id, "sample message")
+        standup.standup_send(login_owner['token'], invalid_channel_id, "sample message")
 
 def test_standup_send_invalid_message():
     clear()
