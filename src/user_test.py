@@ -211,7 +211,7 @@ def test_user_profile_handle_already_in_use():
         
 # TEST FUNCTIONS FOR USER_PROFILE_UPLOADPHOTO
 # Failure for upload photo
-def test_user_profile_invalid_url():
+def test_user_profile_invalid_token():
     "Tests for failure when the token is invalid"
     clear()
     auth.auth_register("validemail@gmail.com", "password123", "New", "User")
