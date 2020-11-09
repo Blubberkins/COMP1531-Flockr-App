@@ -218,7 +218,7 @@ def test_user_profile_invalid_token():
     invalid_token = "invalid_token"
     img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
     
-    with pytest.raises(InputError):
+    with pytest.raises(AccessError):
         user.user_profile_uploadphoto(invalid_token, img_url, 0, 0, 500, 500)
         
 def test_user_profile_invalid_url():
