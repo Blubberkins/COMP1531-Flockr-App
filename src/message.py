@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from data import data
 from error import AccessError, InputError
+from channel import channel_messages
 
 def message_send(token, channel_id, message):
     global data
@@ -87,6 +88,7 @@ def message_remove(token, message_id):
     return {}
 
 def message_edit(token, message_id, message):
+    global data
     # Check message length
     if len(message) > 1000:
         raise InputError("Message is larger than 1000 characters")
@@ -117,3 +119,118 @@ def message_edit(token, message_id, message):
     data["messages"][message_index]["message"] = message
     return {}
     
+def message_react(token, message_id, react_id):
+    global data
+
+    # Test whether the react_id is 1
+    if react_id != 1:
+        raise InputError("Invalid react ID")
+
+    # Test whether message exists
+    message_index = -1
+    message_channel_id = -1
+    is_real_message = False
+    for x in range(len(data["messages"])):
+        if data["messages"][x]["message_id"] == message_id:
+            is_real_message = True
+            message_index = x
+            message_channel_id = data["messages"][x]["channel_id"]
+            break
+    if not is_real_message:
+        raise InputError("Specified message does not exist")
+
+    # Test whether the user is allowed to react to that message
+    u_id = -1
+    for user in data["users"]:
+        if user["token"] == token:
+            user["u_id"] = u_id
+            break
+    
+    is_in_channel = False
+    for x in range(len(data["channels"])):
+        if data["channels"][x]["channel_id"] == message_channel_id:
+            for index in range(len(data["channels"][x]["all_members"])):
+                if data["channels"][x]["all_members"][index]["u_id"] == u_id:
+                    is_in_channel = True
+                    break
+            break
+    if not is_in_channel:
+        raise InputError("User is not currently in the channel of the message they are trying to react to")
+
+    # Test whether the message is already reacted by the user
+    is_reacted = False
+    for message in data["messages"]:
+        if message["message_id"] == message_id:
+            if u_id in message["reacted_by"]:
+                is_reacted = True
+                break
+    if is_reacted:
+        raise InputError("User has already reacted to this message")
+
+    # Add user to reacted_by
+    for message in data["messages"]:
+        if message["message_id"] == message_id:
+            message["reacted_by"].append(u_id)
+            break
+    
+    return {}
+
+def message_unreact(token, message_id, react_id):
+    global data
+
+    # Test whether the react_id is 1
+    if react_id != 1:
+        raise InputError("Invalid react ID")
+
+    # Test whether message exists
+    message_index = -1
+    message_channel_id = -1
+    is_real_message = False
+    for x in range(len(data["messages"])):
+        if data["messages"][x]["message_id"] == message_id:
+            is_real_message = True
+            message_index = x
+            message_channel_id = data["messages"][x]["channel_id"]
+            break
+    if not is_real_message:
+        raise InputError("Specified message does not exist")
+
+    # Test whether the user is allowed to react to that message
+    u_id = -1
+    for user in data["users"]:
+        if user["token"] == token:
+            user["u_id"] = u_id
+            break
+    
+    is_in_channel = False
+    for x in range(len(data["channels"])):
+        if data["channels"][x]["channel_id"] == message_channel_id:
+            for index in range(len(data["channels"][x]["all_members"])):
+                if data["channels"][x]["all_members"][index]["u_id"] == u_id:
+                    is_in_channel = True
+                    break
+            break
+    if not is_in_channel:
+        raise InputError("User is not currently in the channel of the message they are trying to react to")
+
+    # Test whether the message is already reacted by the user
+    is_reacted = False
+    for message in data["messages"]:
+        if message["message_id"] == message_id:
+            if u_id in message["reacted_by"]:
+                is_reacted = True
+                break
+    if not is_reacted:
+        raise InputError("User has not reacted to this message yet")
+
+    # Remove user from reacted_by
+    for message in data["messages"]:
+        if message["message_id"] == message_id:
+            message["reacted_by"].remove(u_id)
+            break
+
+    return {}
+
+
+
+
