@@ -12,6 +12,7 @@ import channels
 import message
 import other
 import user
+import standup
 
 
 def defaultHandler(err):
