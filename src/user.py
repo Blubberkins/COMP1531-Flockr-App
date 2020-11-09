@@ -15,6 +15,12 @@ def valid_email(email):
     else:         
         return False
 
+def valid_token(token):
+    for user in data['users']:
+        if user['token'] == token:
+            return True
+    return False
+
 def user_profile(token, u_id):
     """Returns information about a valid user.
 
@@ -32,7 +38,7 @@ def user_profile(token, u_id):
 
     global data
 
-    if token == "invalid_token":
+    if not valid_token(token):
         raise AccessError("Invalid permissions")
 
     if data["users"] != []:
@@ -65,8 +71,9 @@ def user_profile_setname(token, name_first, name_last):
     """
 
     global data 
+
     # Check if token is valid
-    if token == "invalid_token":
+    if not valid_token(token):
         raise AccessError("Invalid permissions")
 
     # Check if first name is valid
@@ -102,7 +109,7 @@ def user_profile_setemail(token, email):
     global data
 
     # Check if token called is valid
-    if token == "invalid_token":
+    if not valid_token(token):
         raise AccessError("Invalid permissions")
 
     # Check if email is valid
@@ -138,7 +145,7 @@ def user_profile_sethandle(token, handle_str):
     global data
 
     # Check if token called is valid
-    if token == "invalid_token":
+    if not valid_token(token):
         raise AccessError("Invalid permissions")
     
     # Check if handle is valid
@@ -179,7 +186,7 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
     global data 
 
     # Check if token called is valid
-    if token == "invalid_token":
+    if not valid_token(token):
         raise AccessError("Invalid permissions")
 
     is_valid = validators.url(img_url)
