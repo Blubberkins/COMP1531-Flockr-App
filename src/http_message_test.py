@@ -346,3 +346,102 @@ def test_http_message_edit_owner_success(url):
     r = requests.get(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
     assert payload["messages"][0]["message"] == "edited message"
+
+# TEST FUNCTIONS FOR HTTP_MESSAGE_SENDLATER
+# Failure for send later
+def test_http_message_sendlater_invalid_token(url):
+    "Tests for failure when the token is invalid"
+    clear()
+    login_owner = reg_owner(url)
+    channel_info = create_channel(url, login_owner)
+
+    invalid_token = {
+        "token": login_owner["token"],
+        "channel_id": channel_info["channel_id"],
+        "message": "Hello World",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_token)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid permissions</p>"
+    assert payload["code"] == 400
+
+def test_http_message_sendlater_invalid_channel(url):
+    "Tests for failure when the user inputs an invalid channel_id"
+    clear()
+    login_owner = reg_owner(url)
+
+    invalid_channel_id1 = {
+        "token": login_owner["token"],
+        "channel_id": -1,
+        "message": "Hello World",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_channel_id1)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid channel</p>"
+    assert payload["code"] == 400
+
+    invalid_channel_id2 = {
+        "token": login_owner["token"],
+        "channel_id": 100,
+        "message": "Python is cool Python is cool Python is cool Python is cool Python is cool Python is cool Python is cool Python is cool",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_channel_id2)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid channel</p>"
+    assert payload["code"] == 400
+
+def test_http_message_sendlater_over_1000_chars(url):
+    "Tests for failure when the user inputs a message over 1000 characters in length"
+    clear()
+    login_owner = reg_owner(url)
+    channel_info = create_channel(url, login_owner)
+
+    msg_over_1000 = {
+        "token": login_owner["token"],
+        "channel_id": channel_info["channel_id"],
+        "message": "Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musica, sport etc, litot Europa usa li sam vocabular. Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov lingua franca: On refusa continuar payar custosi traductores. At solmen va esser necessi far uniform grammatica, pronunciation e plu sommun paroles. Ma quande lingues coalesce, li grammatica del resultant lingue es plu simplic e regulari quam ti del coalescent lingues. Li nov lingua franca va esser plu simplic e regulari quam li existent Europan lingues. It va esser tam simplic quam Occidental in fact, it va esser Occidental. A un Angleso it va semblar un simplificat Angles, quam un skeptic Cambridge amico dit me que Occidental es. Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musica, sport etc, litot Europa usa li sam vocabular. Li lingues differe solmen in li g",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=msg_over_1000)
+    payload = r.json()
+    assert payload["message"] == "<p>Message is larger than 1000 characters</p>"
+    assert payload["code"] == 400
+
+def test_http_message_sendlater_time_in_past(url):
+    "Tests for failure when the user inputs a time that has already passed"
+    clear()
+    login_owner = reg_owner(url)
+    channel_info = create_channel(url, login_owner)
+
+    invalid_time = {
+        "token": login_owner["token"],
+        "channel_id": channel_info["channel_id"],
+        "message": "Hello World",
+        "time_sent": 1577836800
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_time)
+    payload = r.json()
+    assert payload["message"] == "<p>Time has already passed</p>"
+    assert payload["code"] == 400
+    
+def test_http_message_sendlater_access_error(url):
+    "Tests for failure when a user tries to send a message later in a channel they are not in"
+    clear()
+    login_owner = reg_owner(url)
+    channel_info = create_channel(url, login_owner)
+    login_user = reg_user(url)
+
+    invalid_access = {
+        "token": login_user["token"],
+        "channel_id": channel_info["channel_id"],
+        "message": "Hello World",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_access)
+    payload = r.json()
+    assert payload["message"] == "<p>The user has not joined the channel they are trying to post to</p>"
+    assert payload["code"] == 400
+    

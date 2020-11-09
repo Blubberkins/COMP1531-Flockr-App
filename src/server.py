@@ -142,6 +142,17 @@ def http_message_edit():
     response = message.message_edit(data['token'], data['message_id'], data['message'])
     return dumps(response)
 
+@APP.route("/message/sendlater", methods=['POST'])
+def http_message_sendlater():
+    data = request.get_json()
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
+    time_sent = int(data["time_sent"])
+
+    response = message.message_edit(token, channel_id, message, time_sent)
+    return dumps(response)
+
 # OTHER FUNCTIONS
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
