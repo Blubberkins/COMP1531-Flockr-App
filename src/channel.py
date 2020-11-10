@@ -105,6 +105,7 @@ def channel_messages(token, channel_id, start):
         if message["channel_id"] == channel_id:
             temp = message
             temp.pop("channel_id")
+            temp["reacts"] = {}
             temp["reacts"]["react_id"] = 1
             temp["reacts"]["u_ids"] = message["reacted_by"]
             temp["reacts"]["is_this_user_reacted"] = False

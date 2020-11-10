@@ -45,15 +45,16 @@ def message_send(token, channel_id, message):
     current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
     message_dict["time_created"] = current_time
     message_dict["message_id"] = data["num_messages"]
-    return_dict = {}
-    return_dict["message_id"] = data["num_messages"]
     message_dict["u_id"] = u_id
     message_dict["message"] = message
     # Add channel_id data for database
     message_dict["channel_id"] = channel_id
+    message_dict["is_pinned"] = False
+    message_dict["reacted_by"] = []
+    message_dict["channel_id"] = channel_id
+    return_dict = {}
+    return_dict["message_id"] = data["num_messages"]
     data["messages"].append(message_dict)
-    # Remove channel_id key for return value
-    #return_dict.pop("channel_id")
     data["num_messages"] += 1
     return return_dict
 
