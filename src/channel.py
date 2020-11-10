@@ -103,7 +103,7 @@ def channel_messages(token, channel_id, start):
     messages_in_channel = []
     for message in data["messages"]:
         if message["channel_id"] == channel_id:
-            temp = message
+            temp = message.copy()
             temp.pop("channel_id")
             temp["reacts"] = {}
             temp["reacts"]["react_id"] = 1

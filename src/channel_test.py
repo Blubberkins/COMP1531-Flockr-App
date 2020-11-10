@@ -147,18 +147,16 @@ def test_channel_messages_max_messages_success():
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)   
 
-    x = 0
-    while x < 50:
+    for x in range(50):
         message.message_send(login_owner['token'], channel_id['channel_id'], 'example message')
-        x += 1
     
-    channel_messages = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0) 
-    channel_messages2 = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 1) 
+    channel_messages = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 1) 
+    channel_messages2 = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0) 
     
-    assert channel_messages['start'] == 0
-    assert channel_messages['end'] == 50
-    assert channel_messages2['start'] == 1
-    assert channel_messages2['end'] == -1
+    assert channel_messages['start'] == 1
+    assert channel_messages['end'] == -1
+    assert channel_messages2['start'] == 0
+    assert channel_messages2['end'] == 50
 
 
 # Tests for channel_leave
