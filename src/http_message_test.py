@@ -96,6 +96,42 @@ def create_unique_channel(url, user, name, is_public):
     r = requests.post(url + "channels/create", json=channel)
     return r.json()
 
+#pin message function
+def pin(url, user, message):
+    pin_message = {
+        'token': user['token'],
+        'message_id': message['message_id']
+    }
+    r = requests.post(url + "message/pin", json=pin_message)
+    return r.json()
+
+#unpin message function
+def unpin(url, user, message):
+    unpin_message = {
+        'token': user['token'],
+        'message_id': message['message_id']
+    }
+    r = requests.post(url + "message/unpin", json=unpin_message)
+    return r.json()
+
+#join channel function
+def join_channel(url, user, channel):
+    join = {
+        'token': user['token'],
+        'channel_id': channel['channel_id']
+    }
+    r = requests.post(url + "channel/join", json=join)
+    return r.json()
+
+#leave channel function
+def leave_channel(url, user, channel):
+    leave = {
+        'token': user['token'],
+        'channel_id': channel['channel_id']
+    }
+    r = requests.post(url + "channel/leave", json=leave)
+    return r.json()
+
 # Tests for message_send
 def test_http_message_send_input_error(url):
     clear()

@@ -124,4 +124,3 @@ def test_message_edit_empty_edit():
 
     message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
     assert message.message_edit(login_owner["token"], 0, "") == {}
-    
