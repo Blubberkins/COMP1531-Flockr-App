@@ -12,6 +12,7 @@ import channels
 import message
 import other
 import user
+import standup
 
 
 def defaultHandler(err):
@@ -58,6 +59,18 @@ def http_auth_logout():
 def http_auth_register():
     data = request.get_json()
     response = auth.auth_register(data['email'], data['password'], data['name_first'], data['name_last'])
+    return dumps(response)
+
+@APP.route('/auth/passwordreset/request', methods=['POST'])
+def http_auth_passwordreset_request():
+    data = request.get_json()
+    response = auth.auth_passwordreset_request(data['email'])
+    return dumps(response)
+
+@APP.route('/auth/passwordreset/reset', methods=['POST'])
+def http_auth_passwordreset_reset():
+    data = request.get_json()
+    response = auth.auth_passwordreset_request(data['reset_code'], data['new_password'])
     return dumps(response)
 
 # CHANNEL FUNCTIONS
@@ -142,16 +155,15 @@ def http_message_edit():
     response = message.message_edit(data['token'], data['message_id'], data['message'])
     return dumps(response)
 
-@APP.route("/message/pin", methods=["POST"])
-def http_message_pin():
+@APP.route("/message/sendlater", methods=['POST'])
+def http_message_sendlater():
     data = request.get_json()
-    response = message.message_pin(data["token"], data["message_id"])
-    return dumps(response)
+    token = data["token"]
+    channel_id = data["channel_id"]
+    message = data["message"]
+    time_sent = int(data["time_sent"])
 
-@APP.route("/message/unpin", methods=["POST"])
-def http_message_unpin():
-    data = request.get_json()
-    response = message.message_unpin(data["token"], data["message_id"])
+    response = message.message_edit(token, channel_id, message, time_sent)
     return dumps(response)
 
 # OTHER FUNCTIONS
@@ -194,6 +206,37 @@ def http_user_profile_setemail():
 def http_user_profile_sethandle():
     data = request.get_json()
     response = user.user_profile_sethandle(data["token"], data["handle_str"])
+    return dumps(response)
+
+@APP.route("/user/profile/uploadphoto", methods = ["POST"])
+def http_user_profile_uploadphoto():
+    data = request.get_json()
+    token = data["token"]
+    img_url = data["img_url"]
+    x_start = data["x_start"]
+    y_start = data["y_start"]
+    x_end = data["x_end"]
+    y_end = data["y_end"]
+    response = user.user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end)
+    return dumps(response)
+
+# STANDUP FUNCTIONS
+@APP.route("/standup/start", methods=['POST'])
+def http_standup_start():
+    data = request.get_json()
+    response = standup.standup_start(data['token'], data['channel_id'], data['length'])
+    return dumps(response)
+
+@APP.route("/standup/active", methods=['GET'])
+def http_standup_active():
+    token = request.args.get("token")
+    channel_id = int(request.args.get("channel_id"))
+    return dumps(standup.standup_active(token, channel_id))
+
+@APP.route("/standup/send", methods=['POST'])
+def http_standup_send():
+    data = request.get_json()
+    response = standup.standup_start(data['token'], data['channel_id'], data['message'])
     return dumps(response)
 
 if __name__ == "__main__":

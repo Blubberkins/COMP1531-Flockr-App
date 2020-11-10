@@ -314,3 +314,30 @@ def test_http_register_invalid_last_name(url):
     payload = r.json()
     assert payload['message'] == "<p>Invalid last name</p>"
     assert payload['code'] == 400
+
+# Tests for http_auth_passwordreset_request are not blackbox tests
+
+# Test for http_auth_passwordreset_reset
+def test_http_passwordreset_reset_invalid_reset_code(url):
+    clear()
+
+    invalid_reset_code = {
+        'reset_code' : "",
+        'new_password' : "newpassword123"
+    }
+    r = requests.post(url + "auth/passwordreset/reset", json=invalid_reset_code)
+    payload = r.json()
+    assert payload['message'] == "<p>Reset code is not a valid reset code<p>"
+    assert payload['code'] == 400
+
+def test_http_passwordreset_reset_invalid_password(url):
+    clear()
+
+    invalid_password = {
+        'reset_code' : "validstr",
+        'new_password' : "pass"
+    }
+    r = requests.post(url + "auth/passwordreset/reset", json=invalid_password)
+    payload = r.json()
+    assert payload['message'] == "<p>Invalid password<p>"
+    assert payload['code'] == 400
