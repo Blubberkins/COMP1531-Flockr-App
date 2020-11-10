@@ -624,4 +624,273 @@ def test_http_message_sendlater_access_error(url):
     payload = r.json()
     assert payload["message"] == "<p>The user has not joined the channel they are trying to post to</p>"
     assert payload["code"] == 400
+
+    # Tests for message_react
+def test_http_message_react_message_does_not_exist(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    react = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 1
+    }
+
+    r = requests.post(url + "message/react", json=react)
+    payload = r.json()
+    assert payload["message"] == "<p>Specified message does not exist</p>"
+    assert payload["code"] == 400
+
+def test_http_message_react_removed_message(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+    
+    remove = {
+        "token": login_owner["token"],
+        "message_id": 0
+    }
+
+    requests.delete(url + "message/remove", json=remove)
+
+    react = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 1
+    }
+
+    r = requests.post(url + "message/react", json=react)
+    payload = r.json()
+    assert payload["message"] == "<p>Specified message does not exist</p>"
+    assert payload["code"] == 400
+
+def test_http_message_react_message_in_private_channel(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", False)
+    login_user = reg_user(url)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    react = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 1
+    }
+
+    r = requests.post(url + "message/react", json=react)
+    payload = r.json()
+    assert payload["message"] == "<p>User is not currently in the channel of the message they are trying to react to</p>"
+    assert payload["code"] == 400
+
+def test_http_message_react_react_id_0(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    react = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 0
+    }
+
+    r = requests.post(url + "message/react", json=react)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid react ID</p>"
+    assert payload["code"] == 400
+
+def test_http_message_react_positive_react_id(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    react = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 10000
+    }
+
+    r = requests.post(url + "message/react", json=react)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid react ID</p>"
+    assert payload["code"] == 400
+
+def test_http_message_react_negative_react_id(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    react = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": -10000
+    }
+
+    r = requests.post(url + "message/react", json=react)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid react ID</p>"
+    assert payload["code"] == 400
+
+def test_http_message_react_already_reacted(urk):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    react = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 1
+    }
+
+    requests.post(url + "message/react", json=react)
+    r = requests.post(url + "message/react", json=react)
+    payload = r.json()
+    assert payload["message"] == "<p>User has already reacted to this message</p>"
+    assert payload["code"] == 400
+
+# Tests for message_unreact
+
+def test_http_message_unreact_message_does_not_exist(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    unreact = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 1
+    }
+
+    r = requests.post(url + "message/unreact", json=unreact)
+    payload = r.json()
+    assert payload["message"] == "<p>Specified message does not exist</p>"
+    assert payload["code"] == 400
+
+def test_http_message_unreact_removed_message(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+    
+    remove = {
+        "token": login_owner["token"],
+        "message_id": 0
+    }
+
+    requests.delete(url + "message/remove", json=remove)
+
+    unreact = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 1
+    }
+
+    r = requests.post(url + "message/unreact", json=unreact)
+    payload = r.json()
+    assert payload["message"] == "<p>Specified message does not exist</p>"
+    assert payload["code"] == 400
+
+def test_http_unreact_message_in_private_channel(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", False)
+    login_user = reg_user(url)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    unreact = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 1
+    }
+
+    r = requests.post(url + "message/unreact", json=unreact)
+    payload = r.json()
+    assert payload["message"] == "<p>User is not currently in the channel of the message they are trying to react to</p>"
+    assert payload["code"] == 400
+
+def test_http_message_unreact_react_id_0(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    unreact = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 0
+    }
+
+    r = requests.post(url + "message/unreact", json=unreact)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid react ID</p>"
+    assert payload["code"] == 400   
+
+def test_http_message_unreact_positive_react_id(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    unreact = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 10000
+    }
+
+    r = requests.post(url + "message/unreact", json=unreact)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid react ID</p>"
+    assert payload["code"] == 400
+
+def test_http_message_unreact_negative_react_id(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    unreact = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": -10000
+    }
+
+    r = requests.post(url + "message/unreact", json=unreact)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid react ID</p>"
+    assert payload["code"] == 400
+
+def test_http_message_unreact_message_has_no_reacts(url):
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_unique_channel(url, login_owner, "channel", True)
+
+    msg_send(url, login_owner, channel_id, "example_message")
+
+    unreact = {
+        "token": login_owner["token"],
+        "message_id": 0,
+        "react_id": 1
+    }
+
+    r = requests.post(url + "message/unreact", json=unreact)
+    payload = r.json()
+    assert payload["message"] == "<p>User has not reacted to this message yet</p>"
+    assert payload["code"] == 400
+
     
