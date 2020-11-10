@@ -9,6 +9,10 @@ from other import clear
 
 # Tests for message_send
 def test_message_send_input_error():
+    '''
+    Tests all of the possible input errors (>1000 char string, invalid channel_id)
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -21,6 +25,10 @@ def test_message_send_input_error():
         message.message_send(login_owner["token"], non_existent_channel_id, "sample message")
 
 def test_message_send_access_error():
+    '''
+    Tests the access error when a user tries to send a message to a channel they are not in
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -30,6 +38,10 @@ def test_message_send_access_error():
         message.message_send(login_user["token"], channel_id["channel_id"], "sample message")
 
 def test_message_send_success():
+    '''
+    Tests when a message is successfully sent to a channel, including the max length message case
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -43,6 +55,10 @@ def test_message_send_success():
 
 # Tests for message_remove
 def test_message_remove_no_messages():
+    '''
+    Tests the case where the user tries to remove a message in a channel that has no messages
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channels.channels_create(login_owner['token'], "channel", True)
@@ -51,6 +67,10 @@ def test_message_remove_no_messages():
         message.message_remove(login_owner['token'], 1)
 
 def test_message_remove_removed_message():
+    '''
+    Tests the case where the user tries to remove a message that has already been removed
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -61,6 +81,11 @@ def test_message_remove_removed_message():
         message.message_remove(login_owner["token"], 0)
 
 def test_message_remove_not_message_sender():
+    '''
+    Tests the case where the user tries to remove a message when they are not the original
+    message sender or a flock owner
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -73,6 +98,11 @@ def test_message_remove_not_message_sender():
         message.message_remove(login_user, 0)
 
 def test_message_admin_remove_success():
+    '''
+    Test the case when an owner of the flock removes a message 
+    they did not send originally
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -85,6 +115,11 @@ def test_message_admin_remove_success():
 
 # Tests for message_edit
 def test_message_edit_1000_characters():
+    '''
+    Tests the assumption that message edits that are over 1000 characters 
+    will not be accepted
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -96,6 +131,11 @@ def test_message_edit_1000_characters():
         message.message_edit(login_owner["token"], 0, "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur? At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores e")
 
 def test_message_edit_not_message_sender():
+    '''
+    Tests when the user tries to edit a message they did 
+    not send originally and they are also not a flock owner
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -108,6 +148,11 @@ def test_message_edit_not_message_sender():
         message.message_edit(login_user["token"], 0, "edited message")
 
 def test_message_owner_success():
+    '''
+    Tests the power of a flock owner to edit a message
+    that they did not send originally
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -119,6 +164,11 @@ def test_message_owner_success():
     assert message.message_edit(login_owner["token"], 0, "edited message") == {}
 
 def test_message_edit_empty_edit():
+    '''
+    Tests the functionally that calling the function with
+    an empty string deletes the message
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -129,14 +179,23 @@ def test_message_edit_empty_edit():
 # Tests for message/react
 
 def test_message_react_message_does_not_exist():
+    '''
+    Tests when the user tries to react to a message 
+    that does not exist
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
-    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    channels.channels_create(login_owner['token'], "channel", True)
 
     with pytest.raises(InputError):
         message.message_react(login_owner["token"], 0, 1)
 
 def test_message_react_removed_message():
+    '''
+    Tests when the user tries to react to a message that has been removed
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -148,6 +207,10 @@ def test_message_react_removed_message():
         message.message_react(login_owner["token"], 0, 1)
 
 def test_message_react_message_in_private_channel():
+    '''
+    Tests when the user tries to react to a message that is in a private channel
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", False)
@@ -159,6 +222,11 @@ def test_message_react_message_in_private_channel():
         message.message_react(login_user["token"], 0, 1)
 
 def test_message_react_react_id_0():
+    '''
+    Tests when the user tries to react with react id 0 
+    (react id == 1 is the only valid id as of 10/11/2020)
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -169,6 +237,11 @@ def test_message_react_react_id_0():
         message.message_react(login_owner["token"], 0, 0)
 
 def test_message_react_negative_react_id():
+    '''
+    Tests when the user tries to react with react id < 0
+    (react id == 1 is the only valid id as of 10/11/2020)
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -181,6 +254,11 @@ def test_message_react_negative_react_id():
         message.message_react(login_owner["token"], 0, -100000)
 
 def test_message_react_invalid_positive_react_id():
+    '''
+    Tests when the user tries to react with react id > 0
+    (react id == 1 is the only valid id as of 10/11/2020)
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -193,6 +271,10 @@ def test_message_react_invalid_positive_react_id():
         message.message_react(login_owner["token"], 0, 100000)
 
 def test_message_react_already_reacted():
+    '''
+    Tests when the user tries to react to a message they have already reacted to
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -204,6 +286,10 @@ def test_message_react_already_reacted():
         message.message_react(login_owner["token"], 0, 1)
 
 def test_message_react_blackbox_success():
+    '''
+    Tests the blackbox success case for reacting to a message
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -212,6 +298,10 @@ def test_message_react_blackbox_success():
     assert message.message_react(login_owner["token"], 0, 1) == {}
 
 def test_message_react_whitebox_success():
+    '''
+    Tests the whitebox success case for reacting to a message
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -221,19 +311,27 @@ def test_message_react_whitebox_success():
     message_data = channel.channel_messages(login_owner["token"], channel_id["channel_id"], 0)
     assert message_data["messages"][0]["reacts"]["react_id"] == 1
     assert message_data["messages"][0]["reacts"]["u_ids"] == [login_owner["u_id"]]
-    assert message_data["messages"][0]["reacts"]["is_this_user_reacted"] == True
+    assert message_data["messages"][0]["reacts"]["is_this_user_reacted"]
 
 # Tests for message_unreact
 
 def test_message_unreact_message_does_not_exist():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
-    channel_id = channels.channels_create(login_owner['token'], "channel", True)
+    channels.channels_create(login_owner['token'], "channel", True)
 
     with pytest.raises(InputError):
         message.message_unreact(login_owner["token"], 0, 1)
 
 def test_message_unreact_removed_message():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -245,6 +343,10 @@ def test_message_unreact_removed_message():
         message.message_unreact(login_owner["token"], 0, 1)
 
 def test_message_unreact_message_in_private_channel():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", False)
@@ -256,6 +358,10 @@ def test_message_unreact_message_in_private_channel():
         message.message_unreact(login_user["token"], 0, 1)
 
 def test_message_unreact_react_id_0():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -266,6 +372,10 @@ def test_message_unreact_react_id_0():
         message.message_unreact(login_owner["token"], 0, 0)
 
 def test_message_unreact_negative_react_id():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -278,6 +388,10 @@ def test_message_unreact_negative_react_id():
         message.message_unreact(login_owner["token"], 0, -100000)
 
 def test_message_unreact_invalid_positive_react_id():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -290,6 +404,10 @@ def test_message_unreact_invalid_positive_react_id():
         message.message_unreact(login_owner["token"], 0, 100000)
 
 def test_message_unreact_message_has_no_reacts():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -300,6 +418,10 @@ def test_message_unreact_message_has_no_reacts():
         message.message_unreact(login_owner["token"], 0, 1)
 
 def test_message_unreact_blackbox_success():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -309,6 +431,10 @@ def test_message_unreact_blackbox_success():
     assert message.message_unreact(login_owner["token"], 0, 1) == {}
 
 def test_message_unreact_whitebox_success():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -319,7 +445,7 @@ def test_message_unreact_whitebox_success():
     message_data = channel.channel_messages(login_owner["token"], channel_id["channel_id"], 0)
     assert message_data["messages"][0]["reacts"]["react_id"] == 1
     assert message_data["messages"][0]["reacts"]["u_ids"] == []
-    assert message_data["messages"][0]["reacts"]["is_this_user_reacted"] == False
+    assert not message_data["messages"][0]["reacts"]["is_this_user_reacted"]
     
 # Tests for message_pin
 
@@ -449,13 +575,13 @@ def test_message_unpin_not_owner():
 # Failure for send later 
 def test_message_sendlater_invalid_token():
     clear()
-    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
+    auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     token = "invalid_token"
     channel_info = channels.channels_create(token, "channel", True)
     channel_id = channel_info["channel_id"]
 
     with pytest.raises(AccessError):
-         message.message_sendlater(token, channel_id, "Hello World", 1609459200)
+        message.message_sendlater(token, channel_id, "Hello World", 1609459200)
 
 def test_message_send_later_invalid_channel():
     clear()

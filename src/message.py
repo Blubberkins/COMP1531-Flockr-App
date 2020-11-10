@@ -1,25 +1,20 @@
 from datetime import datetime, timezone
+import threading
 from data import data
 from error import AccessError, InputError
-import time
-import threading
-from channel import channel_messages
 
 def message_send(token, channel_id, message):
+    '''
+    Insert docstring here
+    '''
     global data
     # Check InputError
     valid_channel_id = False
     channel_index = 0
-    '''for channels in data["channels"]:
-        if channels["channel_id"] == channel_id:
+    for channel in data["channels"]:
+        if channel["channel_id"] == channel_id:
             valid_channel_id = True
-            channel_index = channels
-            break'''
-    for x in range(len(data["channels"])):
-        if data["channels"][x]["channel_id"] == channel_id:
-            valid_channel_id = True
-            channel_index = x
-            break
+            break 
     if not valid_channel_id:
         raise InputError("Invalid channel")
     if len(message) > 1000:
@@ -32,9 +27,12 @@ def message_send(token, channel_id, message):
         if users["token"] == token:
             u_id = users["u_id"]
             break
-    for users in data["channels"][channel_index]["all_members"]:
-        if users["u_id"] == u_id:
-            valid_token = True
+    for channel in data["channels"]:
+        if channel["channel_id"] == channel_id:
+            for users in channel["all_members"]:
+                if users["u_id"] == u_id:
+                    valid_token = True
+                    break
             break
     if not valid_token:
         raise AccessError("The user has not joined the channel they are trying to post to")
@@ -47,6 +45,7 @@ def message_send(token, channel_id, message):
     message_dict["message_id"] = data["num_messages"]
     message_dict["u_id"] = u_id
     message_dict["message"] = message
+
     # Add channel_id data for database
     message_dict["channel_id"] = channel_id
     message_dict["is_pinned"] = False
@@ -59,29 +58,32 @@ def message_send(token, channel_id, message):
     return return_dict
 
 def message_remove(token, message_id):
+    '''
+    Insert docstring here
+    '''
+
     global data
     # Check Input Error
     does_message_exist = False
     message_index = 0
-    for x in range(len(data["messages"])):
-        if data["messages"][x]["message_id"] == message_id:
+    u_id = -1
+    message_owner_or_flock_owner = False
+    for msg in data["messages"]:
+        if msg["message_id"] == message_id:
             does_message_exist = True
-            message_index = x
+            if msg["u_id"] == u_id:
+                message_owner_or_flock_owner = True
             break
     if not does_message_exist:
         raise InputError("Message has already been deleted")
 
     # Check AccessError
-    u_id = -1
     u_id_permission = -1
     for users in data["users"]:
         if users["token"] == token:
             u_id = users["u_id"]
             u_id_permission = users["permission_id"]
             break
-    message_owner_or_flock_owner = False
-    if data["messages"][message_index]["u_id"] == u_id:
-        message_owner_or_flock_owner = True
     if u_id_permission == 1:
         message_owner_or_flock_owner = True
     if not message_owner_or_flock_owner:
@@ -91,6 +93,10 @@ def message_remove(token, message_id):
     return {}
 
 def message_edit(token, message_id, message):
+    '''
+    Insert docstring here
+    '''
+
     global data
     # Check message length
     if len(message) > 1000:
@@ -106,23 +112,24 @@ def message_edit(token, message_id, message):
             break
     message_owner_or_flock_owner = False
     message_index = -1
-    for x in range(len(data["messages"])):
-        if data["messages"][x]["message_id"] == message_id:
-            message_index = x
-            break
-    if data["messages"][message_index]["u_id"] == u_id:
-        message_owner_or_flock_owner = True
+    for msg in data["messages"]:
+        if msg["message_id"] == message_id:
+            if msg["u_id"] == u_id:
+                message_owner_or_flock_owner = True
     if u_id_permission == 1:
         message_owner_or_flock_owner = True
     if not message_owner_or_flock_owner:
         raise AccessError("User is not a flock owner or the original user who sent the message")
-
     if message == "":
         return message_remove(token, message_id)
     data["messages"][message_index]["message"] = message
     return {}
 
 def message_react(token, message_id, react_id):
+    '''
+    Insert docstring here
+    '''
+
     global data
 
     # Test whether the react_id is 1
@@ -130,14 +137,12 @@ def message_react(token, message_id, react_id):
         raise InputError("Invalid react ID")
 
     # Test whether message exists
-    message_index = -1
-    message_channel_id = -1
     is_real_message = False
-    for x in range(len(data["messages"])):
-        if data["messages"][x]["message_id"] == message_id:
+    message_channel_id = -1
+    for msg in data["messages"]:
+        if msg["message_id"] == message_id:
             is_real_message = True
-            message_index = x
-            message_channel_id = data["messages"][x]["channel_id"]
+            message_channel_id = msg["channel_id"]
             break
     if not is_real_message:
         raise InputError("Specified message does not exist")
@@ -150,10 +155,10 @@ def message_react(token, message_id, react_id):
             break
     
     is_in_channel = False
-    for x in range(len(data["channels"])):
-        if data["channels"][x]["channel_id"] == message_channel_id:
-            for index in range(len(data["channels"][x]["all_members"])):
-                if data["channels"][x]["all_members"][index]["u_id"] == u_id:
+    for channel in data["channels"]:
+        if channel["channel_id"] == message_channel_id:
+            for users in channel["all_members"]:
+                if users["u_id"] == u_id:
                     is_in_channel = True
                     break
             break
@@ -179,6 +184,10 @@ def message_react(token, message_id, react_id):
     return {}
 
 def message_unreact(token, message_id, react_id):
+    '''
+    Insert docstring here
+    '''
+
     global data
 
     # Test whether the react_id is 1
@@ -186,14 +195,12 @@ def message_unreact(token, message_id, react_id):
         raise InputError("Invalid react ID")
 
     # Test whether message exists
-    message_index = -1
-    message_channel_id = -1
     is_real_message = False
-    for x in range(len(data["messages"])):
-        if data["messages"][x]["message_id"] == message_id:
+    message_channel_id = -1
+    for msg in data["messages"]:
+        if msg["message_id"] == message_id:
             is_real_message = True
-            message_index = x
-            message_channel_id = data["messages"][x]["channel_id"]
+            message_channel_id = msg["channel_id"]
             break
     if not is_real_message:
         raise InputError("Specified message does not exist")
@@ -206,17 +213,17 @@ def message_unreact(token, message_id, react_id):
             break
     
     is_in_channel = False
-    for x in range(len(data["channels"])):
-        if data["channels"][x]["channel_id"] == message_channel_id:
-            for index in range(len(data["channels"][x]["all_members"])):
-                if data["channels"][x]["all_members"][index]["u_id"] == u_id:
+    for channel in data["channels"]:
+        if channel["channel_id"] == message_channel_id:
+            for users in channel["all_members"]:
+                if users["u_id"] == u_id:
                     is_in_channel = True
                     break
             break
     if not is_in_channel:
         raise InputError("User is not currently in the channel of the message they are trying to react to")
 
-    # Test whether the message is already reacted by the user
+    # Test whether the message is not already reacted by the user
     is_reacted = False
     for message in data["messages"]:
         if message["message_id"] == message_id:

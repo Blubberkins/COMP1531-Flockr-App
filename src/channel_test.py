@@ -93,6 +93,10 @@ def test_channel_details_success():
 
 # Tests for channel_messages
 def test_channel_messages_invalid_start_index():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -106,6 +110,10 @@ def test_channel_messages_invalid_start_index():
 
 
 def test_channel_messages_invalid_channel():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channels.channels_create(login_owner['token'], "channel", True)
@@ -116,6 +124,10 @@ def test_channel_messages_invalid_channel():
 
 
 def test_channel_messages_invalid_token():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", False)
@@ -129,6 +141,10 @@ def test_channel_messages_invalid_token():
 
 
 def test_channel_messages_one_message_success():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -143,6 +159,10 @@ def test_channel_messages_one_message_success():
     assert channel_messages['messages'][0]['message'] == 'example message'
 
 def test_channel_messages_max_messages_success():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)   
@@ -161,6 +181,10 @@ def test_channel_messages_max_messages_success():
 
 # Tests for channel_leave
 def test_channel_leave_invalid_channel_id():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channels.channels_create(login_owner['token'], "channel", True)
@@ -170,6 +194,10 @@ def test_channel_leave_invalid_channel_id():
         channel.channel_leave(login_owner['token'], invalid_channel_id)
     
 def test_channel_leave_not_in_channel():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
@@ -182,6 +210,10 @@ def test_channel_leave_not_in_channel():
         channel.channel_leave(login_user['token'], owner_channel['channel_id'])
 
 def test_channel_leave_success():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -191,7 +223,11 @@ def test_channel_leave_success():
     assert channel_list == {'channels': []}
 
 # Tests for channel_join
-def test_channel_join_invalid_channel_id():    
+def test_channel_join_invalid_channel_id():   
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
@@ -203,6 +239,10 @@ def test_channel_join_invalid_channel_id():
         channel.channel_join(login_user['token'], invalid_channel_id)
 
 def test_channel_join_private_channel():
+    '''
+    Insert docstring here
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
@@ -213,6 +253,10 @@ def test_channel_join_private_channel():
         channel.channel_join(login_user['token'], channel_id['channel_id'])
 
 def test_public_channel_join_success():
+    '''
+    Insert docstring here
+    '''
+    
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")

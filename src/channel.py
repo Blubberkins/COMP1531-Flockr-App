@@ -73,6 +73,9 @@ def channel_details(token, channel_id):
     return channel_details_dict
 
 def channel_messages(token, channel_id, start):
+    '''
+    Insert docstring here
+    '''
     global data
     # Check channel_id
     isValidChannel = False
@@ -129,34 +132,12 @@ def channel_messages(token, channel_id, start):
         for index in range(50, -1):
             messages_in_channel.pop(index)
     return_dict["messages"] = messages_in_channel
-    '''
-    # Check if start index is valid
-    counter = 0
-    # Skip forward until the given start index
-    for message in data["messages"]:
-        if message["channel_id"] == channel_id:
-            counter += 1
-
-    if start + 1 > counter:
-        raise InputError("Start is greater than the total number of messages in the channel")
-    
-    returnDict = {}
-    returnDict["messages"] = []
-    returnDict["start"] = start
-    returnDict["end"] = start + 50
-    # Add items to dictionary
-    counter = 0
-    for message in data["messages"]:
-        if message["channel_id"] == channel_id:
-            if counter >= start and counter < 50:
-                returnDict["messages"].append(message)
-            counter += 1
-    if len(returnDict["messages"]) < 50:
-        returnDict["end"] = -1
-    '''
     return return_dict
 
 def channel_leave(token, channel_id):
+    '''
+    Insert docstring here
+    '''
     global data
     # Check channel_id
     num_users = len(data["users"])
@@ -202,6 +183,9 @@ def channel_leave(token, channel_id):
     return {}
 
 def channel_join(token, channel_id):
+    '''
+    Insert docstring here
+    '''
     global data
     # Check channel id
     num_channels = len(data["channels"])
