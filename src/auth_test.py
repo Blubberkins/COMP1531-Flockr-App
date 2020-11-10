@@ -124,3 +124,27 @@ def test_register_invalid_last_name():
     with pytest.raises(InputError):
         auth.auth_register("validemail@gmail.com", "password123", "Firstname", "")
         auth.auth_register("validemail@gmail.com", "password123", "Firstname", "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz")
+
+# Tests for password reset request
+# A blackbox success case doesn't exist
+
+# Test for password reset reset
+# A blackbox success case doesn't exist
+
+# Success for password reset reset
+
+def test_passwordreset_reset_invalid_resetcode():
+    clear()
+    auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
+    with pytest.raises(InputError):
+        auth.auth_passwordreset_reset("", "newpassword123")
+
+def test_passwordreset_reset_invalid_password():
+    clear()
+    auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
+    with pytest.raises(InputError):
+        auth.auth_passwordreset_reset("valid_s", "")
+        auth.auth_passwordreset_reset("valid_s", "123")
+        auth.auth_passwordreset_reset("valid_s", "pass")
+
+   

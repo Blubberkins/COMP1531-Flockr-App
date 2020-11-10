@@ -73,6 +73,14 @@ def channel_details(token, channel_id):
     return channel_details_dict
 
 def channel_messages(token, channel_id, start):
+    '''
+    Given a Channel with ID channel_id that the authorised user is part of, 
+    return up to 50 messages between index "start" and "start + 50". 
+    Message with index 0 is the most recent message in the channel. 
+    This function returns a new index "end" which is the value of "start + 50", or, 
+    if this function has returned the least recent messages in the channel, 
+    returns -1 in "end" to indicate there are no more messages to load after this return.
+    '''
     global data
     # Check channel_id
     isValidChannel = False
@@ -100,32 +108,41 @@ def channel_messages(token, channel_id, start):
     if not isValidToken:
         raise AccessError("User is not a member of the channel")
 
-    # Check if start index is valid
-    counter = 0
+    messages_in_channel = []
     for message in data["messages"]:
         if message["channel_id"] == channel_id:
-            counter += 1
+            temp = message.copy()
+            temp.pop("channel_id")
+            temp["reacts"] = {}
+            temp["reacts"]["react_id"] = 1
+            temp["reacts"]["u_ids"] = message["reacted_by"]
+            temp["reacts"]["is_this_user_reacted"] = False
+            if u_id in message["reacted_by"]:
+                temp["reacts"]["is_this_user_reacted"] = True
+            temp.pop("reacted_by")
+            messages_in_channel.append(temp)
 
-    if start + 1 > counter:
+    if start >= len(messages_in_channel):
         raise InputError("Start is greater than the total number of messages in the channel")
     
-    returnDict = {}
-    returnDict["messages"] = []
-    returnDict["start"] = start
-    returnDict["end"] = start + 50
-    # Add items to dictionary
-    counter = 0
-    for message in data["messages"]:
-        if message["channel_id"] == channel_id:
-            if counter >= start and counter < 50:
-                returnDict["messages"].append(message)
-            counter += 1
-    if len(returnDict["messages"]) < 50:
-        returnDict["end"] = -1
-
-    return returnDict
+    for index in range(0, start):
+        messages_in_channel.pop(index)
+    
+    return_dict = {}
+    return_dict["start"] = start
+    return_dict["end"] = 50
+    if len(messages_in_channel) < 50:
+        return_dict["end"] = -1
+    if len(messages_in_channel) > 50:
+        for index in range(50, -1):
+            messages_in_channel.pop(index)
+    return_dict["messages"] = messages_in_channel
+    return return_dict
 
 def channel_leave(token, channel_id):
+    '''
+    Given a channel ID, the user removed as a member of this channel
+    '''
     global data
     # Check channel_id
     num_users = len(data["users"])
@@ -171,6 +188,9 @@ def channel_leave(token, channel_id):
     return {}
 
 def channel_join(token, channel_id):
+    '''
+    Given a channel_id of a channel that the authorised user can join, adds them to that channel
+    '''
     global data
     # Check channel id
     num_channels = len(data["channels"])
