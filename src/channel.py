@@ -114,7 +114,7 @@ def channel_messages(token, channel_id, start):
             temp.pop("reacted_by")
             messages_in_channel.append(temp)
 
-    if start > len(messages_in_channel) + 1:
+    if start >= len(messages_in_channel):
         raise InputError("Start is greater than the total number of messages in the channel")
     
     for index in range(0, start):
