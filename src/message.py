@@ -5,12 +5,16 @@ from error import AccessError, InputError
 
 def message_send(token, channel_id, message):
     '''
-    Insert docstring here
+    Send a message from authorised_user to the channel specified by channel_id
+        Args:
+            token: String which is used as an authorisation hash
+            channel_id: Integer number of the channel the message is to be sent to
+            message: A string of the message to be sent
+        Raises:
     '''
     global data
     # Check InputError
     valid_channel_id = False
-    channel_index = 0
     for channel in data["channels"]:
         if channel["channel_id"] == channel_id:
             valid_channel_id = True
@@ -59,7 +63,11 @@ def message_send(token, channel_id, message):
 
 def message_remove(token, message_id):
     '''
-    Insert docstring here
+    Given a message_id for a message, this message is removed from the channel
+        Args:
+            token: String which is used as an authorisation hash
+            message_id: Integer which is used as a unique identifier for a message
+        Raises:
     '''
 
     global data
@@ -94,7 +102,7 @@ def message_remove(token, message_id):
 
 def message_edit(token, message_id, message):
     '''
-    Insert docstring here
+    Given a message, update it's text with new text. If the new message is an empty string, the message is deleted.
     '''
 
     global data
@@ -127,7 +135,7 @@ def message_edit(token, message_id, message):
 
 def message_react(token, message_id, react_id):
     '''
-    Insert docstring here
+    Given a message within a channel the authorised user is part of, add a "react" to that particular message
     '''
 
     global data
@@ -185,7 +193,7 @@ def message_react(token, message_id, react_id):
 
 def message_unreact(token, message_id, react_id):
     '''
-    Insert docstring here
+    Given a message within a channel the authorised user is part of, remove a "react" to that particular message
     '''
 
     global data

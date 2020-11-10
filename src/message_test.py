@@ -317,7 +317,7 @@ def test_message_react_whitebox_success():
 
 def test_message_unreact_message_does_not_exist():
     '''
-    Insert docstring here
+    Tests when the user tries to unreact to a message that does not exist
     '''
 
     clear()
@@ -329,7 +329,7 @@ def test_message_unreact_message_does_not_exist():
 
 def test_message_unreact_removed_message():
     '''
-    Insert docstring here
+    Tests when the user tries to unreact to a message that has been removed
     '''
 
     clear()
@@ -344,7 +344,8 @@ def test_message_unreact_removed_message():
 
 def test_message_unreact_message_in_private_channel():
     '''
-    Insert docstring here
+    Tests when the user tries to unreact to a message that is in a private
+    channel that they have not joined yet
     '''
 
     clear()
@@ -359,7 +360,8 @@ def test_message_unreact_message_in_private_channel():
 
 def test_message_unreact_react_id_0():
     '''
-    Insert docstring here
+    Tests when the user tries to unreact with react id 0
+    (react id == 1 is the only valid id as of 10/11/2020)
     '''
 
     clear()
@@ -373,7 +375,8 @@ def test_message_unreact_react_id_0():
 
 def test_message_unreact_negative_react_id():
     '''
-    Insert docstring here
+    Tests when the user tries to unreact with react id < 0
+    (react id == 1 is the only valid id as of 10/11/2020)
     '''
 
     clear()
@@ -389,7 +392,8 @@ def test_message_unreact_negative_react_id():
 
 def test_message_unreact_invalid_positive_react_id():
     '''
-    Insert docstring here
+    Tests when the user tries to unreact with react id > 0
+    (react id == 1 is the only valid id as of 10/11/2020)
     '''
 
     clear()
@@ -405,7 +409,8 @@ def test_message_unreact_invalid_positive_react_id():
 
 def test_message_unreact_message_has_no_reacts():
     '''
-    Insert docstring here
+    Tests when the user tries to unreact to a message that 
+    they have not reacted to yet
     '''
 
     clear()
@@ -419,7 +424,7 @@ def test_message_unreact_message_has_no_reacts():
 
 def test_message_unreact_blackbox_success():
     '''
-    Insert docstring here
+    Tests the blackbox success case for unreacting to a message
     '''
 
     clear()
@@ -432,7 +437,7 @@ def test_message_unreact_blackbox_success():
 
 def test_message_unreact_whitebox_success():
     '''
-    Insert docstring here
+    Tests the whitebox case for unreacting to a message
     '''
 
     clear()

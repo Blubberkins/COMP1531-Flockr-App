@@ -135,13 +135,13 @@ def test_register_invalid_last_name():
 
 def test_passwordreset_reset_invalid_resetcode():
     clear()
-    register_user = auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
+    auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
     with pytest.raises(InputError):
         auth.auth_passwordreset_reset("", "newpassword123")
 
 def test_passwordreset_reset_invalid_password():
     clear()
-    register_user = auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
+    auth.auth_register("validemail@gmail.com", "password123", "Firstname", "Lastname")
     with pytest.raises(InputError):
         auth.auth_passwordreset_reset("valid_s", "")
         auth.auth_passwordreset_reset("valid_s", "123")

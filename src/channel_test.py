@@ -94,7 +94,7 @@ def test_channel_details_success():
 # Tests for channel_messages
 def test_channel_messages_invalid_start_index():
     '''
-    Insert docstring here
+    Tests the input error for when the start argument is invalid
     '''
 
     clear()
@@ -111,7 +111,7 @@ def test_channel_messages_invalid_start_index():
 
 def test_channel_messages_invalid_channel():
     '''
-    Insert docstring here
+    Tests the input error for when the channel_id is invalid
     '''
 
     clear()
@@ -125,7 +125,7 @@ def test_channel_messages_invalid_channel():
 
 def test_channel_messages_invalid_token():
     '''
-    Insert docstring here
+    Tests for the access error for a channel that the user has not joined yet
     '''
 
     clear()
@@ -142,7 +142,7 @@ def test_channel_messages_invalid_token():
 
 def test_channel_messages_one_message_success():
     '''
-    Insert docstring here
+    Tests the success case for one message in the channel
     '''
 
     clear()
@@ -160,15 +160,17 @@ def test_channel_messages_one_message_success():
 
 def test_channel_messages_max_messages_success():
     '''
-    Insert docstring here
+    Tests the success case for the maximum number of message the function can display at once
     '''
 
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)   
 
-    for x in range(50):
+    x = 0
+    while x < 50:
         message.message_send(login_owner['token'], channel_id['channel_id'], 'example message')
+        x += 1
     
     channel_messages = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 1) 
     channel_messages2 = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0) 
@@ -182,7 +184,7 @@ def test_channel_messages_max_messages_success():
 # Tests for channel_leave
 def test_channel_leave_invalid_channel_id():
     '''
-    Insert docstring here
+    Tests the input error for when the channel id is invalid
     '''
 
     clear()
@@ -195,7 +197,8 @@ def test_channel_leave_invalid_channel_id():
     
 def test_channel_leave_not_in_channel():
     '''
-    Insert docstring here
+    Tests the access error for when the user tries to leave 
+    a channel that they are not currently a member of
     '''
 
     clear()
@@ -211,7 +214,8 @@ def test_channel_leave_not_in_channel():
 
 def test_channel_leave_success():
     '''
-    Insert docstring here
+    Tests the success case when the user tries to leave a channel
+    they are a member of
     '''
 
     clear()
@@ -225,7 +229,8 @@ def test_channel_leave_success():
 # Tests for channel_join
 def test_channel_join_invalid_channel_id():   
     '''
-    Insert docstring here
+    Tests the input error for when the user tries to join 
+    a channel with an invalid channel id
     '''
 
     clear()
@@ -240,7 +245,8 @@ def test_channel_join_invalid_channel_id():
 
 def test_channel_join_private_channel():
     '''
-    Insert docstring here
+    Tests the access error for when the user 
+    tries to join a channel that is private
     '''
 
     clear()
@@ -254,9 +260,10 @@ def test_channel_join_private_channel():
 
 def test_public_channel_join_success():
     '''
-    Insert docstring here
+    Tests the success case for when the user
+    tries to join a public channel
     '''
-    
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")

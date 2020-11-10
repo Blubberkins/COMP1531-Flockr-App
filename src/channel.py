@@ -74,7 +74,12 @@ def channel_details(token, channel_id):
 
 def channel_messages(token, channel_id, start):
     '''
-    Insert docstring here
+    Given a Channel with ID channel_id that the authorised user is part of, 
+    return up to 50 messages between index "start" and "start + 50". 
+    Message with index 0 is the most recent message in the channel. 
+    This function returns a new index "end" which is the value of "start + 50", or, 
+    if this function has returned the least recent messages in the channel, 
+    returns -1 in "end" to indicate there are no more messages to load after this return.
     '''
     global data
     # Check channel_id
@@ -136,7 +141,7 @@ def channel_messages(token, channel_id, start):
 
 def channel_leave(token, channel_id):
     '''
-    Insert docstring here
+    Given a channel ID, the user removed as a member of this channel
     '''
     global data
     # Check channel_id
@@ -184,7 +189,7 @@ def channel_leave(token, channel_id):
 
 def channel_join(token, channel_id):
     '''
-    Insert docstring here
+    Given a channel_id of a channel that the authorised user can join, adds them to that channel
     '''
     global data
     # Check channel id
