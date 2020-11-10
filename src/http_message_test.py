@@ -382,6 +382,150 @@ def test_http_message_edit_owner_success(url):
     r = requests.get(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
     assert payload["messages"][0]["message"] == "edited message"
+    
+# Tests for message_pin
+
+def http_test_message_pin_success():
+    '''test for successful pin'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    empty = pin(url, login_owner, message_id)
+
+    assert empty == {}
+
+def http_test_message_pin_invalid_message_id():
+    '''test for input error due to invalid message id'''
+    clear()
+    login_owner = reg_owner(url)
+    create_channel(url, login_owner)
+    invalid_message_id = -1
+
+    payload = pin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>Message is not a valid message</p>"
+    assert payload['code'] == 400
+
+def http_test_message_pin_already_pinned():
+    '''test for input error due to message already being pinned'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    pin(url, login_owner, message_id)
+
+    payload = pin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>Message is already pinned</p>"
+    assert payload['code'] == 400
+
+def http_test_message_pin_invalid_channel():
+    '''test for access error due to user not being in the channel the message is in'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    leave_channel(url, login_owner, channel_id)
+
+    payload = pin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>User is not a member of the channel or an owner in the channel</p>"
+    assert payload['code'] == 400
+
+def http_test_message_pin_not_owner():
+    '''test for access error due to user not being an owner in the channel'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    login_user = reg_user(url)
+    join_channel(url, login_user, channel_id)
+
+    payload = pin(url, login_user, message_id)
+
+    assert payload['message'] == "<p>User is not a member of the channel or an owner in the channel</p>"
+    assert payload['code'] == 400
+
+# Tests for message_unpin
+
+def http_test_message_unpin_success():
+    '''test for successful unpin'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    pin(url, login_user, message_id)
+
+    empty = unpin(url, login_owner, message_id)
+
+    assert empty == {}
+
+def http_test_message_unpin_invalid_message_id():
+    '''test for input error due to invalid message id'''
+    clear()
+    login_owner = reg_owner(url)
+    create_channel(url, login_owner)
+    invalid_message_id = -1
+
+    payload = unpin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>Message is not a valid message</p>"
+    assert payload['code'] == 400
+
+def http_test_message_unpin_already_unpinned():
+    '''test for input error due to message already being unpinned'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    pin(url, login_owner, message_id)
+
+    unpin(url, login_owner, message_id)
+
+    payload = unpin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>Message is already unpinned</p>"
+    assert payload['code'] == 400
+
+def http_test_message_unpin_invalid_channel():
+    '''test for access error due to user not being in the channel the message is in'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    pin(url, login_owner, message_id)
+
+    leave_channel(url, login_owner, channel_id)
+
+    payload = unpin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>User is not a member of the channel or an owner in the channel</p>"
+    assert payload['code'] == 400
+
+def http_test_message_unpin_not_owner():
+    '''test for access error due to user not being an owner in the channel'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    login_user = reg_user(url)
+    join_channel(url, login_user, channel_id)
+
+    pin(url, login_owner, message_id)
+
+    payload = unpin(url, login_user, message_id)
+
+    assert payload['message'] == "<p>User is not a member of the channel or an owner in the channel</p>"
+    assert payload['code'] == 400
 
 # TEST FUNCTIONS FOR HTTP_MESSAGE_SENDLATER
 # Failure for send later
