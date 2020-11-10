@@ -154,6 +154,18 @@ def http_message_edit():
     data = request.get_json()
     response = message.message_edit(data['token'], data['message_id'], data['message'])
     return dumps(response)
+    
+@APP.route("/message/pin", methods=["POST"])
+def http_message_pin():
+    data = request.get_json()
+    response = message.message_pin(data["token"], data["message_id"])
+    return dumps(response)
+
+@APP.route("/message/unpin", methods=["POST"])
+def http_message_unpin():
+    data = request.get_json()
+    response = message.message_unpin(data["token"], data["message_id"])
+    return dumps(response)
 
 @APP.route("/message/sendlater", methods=['POST'])
 def http_message_sendlater():
