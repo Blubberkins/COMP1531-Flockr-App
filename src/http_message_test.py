@@ -96,6 +96,42 @@ def create_unique_channel(url, user, name, is_public):
     r = requests.post(url + "channels/create", json=channel)
     return r.json()
 
+#pin message function
+def pin(url, user, message):
+    pin_message = {
+        'token': user['token'],
+        'message_id': message['message_id']
+    }
+    r = requests.post(url + "message/pin", json=pin_message)
+    return r.json()
+
+#unpin message function
+def unpin(url, user, message):
+    unpin_message = {
+        'token': user['token'],
+        'message_id': message['message_id']
+    }
+    r = requests.post(url + "message/unpin", json=unpin_message)
+    return r.json()
+
+#join channel function
+def join_channel(url, user, channel):
+    join = {
+        'token': user['token'],
+        'channel_id': channel['channel_id']
+    }
+    r = requests.post(url + "channel/join", json=join)
+    return r.json()
+
+#leave channel function
+def leave_channel(url, user, channel):
+    leave = {
+        'token': user['token'],
+        'channel_id': channel['channel_id']
+    }
+    r = requests.post(url + "channel/leave", json=leave)
+    return r.json()
+
 # Tests for message_send
 def test_http_message_send_input_error(url):
     clear()
@@ -346,8 +382,250 @@ def test_http_message_edit_owner_success(url):
     r = requests.get(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
     assert payload["messages"][0]["message"] == "edited message"
+    
+# Tests for message_pin
 
-# Tests for message_react
+def http_test_message_pin_success():
+    '''test for successful pin'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    empty = pin(url, login_owner, message_id)
+
+    assert empty == {}
+
+def http_test_message_pin_invalid_message_id():
+    '''test for input error due to invalid message id'''
+    clear()
+    login_owner = reg_owner(url)
+    create_channel(url, login_owner)
+    invalid_message_id = -1
+
+    payload = pin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>Message is not a valid message</p>"
+    assert payload['code'] == 400
+
+def http_test_message_pin_already_pinned():
+    '''test for input error due to message already being pinned'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    pin(url, login_owner, message_id)
+
+    payload = pin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>Message is already pinned</p>"
+    assert payload['code'] == 400
+
+def http_test_message_pin_invalid_channel():
+    '''test for access error due to user not being in the channel the message is in'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    leave_channel(url, login_owner, channel_id)
+
+    payload = pin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>User is not a member of the channel or an owner in the channel</p>"
+    assert payload['code'] == 400
+
+def http_test_message_pin_not_owner():
+    '''test for access error due to user not being an owner in the channel'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    login_user = reg_user(url)
+    join_channel(url, login_user, channel_id)
+
+    payload = pin(url, login_user, message_id)
+
+    assert payload['message'] == "<p>User is not a member of the channel or an owner in the channel</p>"
+    assert payload['code'] == 400
+
+# Tests for message_unpin
+
+def http_test_message_unpin_success():
+    '''test for successful unpin'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    pin(url, login_user, message_id)
+
+    empty = unpin(url, login_owner, message_id)
+
+    assert empty == {}
+
+def http_test_message_unpin_invalid_message_id():
+    '''test for input error due to invalid message id'''
+    clear()
+    login_owner = reg_owner(url)
+    create_channel(url, login_owner)
+    invalid_message_id = -1
+
+    payload = unpin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>Message is not a valid message</p>"
+    assert payload['code'] == 400
+
+def http_test_message_unpin_already_unpinned():
+    '''test for input error due to message already being unpinned'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    pin(url, login_owner, message_id)
+
+    unpin(url, login_owner, message_id)
+
+    payload = unpin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>Message is already unpinned</p>"
+    assert payload['code'] == 400
+
+def http_test_message_unpin_invalid_channel():
+    '''test for access error due to user not being in the channel the message is in'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    pin(url, login_owner, message_id)
+
+    leave_channel(url, login_owner, channel_id)
+
+    payload = unpin(url, login_owner, message_id)
+
+    assert payload['message'] == "<p>User is not a member of the channel or an owner in the channel</p>"
+    assert payload['code'] == 400
+
+def http_test_message_unpin_not_owner():
+    '''test for access error due to user not being an owner in the channel'''
+    clear()
+    login_owner = reg_owner(url)
+    channel_id = create_channel(url, login_owner)
+    message_id = msg_send(url, login_owner, channel_id, "sample message")
+
+    login_user = reg_user(url)
+    join_channel(url, login_user, channel_id)
+
+    pin(url, login_owner, message_id)
+
+    payload = unpin(url, login_user, message_id)
+
+    assert payload['message'] == "<p>User is not a member of the channel or an owner in the channel</p>"
+    assert payload['code'] == 400
+
+# TEST FUNCTIONS FOR HTTP_MESSAGE_SENDLATER
+# Failure for send later
+def test_http_message_sendlater_invalid_token(url):
+    "Tests for failure when the token is invalid"
+    clear()
+    login_owner = reg_owner(url)
+    channel_info = create_channel(url, login_owner)
+
+    invalid_token = {
+        "token": login_owner["token"],
+        "channel_id": channel_info["channel_id"],
+        "message": "Hello World",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_token)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid permissions</p>"
+    assert payload["code"] == 400
+
+def test_http_message_sendlater_invalid_channel(url):
+    "Tests for failure when the user inputs an invalid channel_id"
+    clear()
+    login_owner = reg_owner(url)
+
+    invalid_channel_id1 = {
+        "token": login_owner["token"],
+        "channel_id": -1,
+        "message": "Hello World",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_channel_id1)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid channel</p>"
+    assert payload["code"] == 400
+
+    invalid_channel_id2 = {
+        "token": login_owner["token"],
+        "channel_id": 100,
+        "message": "Python is cool Python is cool Python is cool Python is cool Python is cool Python is cool Python is cool Python is cool",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_channel_id2)
+    payload = r.json()
+    assert payload["message"] == "<p>Invalid channel</p>"
+    assert payload["code"] == 400
+
+def test_http_message_sendlater_over_1000_chars(url):
+    "Tests for failure when the user inputs a message over 1000 characters in length"
+    clear()
+    login_owner = reg_owner(url)
+    channel_info = create_channel(url, login_owner)
+
+    msg_over_1000 = {
+        "token": login_owner["token"],
+        "channel_id": channel_info["channel_id"],
+        "message": "Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musica, sport etc, litot Europa usa li sam vocabular. Li lingues differe solmen in li grammatica, li pronunciation e li plu commun vocabules. Omnicos directe al desirabilite de un nov lingua franca: On refusa continuar payar custosi traductores. At solmen va esser necessi far uniform grammatica, pronunciation e plu sommun paroles. Ma quande lingues coalesce, li grammatica del resultant lingue es plu simplic e regulari quam ti del coalescent lingues. Li nov lingua franca va esser plu simplic e regulari quam li existent Europan lingues. It va esser tam simplic quam Occidental in fact, it va esser Occidental. A un Angleso it va semblar un simplificat Angles, quam un skeptic Cambridge amico dit me que Occidental es. Li Europan lingues es membres del sam familie. Lor separat existentie es un myth. Por scientie, musica, sport etc, litot Europa usa li sam vocabular. Li lingues differe solmen in li g",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=msg_over_1000)
+    payload = r.json()
+    assert payload["message"] == "<p>Message is larger than 1000 characters</p>"
+    assert payload["code"] == 400
+
+def test_http_message_sendlater_time_in_past(url):
+    "Tests for failure when the user inputs a time that has already passed"
+    clear()
+    login_owner = reg_owner(url)
+    channel_info = create_channel(url, login_owner)
+
+    invalid_time = {
+        "token": login_owner["token"],
+        "channel_id": channel_info["channel_id"],
+        "message": "Hello World",
+        "time_sent": 1577836800
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_time)
+    payload = r.json()
+    assert payload["message"] == "<p>Time has already passed</p>"
+    assert payload["code"] == 400
+    
+def test_http_message_sendlater_access_error(url):
+    "Tests for failure when a user tries to send a message later in a channel they are not in"
+    clear()
+    login_owner = reg_owner(url)
+    channel_info = create_channel(url, login_owner)
+    login_user = reg_user(url)
+
+    invalid_access = {
+        "token": login_user["token"],
+        "channel_id": channel_info["channel_id"],
+        "message": "Hello World",
+        "time_sent": 1609459200
+    }
+    r = requests.post(url + 'message/sendlater', json=invalid_access)
+    payload = r.json()
+    assert payload["message"] == "<p>The user has not joined the channel they are trying to post to</p>"
+    assert payload["code"] == 400
+
+    # Tests for message_react
 def test_http_message_react_message_does_not_exist(url):
     clear()
     login_owner = reg_owner(url)
@@ -614,3 +892,5 @@ def test_http_message_unreact_message_has_no_reacts(url):
     payload = r.json()
     assert payload["message"] == "<p>User has not reacted to this message yet</p>"
     assert payload["code"] == 400
+
+    
