@@ -194,13 +194,13 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
         raise InputError("Invalid url")
 
     # Saves the image at the img_url locally with the following filename
-    urllib.request.urlretrieve(img_url, "profile_picture.jpg")
+    urllib.request.urlretrieve(img_url, "src/static/profile_picture.jpg")
 
-    if ".jpg" not in img_url or ".jpeg" not in img_url:
+    if ".jpg" not in img_url and ".jpeg" not in img_url:
         raise InputError("Image is not in jpg/jpeg format")
 
-    open_image = Image.open("profile_picture.jpg")
-    width, height = open_image.size
+    original_image = Image.open("src/static/profile_picture.jpg")
+    width, height = original_image.size
 
     if x_start < 0 or x_start >= width:
         raise InputError("x1 out of bounds")
@@ -218,9 +218,8 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
     crop_dimensions = (x_start, y_start, x_end, y_end)
 
     # Crops the image according to the crop_dimensions and saves this into the original file
-    original_image = Image.open("profile_picture.jpg")
     cropped_image = original_image.crop(crop_dimensions)
-    cropped_image.save("profile_picture.jpg")
+    cropped_image.save("src/static/profile_picture.jpg")
 
     return {}
     
