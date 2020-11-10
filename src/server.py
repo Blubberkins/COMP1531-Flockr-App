@@ -178,6 +178,17 @@ def http_message_sendlater():
     response = message.message_edit(token, channel_id, message, time_sent)
     return dumps(response)
 
+@APP.route("/message/react", methods=["POST"])
+def http_message_react():
+    data = request.get_json()
+    response = message.message_edit(data['token'], data['message_id'], data['react_id'])
+    return dumps(response)
+    
+@APP.route("/message/unreact", methods=["POST"])
+def http_message_unreact():
+    data = request.get_json()
+    response = message.message_edit(data['token'], data['message_id'], data['react_id'])
+    return dumps(response)
 # OTHER FUNCTIONS
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
