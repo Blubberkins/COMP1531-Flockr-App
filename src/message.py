@@ -409,7 +409,12 @@ def message_sendlater(token, channel_id, message, time_sent):
     global data
 
     # Check if token is valid
-    if token == "invalid_token":
+    valid_token = False
+    for user in data["users"]:
+        if token == user["token"]:
+            valid_token = True
+            break
+    if not valid_token:
         raise AccessError("Invalid permissions")
     
     # Check if channel_id is valid
@@ -435,21 +440,20 @@ def message_sendlater(token, channel_id, message, time_sent):
         raise InputError("Time has already passed")
 
     # Check if user is part of the channel they want to send a message to
-    valid_token = False
+    is_user_in_channel = False
     u_id = -1
     for user in data["users"]:
         if user["token"] == token:
             u_id = user["u_id"]
             break
-    for x in range(len(data["channels"])):
-        if data["channels"][x]["channel_id"] == channel_id:
-            channel_index = x
-            break
-    for user in data["channels"][channel_index]["all_members"]:
-        if user["u_id"] == u_id:
-            valid_token = True
-            break
-    if not valid_token:
+    for channel in data["channels"]:
+        if channel == channel["channel_id"]:
+            for user in channel["all_members"]:
+                if u_id == user["u_id"]:
+                    is_user_in_channel = True
+                    break
+   
+    if not is_user_in_channel:
         raise AccessError("The user has not joined the channel they are trying to post to")
     
     current_time = datetime.now()

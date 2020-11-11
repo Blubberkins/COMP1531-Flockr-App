@@ -40,7 +40,6 @@ def register_user1(url):
         'name_last': "User"
     }
     r = requests.post(url + "auth/register", json=register_user1)
-    print(r.json())
     return r.json()
 
 def register_user2(url):
