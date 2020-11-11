@@ -50,9 +50,10 @@ def auth_login(email, password):
     if data["users"] != []:
         for user in data["users"]:            
             if email == user["email"] and password == user["password"]:
+                user["token"] = encode_jwt(email)
                 return {
                     "u_id": user["u_id"],
-                    "token": encode_jwt(email),
+                    "token": user["token"],
                 }
         raise InputError("Invalid email or password")    
                
@@ -63,7 +64,7 @@ def auth_logout(token):
     for user in data["users"]: 
         if token != "invalid_token" and decode_jwt(token) == user["email"]:
             # Invalidate token and log the user out
-            token = "invalid_token"
+            user["token"] = "invalid_token"
             return {
                 "is_success": True,
             }
@@ -178,6 +179,8 @@ def auth_passwordreset_request(email):
 
 
 def auth_passwordreset_reset(reset_code, new_password):
+    global data
+    
     if len(new_password) < 6:
         raise InputError("Invalid password")
     if len(reset_code) != 8:

@@ -258,7 +258,7 @@ def test_http_register_invalid_password(url):
         'name_first' : "New",
         'name_last' : "User",
     }
-    r = requests.post(f"{url}/auth/register", json=no_password)
+    r = requests.post(url + "auth/register", json=no_password)
     payload = r.json()
     assert payload['message'] == "<p>Invalid password</p>"
     assert payload['code'] == 400
