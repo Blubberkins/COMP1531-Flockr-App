@@ -416,7 +416,7 @@ def test_http_user_profile_x_start_out_of_bounds(url):
     clear()
     login_user = register_user(url)
     img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
-    width = 2134
+    width = 1200
 
     invalid_x_start1 = {
         "token" : login_user["token"],
@@ -457,12 +457,12 @@ def test_http_user_profile_x_start_out_of_bounds(url):
     assert payload["message"] == "<p>x1 out of bounds</p>"
     assert payload["code"] == 400
 
-def test_user_profile_y_start_out_of_bounds(url):  
+def test_http_user_profile_y_start_out_of_bounds(url):  
     "Tests for failure when the user inputs an invalid y1 value"
     clear()
     login_user = register_user(url)
     img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
-    height = 1200 
+    height = 2134
 
     invalid_y_start1 = {
         "token" : login_user["token"],
@@ -474,6 +474,7 @@ def test_user_profile_y_start_out_of_bounds(url):
     }
     r = requests.post(url + "user/profile/uploadphoto", json=invalid_y_start1)
     payload = r.json()
+    print("test 1")
     assert payload["message"] == "<p>y1 out of bounds</p>"
     assert payload["code"] == 400
 
@@ -487,6 +488,7 @@ def test_user_profile_y_start_out_of_bounds(url):
     }
     r = requests.post(url + "user/profile/uploadphoto", json=invalid_y_start2)
     payload = r.json()
+    print("test 2")
     assert payload["message"] == "<p>y1 out of bounds</p>"
     assert payload["code"] == 400
 
@@ -500,6 +502,7 @@ def test_user_profile_y_start_out_of_bounds(url):
     }
     r = requests.post(url + "user/profile/uploadphoto", json=invalid_y_start3)
     payload = r.json()
+    print("test 3")
     assert payload["message"] == "<p>y1 out of bounds</p>"
     assert payload["code"] == 400
 
@@ -634,5 +637,5 @@ def test_http_user_profile_all_out_of_bounds(url):
     }
     r = requests.post(url + "user/profile/uploadphoto", json=invalid_all3)
     payload = r.json()
-    assert payload["message"] == "<p>x1 out of bounds</p>"
+    assert payload["message"] == "<p>x2 out of bounds</p>"
     assert payload["code"] == 400

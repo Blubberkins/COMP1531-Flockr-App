@@ -22,7 +22,7 @@ def valid_email(email):
 def encode_jwt(email):
     SECRET = "COMP1531"
     non_encoded_token = {'email' : email}
-    token = jwt.encode(non_encoded_token, SECRET, algorithm ='HS256')
+    token = jwt.encode(non_encoded_token, SECRET, algorithm ='HS256').decode('utf-8')
     return token
 
 def decode_jwt(token):
@@ -35,7 +35,6 @@ def get_reset_code():
     chars = string.ascii_letters + string.digits
     result = ''.join(random.choice(chars) for char in range(8))
     return result
-
 
 def auth_login(email, password):
     global data
@@ -130,6 +129,7 @@ def auth_register(email, password, name_first, name_last):
     user["handle_str"] = handle
     user["password"] = hashlib.sha256(password.encode()).hexdigest()
     user["token"] = encode_jwt(email)
+    
     if u_id == 1:
         user["permission_id"] = 1
     else:
@@ -180,7 +180,7 @@ def auth_passwordreset_request(email):
 
 def auth_passwordreset_reset(reset_code, new_password):
     global data
-    
+
     if len(new_password) < 6:
         raise InputError("Invalid password")
     if len(reset_code) != 8:

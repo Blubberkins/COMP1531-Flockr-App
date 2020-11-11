@@ -70,7 +70,7 @@ def http_auth_passwordreset_request():
 @APP.route('/auth/passwordreset/reset', methods=['POST'])
 def http_auth_passwordreset_reset():
     data = request.get_json()
-    response = auth.auth_passwordreset_request(data['reset_code'], data['new_password'])
+    response = auth.auth_passwordreset_reset(data['reset_code'], data['new_password'])
     return dumps(response)
 
 # CHANNEL FUNCTIONS

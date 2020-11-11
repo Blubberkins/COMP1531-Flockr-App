@@ -40,6 +40,7 @@ def register_user1(url):
         'name_last': "User"
     }
     r = requests.post(url + "auth/register", json=register_user1)
+    print(r.json())
     return r.json()
 
 def register_user2(url):
@@ -327,7 +328,7 @@ def test_http_passwordreset_reset_invalid_reset_code(url):
     }
     r = requests.post(url + "auth/passwordreset/reset", json=invalid_reset_code)
     payload = r.json()
-    assert payload['message'] == "<p>Reset code is not a valid reset code<p>"
+    assert payload['message'] == "<p>Reset code is not a valid reset code</p>"
     assert payload['code'] == 400
 
 def test_http_passwordreset_reset_invalid_password(url):
@@ -339,5 +340,5 @@ def test_http_passwordreset_reset_invalid_password(url):
     }
     r = requests.post(url + "auth/passwordreset/reset", json=invalid_password)
     payload = r.json()
-    assert payload['message'] == "<p>Invalid password<p>"
+    assert payload['message'] == "<p>Invalid password</p>"
     assert payload['code'] == 400
