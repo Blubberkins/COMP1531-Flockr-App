@@ -84,8 +84,8 @@ def channel_messages(token, channel_id, start):
     global data
     # Check channel_id
     isValidChannel = False
-    for x in range(len(data["channels"])):
-        if data["channels"][x]["channel_id"] == channel_id:
+    for channel in data["channels"]:
+        if channel["channel_id"] == channel_id:
             isValidChannel = True
             break
 
@@ -148,9 +148,10 @@ def channel_leave(token, channel_id):
     num_users = len(data["users"])
     num_channels = len(data["channels"])
     u_id = 0
-    for x in range(num_users):
-        if data["users"][x]["token"] == token:
-            u_id = data["users"][x]["u_id"]
+    for user in data["users"]:
+        if user["token"] == token:
+            u_id = user["u_id"]
+            break
     correct_channel_id = False
     isValid_token = False
     channel_index = -1
