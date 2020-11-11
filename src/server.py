@@ -259,7 +259,7 @@ def http_standup_active():
 @APP.route("/standup/send", methods=['POST'])
 def http_standup_send():
     data = request.get_json()
-    response = standup.standup_start(data['token'], data['channel_id'], data['message'])
+    response = standup.standup_send(data['token'], data['channel_id'], data['message'])
     return dumps(response)
 
 if __name__ == "__main__":
