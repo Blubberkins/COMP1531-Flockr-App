@@ -84,7 +84,8 @@ def msg_send(url, user, channel, message):
         'channel_id': channel['channel_id'],
         'message': message
     }
-    requests.post(url + "message/send", json=message_send)
+    r = requests.post(url + "message/send", json=message_send)
+    return r.json()
 
 #create unique channel function
 def create_unique_channel(url, user, name, is_public):

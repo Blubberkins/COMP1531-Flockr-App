@@ -31,12 +31,9 @@ def message_send(token, channel_id, message):
         if users["token"] == token:
             u_id = users["u_id"]
             break
-    for channel in data["channels"]:
-        if channel["channel_id"] == channel_id:
-            for users in channel["all_members"]:
-                if users["u_id"] == u_id:
-                    valid_token = True
-                    break
+    for users in channel["all_members"]:
+        if users["u_id"] == u_id:
+            valid_token = True
             break
     if not valid_token:
         raise AccessError("The user has not joined the channel they are trying to post to")
@@ -54,7 +51,6 @@ def message_send(token, channel_id, message):
     message_dict["channel_id"] = channel_id
     message_dict["is_pinned"] = False
     message_dict["reacted_by"] = []
-    message_dict["channel_id"] = channel_id
     return_dict = {}
     return_dict["message_id"] = data["num_messages"]
     data["messages"].append(message_dict)
@@ -73,31 +69,26 @@ def message_remove(token, message_id):
     global data
     # Check Input Error
     does_message_exist = False
-    message_index = 0
-    u_id = -1
-    message_owner_or_flock_owner = False
     for msg in data["messages"]:
         if msg["message_id"] == message_id:
             does_message_exist = True
-            if msg["u_id"] == u_id:
-                message_owner_or_flock_owner = True
             break
     if not does_message_exist:
         raise InputError("Message has already been deleted")
 
     # Check AccessError
-    u_id_permission = -1
+    message_owner_or_flock_owner = False
     for users in data["users"]:
         if users["token"] == token:
-            u_id = users["u_id"]
-            u_id_permission = users["permission_id"]
+            if msg["u_id"] == users['u_id']:
+                message_owner_or_flock_owner = True
+            if users['permission_id'] == 1:
+                message_owner_or_flock_owner = True
             break
-    if u_id_permission == 1:
-        message_owner_or_flock_owner = True
     if not message_owner_or_flock_owner:
         raise AccessError("User is not a flock owner or the original user who sent the message")
 
-    data["messages"].pop(message_index)
+    data["messages"].remove(msg)
     return {}
 
 def message_edit(token, message_id, message):
