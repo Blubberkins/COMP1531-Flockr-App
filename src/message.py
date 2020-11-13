@@ -433,11 +433,11 @@ def message_sendlater(token, channel_id, message, time_sent):
     # Get the current time
     current_time = datetime.now()
     current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
-
+    
     if time_sent < current_time:
         raise InputError("Time has already passed")
     
-    current_time = datetime.utcnow()
+    current_time = datetime.now()
     current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
 
     message_id = data["num_messages"]

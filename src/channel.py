@@ -118,11 +118,6 @@ def channel_messages(token, channel_id, start):
             react_dict["react_id"] = 1
             react_dict["u_ids"] = message["reacted_by"]
             react_dict["is_this_user_reacted"] = False
-            '''
-            temp["reacts"]["react_id"] = 1
-            temp["reacts"]["u_ids"] = message["reacted_by"]
-            temp["reacts"]["is_this_user_reacted"] = False
-            '''
             if u_id in message["reacted_by"]:
                 react_dict["is_this_user_reacted"] = True
             temp["reacts"].append(react_dict)
