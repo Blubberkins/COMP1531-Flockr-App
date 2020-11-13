@@ -21,6 +21,7 @@ def test_user_profile_success1():
             "name_first" : "New",
             "name_last" : "User",
             "handle_str" : "newuser",
+            "profile_img_url" : "/imgurl/newuser.jpg",
         }
     }
     assert user_info["user"] == return_user["user"]
@@ -41,6 +42,7 @@ def test_user_profile_success2():
             "name_first" : "Python",
             "name_last" : "Programmer",
             "handle_str" : "pythonprogrammer",
+            "profile_img_url" : "/imgurl/pythonprogrammer.jpg",
         }
     }
     assert user_info["user"] == return_user["user"]

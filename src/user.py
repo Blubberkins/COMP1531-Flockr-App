@@ -1,10 +1,11 @@
 from data import data
-from error import InputError
-from error import AccessError
+from error import InputError, AccessError
 import re
+import validators
 import urllib.request
 from PIL import Image
-import validators
+import os
+from os import path, remove
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -50,7 +51,8 @@ def user_profile(token, u_id):
                         "email": user["email"],
                         "name_first": user["name_first"],
                         "name_last": user["name_last"],
-                        "handle_str": user["handle_str"],  
+                        "handle_str": user["handle_str"], 
+                        "profile_img_url": user["profile_img_url"]
                     }
                 }
         raise InputError("Invalid user_id")
@@ -193,14 +195,19 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
     if not is_valid:
         raise InputError("Invalid url")
 
-    # Saves the image at the img_url locally with the following filename
-    urllib.request.urlretrieve(img_url, "src/static/profile_picture.jpg")
+    # Saves the image at the img_url in static folder with the name <user's handle>.jpg
+    for user in data["users"]:
+        if token == user["token"]:
+            handle = user["handle_str"]
+            break
+    img_filename = f"{handle}.jpg"
+    urllib.request.urlretrieve(img_url, f"src/static/{img_filename}")
 
     if ".jpg" not in img_url and ".jpeg" not in img_url:
         raise InputError("Image is not in jpg/jpeg format")
 
-    original_image = Image.open("src/static/profile_picture.jpg")
-    width, height = original_image.size
+    original_img = Image.open("src/static/profile_picture.jpg")
+    width, height = original_img.size
 
     if x_start < 0 or x_start >= width:
         raise InputError("x1 out of bounds")
@@ -218,8 +225,17 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
     crop_dimensions = (x_start, y_start, x_end, y_end)
 
     # Crops the image according to the crop_dimensions and saves this into the original file
-    cropped_image = original_image.crop(crop_dimensions)
-    cropped_image.save("src/static/profile_picture.jpg")
+    cropped_img = original_img.crop(crop_dimensions)
+
+    # Checks if a file exists with the same name
+    if os.path.exists(f"src/static/{img_filename}"):
+        os.remove(f"src/static/{img_filename}")
+    
+    # Save cropped image in static folder
+    cropped_image.save(f"src/static/{img_filename}")
+
+    # Stores the path which will be added to base url later on
+    user["profile_img_url"] = f"/imgurl/{img_filename}"
 
     return {}
     
