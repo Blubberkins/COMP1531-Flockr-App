@@ -297,22 +297,6 @@ def test_message_react_blackbox_success():
     message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
     assert message.message_react(login_owner["token"], 0, 1) == {}
 
-def test_message_react_whitebox_success():
-    '''
-    Tests the whitebox success case for reacting to a message
-    '''
-
-    clear()
-    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
-    channel_id = channels.channels_create(login_owner['token'], "channel", True)
-
-    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
-    message.message_react(login_owner["token"], 0, 1)
-    message_data = channel.channel_messages(login_owner["token"], channel_id["channel_id"], 0)
-    assert message_data["messages"][0]["reacts"]["react_id"] == 1
-    assert message_data["messages"][0]["reacts"]["u_ids"] == [login_owner["u_id"]]
-    assert message_data["messages"][0]["reacts"]["is_this_user_reacted"]
-
 # Tests for message_unreact
 
 def test_message_unreact_message_does_not_exist():
@@ -434,23 +418,6 @@ def test_message_unreact_blackbox_success():
     message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
     message.message_react(login_owner["token"], 0, 1)
     assert message.message_unreact(login_owner["token"], 0, 1) == {}
-
-def test_message_unreact_whitebox_success():
-    '''
-    Tests the whitebox case for unreacting to a message
-    '''
-
-    clear()
-    login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
-    channel_id = channels.channels_create(login_owner['token'], "channel", True)
-
-    message.message_send(login_owner["token"], channel_id["channel_id"], "sample message") 
-    message.message_react(login_owner["token"], 0, 1)
-    message.message_unreact(login_owner["token"], 0, 1)
-    message_data = channel.channel_messages(login_owner["token"], channel_id["channel_id"], 0)
-    assert message_data["messages"][0]["reacts"]["react_id"] == 1
-    assert message_data["messages"][0]["reacts"]["u_ids"] == []
-    assert not message_data["messages"][0]["reacts"]["is_this_user_reacted"]
     
 # Tests for message_pin
 
