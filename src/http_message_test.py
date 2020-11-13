@@ -677,7 +677,7 @@ def test_http_message_react_message_in_private_channel(url):
     msg_send(url, login_owner, channel_id, "example_message")
 
     react = {
-        "token": login_owner["token"],
+        "token": login_user["token"],
         "message_id": 0,
         "react_id": 1
     }
@@ -812,7 +812,7 @@ def test_http_unreact_message_in_private_channel(url):
     msg_send(url, login_owner, channel_id, "example_message")
 
     unreact = {
-        "token": login_owner["token"],
+        "token": login_user["token"],
         "message_id": 0,
         "react_id": 1
     }
