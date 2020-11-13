@@ -537,7 +537,7 @@ def test_http_message_sendlater_invalid_token(url):
     channel_info = create_channel(url, login_owner)
 
     invalid_token = {
-        "token": login_owner["token"],
+        "token": "invalid_token",
         "channel_id": channel_info["channel_id"],
         "message": "Hello World",
         "time_sent": 1609459200
