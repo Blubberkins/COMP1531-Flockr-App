@@ -207,7 +207,6 @@ def http_search():
 @APP.route("/user/profile", methods = ["GET"])
 def http_user_profile():
     response = user.user_profile(request.args.get("token"), int(request.args.get("u_id")))
-    #response["profile_img_url"] = urljoin(str(request.host_url), response["profile_img_url"])
     return dumps(response)
 
 @APP.route("/user/profile/setname", methods = ["PUT"])
@@ -228,7 +227,7 @@ def http_user_profile_sethandle():
     response = user.user_profile_sethandle(data["token"], data["handle_str"])
     return dumps(response)
 
-@APP.route("/imgurl/<path:path>",)
+@APP.route("/<path:path>",)
 def http_user_profile_serve_image(path):
     return send_from_directory("src/static", path)
 
