@@ -741,7 +741,7 @@ def test_http_message_react_negative_react_id(url):
     assert payload["message"] == "<p>Invalid react ID</p>"
     assert payload["code"] == 400
 
-def test_http_message_react_already_reacted(urk):
+def test_http_message_react_already_reacted(url):
     clear()
     login_owner = reg_owner(url)
     channel_id = create_unique_channel(url, login_owner, "channel", True)
