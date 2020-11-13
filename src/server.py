@@ -1,6 +1,6 @@
 import sys
 from json import dumps
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from error import InputError
 
@@ -14,6 +14,7 @@ import other
 import user
 import standup
 
+from urllib.parse import urljoin
 
 def defaultHandler(err):
     response = err.get_response()
@@ -26,7 +27,7 @@ def defaultHandler(err):
     response.content_type = 'application/json'
     return response
 
-APP = Flask(__name__)
+APP = Flask(__name__, static_url_path="")
 CORS(APP)
 
 APP.config['TRAP_HTTP_EXCEPTIONS'] = True
@@ -205,9 +206,9 @@ def http_search():
 # USER FUNCTIONS
 @APP.route("/user/profile", methods = ["GET"])
 def http_user_profile():
-    token = request.args.get("token")
-    u_id = int(request.args.get("u_id"))
-    return dumps(user.user_profile(token, u_id))
+    response = user.user_profile(request.args.get("token"), int(request.args.get("u_id")))
+    #response["profile_img_url"] = urljoin(str(request.host_url), response["profile_img_url"])
+    return dumps(response)
 
 @APP.route("/user/profile/setname", methods = ["PUT"])
 def http_user_profile_setname():
@@ -227,16 +228,14 @@ def http_user_profile_sethandle():
     response = user.user_profile_sethandle(data["token"], data["handle_str"])
     return dumps(response)
 
+@APP.route("/imgurl/<path:path>",)
+def http_user_profile_serve_image(path):
+    return send_from_directory("src/static", path)
+
 @APP.route("/user/profile/uploadphoto", methods = ["POST"])
 def http_user_profile_uploadphoto():
     data = request.get_json()
-    token = data["token"]
-    img_url = data["img_url"]
-    x_start = data["x_start"]
-    y_start = data["y_start"]
-    x_end = data["x_end"]
-    y_end = data["y_end"]
-    response = user.user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end)
+    response = user.user_profile_uploadphoto(data["token"], data["img_url"], data["x_start"], data["y_start"], data["x_end"], data["y_end"])
     return dumps(response)
 
 # STANDUP FUNCTIONS

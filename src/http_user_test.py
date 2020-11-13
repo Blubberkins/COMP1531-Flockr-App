@@ -5,8 +5,7 @@ import re
 import signal
 import pytest
 import requests
-from error import InputError
-from error import AccessError
+from error import InputError, AccessError
 from other import clear
 
 # Use this fixture to get the URL of the server.
@@ -65,6 +64,7 @@ def get_user_profile(url, token, u_id):
     r = requests.get(url + "user/profile", params={"token": token, "u_id": u_id})
     return r.json()
 
+
 # TEST FUNCTIONS FOR HTTP_USER_PROFILE
 # Success for user profile
 def test_http_user_profile_success1(url):
@@ -72,7 +72,7 @@ def test_http_user_profile_success1(url):
     clear()
     login_owner = register_owner(url)
     payload = get_user_profile(url, login_owner["token"], login_owner["u_id"])
-    assert payload["user"] == {"u_id": 1, "email": "owner@gmail.com", "name_first": "Flock", "name_last": "Owner", "handle_str": "flockowner"}
+    assert payload["user"] == {"u_id": 1, "email": "owner@gmail.com", "name_first": "Flock", "name_last": "Owner", "handle_str": "flockowner", "profile_img_url": "/imgurl/flockowner.jpg"}
 
 def test_http_user_profile_success2(url):
     """Tests for success when a registered user can view another user's profile."""
@@ -80,7 +80,7 @@ def test_http_user_profile_success2(url):
     register_owner(url)
     login_user = register_user(url)
     payload = get_user_profile(url, login_user["token"], login_user["u_id"])
-    assert payload["user"] == {"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last": "User", "handle_str": "newuser"}
+    assert payload["user"] == {"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last": "User", "handle_str": "newuser", "profile_img_url": "/imgurl/newuser.jpg"}
 
 # Failure for user profile
 def test_http_user_profile_invalid_u_id(url):
@@ -510,7 +510,7 @@ def test_http_user_profile_x_end_out_of_bounds(url):
     "Tests for failure when the user inputs an invalid x2 value"
     clear()
     login_user = register_user(url)
-
+ 
     invalid_x_end1 = {
         "token" : login_user["token"],
         "img_url": "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg",
@@ -557,7 +557,7 @@ def test_http_user_profile_y_end_out_of_bounds(url):
     img_url = "https://i.pinimg.com/originals/43/d8/55/43d855657208611181d1522c2699fe50.jpg"
     
     invalid_y_end1 = {
-        "token" : login_user["token"],
+        "token": login_user["token"],
         "img_url": img_url,
         "x_start": 0,
         "y_start": 0, 

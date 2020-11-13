@@ -10,6 +10,8 @@ import threading
 import time
 import urllib.request
 from PIL import Image
+from flask import url_for
+import server
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -87,7 +89,7 @@ def auth_register(email, password, name_first, name_last):
     if data["users"] != []:
         for user in data["users"]:
             if email == user["email"]:
-                raise InputError("Email is already in use")        
+                raise InputError("Email is already in use")       
  
     # Check if password is valid
     if len(password) < 6:
@@ -125,9 +127,9 @@ def auth_register(email, password, name_first, name_last):
     img_url = "https://www.ballastpoint.com.au/wp-content/uploads/2017/11/White-Square.jpg"
     img_filename = f"{handle}.jpg"
     urllib.request.urlretrieve(img_url, f"src/static/{img_filename}")
-    img = Image.open(f"src/static/{img_filename}")
-    img.save(f"src/static/{img_filename}")
-    
+    with server.APP.app_context(), server.APP.test_request_context():
+        profile_img_url = url_for("static", filename = f"imgurl/{img_filename}")
+
     # Create a dictionary for the users' details and add this to the list of users
     user = {}
     user["u_id"] = u_id
@@ -137,12 +139,13 @@ def auth_register(email, password, name_first, name_last):
     user["handle_str"] = handle
     user["password"] = hashlib.sha256(password.encode()).hexdigest()
     user["token"] = encode_jwt(email)
-    user["profile_img_url"] = f"/imgurl/{img_filename}"
+    user["profile_img_url"] = profile_img_url
     
     if u_id == 1:
         user["permission_id"] = 1
     else:
         user["permission_id"] = 2
+
     data["users"].append(user)
     
     return {

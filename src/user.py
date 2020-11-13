@@ -6,6 +6,8 @@ import urllib.request
 from PIL import Image
 import os
 from os import path, remove
+from flask import url_for
+import server
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -206,7 +208,7 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
     if ".jpg" not in img_url and ".jpeg" not in img_url:
         raise InputError("Image is not in jpg/jpeg format")
 
-    original_img = Image.open("src/static/profile_picture.jpg")
+    original_img = Image.open(f"src/static/{img_filename}")
     width, height = original_img.size
 
     if x_start < 0 or x_start >= width:
@@ -232,10 +234,11 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
         os.remove(f"src/static/{img_filename}")
     
     # Save cropped image in static folder
-    cropped_image.save(f"src/static/{img_filename}")
+    cropped_img.save(f"src/static/{img_filename}")
 
     # Stores the path which will be added to base url later on
-    user["profile_img_url"] = f"/imgurl/{img_filename}"
+    with server.APP.app_context(), server.APP.test_request_context(): 
+        user["profile_img_url"] = url_for("static", filename = f"imgurl/{img_filename}")
 
     return {}
     
