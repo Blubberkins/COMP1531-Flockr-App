@@ -170,11 +170,7 @@ def http_message_unpin():
 @APP.route("/message/sendlater", methods=["POST"])
 def http_message_sendlater():
     data = request.get_json()
-    token = data["token"]
-    channel_id = data["channel_id"]
-    message = data["message"]
-    time_sent = data["time_sent"]
-    response = message.message_sendlater(token, channel_id, message, time_sent)
+    response = message.message_sendlater(data["token"], data["channel_id"], data["message"], data["time_sent"])
     return dumps(response)
 
 @APP.route("/message/react", methods=["POST"])
