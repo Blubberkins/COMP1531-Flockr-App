@@ -398,25 +398,32 @@ def message_sendlater(token, channel_id, message, time_sent):
     """
 
     global data
-
-    # Check if token is valid
-    valid_token = False
-    for user in data["users"]:
-        if token == user["token"]:
-            valid_token = True
-            break
-    if not valid_token:
-        raise AccessError("Invalid permissions")
     
     # Check if channel_id is valid
     channel_found = False
     for channel in data["channels"]:
         if channel_id == channel["channel_id"]:
             channel_found = True
-            break
-    
+            break   
     if not channel_found:
         raise InputError("Invalid channel")
+
+    # Check if token is valid
+    token_exist = False
+    for user in data['users']:
+        if user['token'] == token:
+            token_exist = True
+            break
+    if token_exist == False:
+        raise AccessError("Invalid permissions")
+
+    token_true = False
+    for member in channel['all_members']:
+        if user['u_id'] == member['u_id']:
+            token_true = True
+            break
+    if token_true == False:
+        raise AccessError("The user has not joined the channel they are trying to post to")
 
     # Check message length
     if len(message) > 1000:
@@ -429,32 +436,15 @@ def message_sendlater(token, channel_id, message, time_sent):
 
     if time_sent < current_time:
         raise InputError("Time has already passed")
-
-    # Check if user is part of the channel they want to send a message to
-    is_user_in_channel = False
-    u_id = -1
-    for user in data["users"]:
-        if user["token"] == token:
-            u_id = user["u_id"]
-            break
-    for channel in data["channels"]:
-        if channel == channel["channel_id"]:
-            for user in channel["all_members"]:
-                if u_id == user["u_id"]:
-                    is_user_in_channel = True
-                    break
-   
-    if not is_user_in_channel:
-        raise AccessError("The user has not joined the channel they are trying to post to")
     
     current_time = datetime.now()
     current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
 
+    message_id = data["num_messages"]
+
     time_period = time_sent - current_time
     timer = threading.Timer(time_period, message_send, [token, channel_id, message])
     timer.start()
-
-    message_id = data["num_messages"] - 1
 
     return {
         "message_id": message_id
