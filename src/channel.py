@@ -147,7 +147,6 @@ def channel_leave(token, channel_id):
     '''
     global data
     # Check channel_id
-    num_users = len(data["users"])
     num_channels = len(data["channels"])
     u_id = 0
     for user in data["users"]:

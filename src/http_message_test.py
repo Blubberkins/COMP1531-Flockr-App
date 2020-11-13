@@ -404,7 +404,7 @@ def http_test_message_pin_invalid_message_id():
     create_channel(url, login_owner)
     invalid_message_id = -1
 
-    payload = pin(url, login_owner, message_id)
+    payload = pin(url, login_owner, invalid_message_id)
 
     assert payload['message'] == "<p>Message is not a valid message</p>"
     assert payload['code'] == 400
@@ -461,7 +461,7 @@ def http_test_message_unpin_success():
     channel_id = create_channel(url, login_owner)
     message_id = msg_send(url, login_owner, channel_id, "sample message")
 
-    pin(url, login_user, message_id)
+    pin(url, login_owner, message_id)
 
     empty = unpin(url, login_owner, message_id)
 
@@ -474,7 +474,7 @@ def http_test_message_unpin_invalid_message_id():
     create_channel(url, login_owner)
     invalid_message_id = -1
 
-    payload = unpin(url, login_owner, message_id)
+    payload = unpin(url, login_owner, invalid_message_id)
 
     assert payload['message'] == "<p>Message is not a valid message</p>"
     assert payload['code'] == 400
@@ -630,7 +630,7 @@ def test_http_message_sendlater_access_error(url):
 def test_http_message_react_message_does_not_exist(url):
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    create_unique_channel(url, login_owner, "channel", True)
 
     react = {
         "token": login_owner["token"],
@@ -765,7 +765,7 @@ def test_http_message_react_already_reacted(url):
 def test_http_message_unreact_message_does_not_exist(url):
     clear()
     login_owner = reg_owner(url)
-    channel_id = create_unique_channel(url, login_owner, "channel", True)
+    create_unique_channel(url, login_owner, "channel", True)
 
     unreact = {
         "token": login_owner["token"],

@@ -176,6 +176,7 @@ def auth_passwordreset_request(email):
     
     except:
         raise InputError("Unable to send reset code")
+    return {}
 
 
 def auth_passwordreset_reset(reset_code, new_password):
@@ -191,3 +192,4 @@ def auth_passwordreset_reset(reset_code, new_password):
             if reset_code == user["reset_code"]:
                 user["password"] = new_password
                 del user["reset_code"]
+    return {}

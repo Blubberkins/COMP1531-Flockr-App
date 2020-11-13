@@ -83,3 +83,6 @@ def standup_send(token, channel_id, message):
         raise InputError("There is no active stand up") 
 
     message_sendlater(token, channel_id, message, channel['stand_up']['time_finish'])
+
+    return {}
+    
