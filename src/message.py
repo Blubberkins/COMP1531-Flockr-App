@@ -41,7 +41,7 @@ def message_send(token, channel_id, message):
     # Add message
     message_dict = {}
     current_time = datetime.now()
-    current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
+    current_time = current_time.replace(tzinfo=timezone.utc).timestamp() - 39600
     message_dict["time_created"] = current_time
     message_dict["message_id"] = data["num_messages"]
     message_dict["u_id"] = u_id

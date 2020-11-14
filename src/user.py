@@ -203,12 +203,12 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
             handle = user["handle_str"]
             break
     img_filename = f"{handle}.jpg"
-    urllib.request.urlretrieve(img_url, f"src/static/{img_filename}")
+    urllib.request.urlretrieve(img_url, f"src/static/imgurl/{img_filename}")
 
     if ".jpg" not in img_url and ".jpeg" not in img_url:
         raise InputError("Image is not in jpg/jpeg format")
 
-    original_img = Image.open(f"src/static/{img_filename}")
+    original_img = Image.open(f"src/static/imgurl/{img_filename}")
     width, height = original_img.size
 
     if x_start < 0 or x_start >= width:
@@ -230,11 +230,11 @@ def user_profile_uploadphoto(token, img_url, x_start, y_start, x_end, y_end):
     cropped_img = original_img.crop(crop_dimensions)
 
     # Checks if a file exists with the same name
-    if os.path.exists(f"src/static/{img_filename}"):
-        os.remove(f"src/static/{img_filename}")
+    if os.path.exists(f"src/static/imgurl/{img_filename}"):
+        os.remove(f"src/static/imgurl/{img_filename}")
     
     # Save cropped image in static folder
-    cropped_img.save(f"src/static/{img_filename}")
+    cropped_img.save(f"src/static/imgurl/{img_filename}")
 
     # Stores the path which will be added to base url later on
     with server.APP.app_context(), server.APP.test_request_context(): 

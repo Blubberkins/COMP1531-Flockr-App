@@ -126,7 +126,7 @@ def auth_register(email, password, name_first, name_last):
     # Set default profile picture
     img_url = "https://www.ballastpoint.com.au/wp-content/uploads/2017/11/White-Square.jpg"
     img_filename = f"{handle}.jpg"
-    urllib.request.urlretrieve(img_url, f"src/static/{img_filename}")
+    urllib.request.urlretrieve(img_url, f"src/static/imgurl/{img_filename}")
     with server.APP.app_context(), server.APP.test_request_context():
         profile_img_url = url_for("static", filename = f"imgurl/{img_filename}")
 

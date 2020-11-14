@@ -4,7 +4,7 @@ from flask import Flask, request, send_from_directory
 from flask_cors import CORS
 from error import InputError
 
-import data 
+from data import data
 
 import auth
 import channel
@@ -13,7 +13,6 @@ import message
 import other
 import user
 import standup
-
 from urllib.parse import urljoin
 
 def defaultHandler(err):
@@ -207,6 +206,8 @@ def http_search():
 @APP.route("/user/profile", methods = ["GET"])
 def http_user_profile():
     response = user.user_profile(request.args.get("token"), int(request.args.get("u_id")))
+    u_id = int(request.args.get("u_id"))
+    response["user"]["profile_img_url"] =  str(request.host_url)[:-1] + response["user"]["profile_img_url"]
     return dumps(response)
 
 @APP.route("/user/profile/setname", methods = ["PUT"])
@@ -227,7 +228,7 @@ def http_user_profile_sethandle():
     response = user.user_profile_sethandle(data["token"], data["handle_str"])
     return dumps(response)
 
-@APP.route("/<path:path>",)
+@APP.route("/<path:path>")
 def http_user_profile_serve_image(path):
     return send_from_directory("src/static", path)
 

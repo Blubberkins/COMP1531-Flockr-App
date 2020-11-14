@@ -54,7 +54,7 @@ def standup_start(token, channel_id, length):
         raise InputError("Invalid length of time") 
 
     end_standup = datetime.now() + timedelta(seconds=length)
-    end_standup = end_standup.replace(tzinfo=timezone.utc).timestamp()
+    end_standup = end_standup.replace(tzinfo=timezone.utc).timestamp() - 39600
 
     channel['stand_up']['is_active'] = True
     channel['stand_up']['time_finish'] = end_standup
