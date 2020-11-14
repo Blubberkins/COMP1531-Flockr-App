@@ -206,7 +206,6 @@ def http_search():
 @APP.route("/user/profile", methods = ["GET"])
 def http_user_profile():
     response = user.user_profile(request.args.get("token"), int(request.args.get("u_id")))
-    u_id = int(request.args.get("u_id"))
     response["user"]["profile_img_url"] =  str(request.host_url)[:-1] + response["user"]["profile_img_url"]
     return dumps(response)
 

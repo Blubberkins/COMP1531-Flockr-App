@@ -26,27 +26,6 @@ def test_user_profile_success1():
     }
     assert user_info["user"] == return_user["user"]
 
-def test_user_profile_success2():
-    """Tests for success when a registered user can view another user's profile."""
-    clear()
-    register_user1 = auth.auth_register("validemail@gmail.com", "password123", "New", "User")
-    user1_token = register_user1["token"]
-    register_user2 = auth.auth_register("pythonthings@gmail.com", "pythonrules123", "Python", "Programmer")
-    user2_u_id = register_user2["u_id"]
-
-    user_info = user.user_profile(user1_token, user2_u_id) 
-    return_user = {
-        "user": {
-            "u_id": 2,
-            "email": "pythonthings@gmail.com",
-            "name_first": "Python",
-            "name_last": "Programmer",
-            "handle_str": "pythonprogrammer",
-            "profile_img_url": "/imgurl/pythonprogrammer.jpg",
-        }
-    }
-    assert user_info["user"] == return_user["user"]
-
 # Failure for user profile
 def test_user_profile_invalid_u_id():
     """Tests for failure to display a registered user's own profile."""
