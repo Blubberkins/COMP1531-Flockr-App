@@ -321,9 +321,8 @@ def test_http_message_remove_admin_remove_success(url):
 
     r = requests.get(url + 'channel/messages', params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 0})
     payload = r.json()
-    print(payload)
-    assert payload["message"] == "<p>Start is greater than the total number of messages in the channel</p>"
-    assert payload["code"] == 400
+    assert payload["start"] == 0
+    assert payload["end"] == -1
 
 # Tests for message_edit
 def test_http_edit_1000_characters(url):
