@@ -477,13 +477,13 @@ def test_http_channel_messages_invalid_start_index(url):
     clear()
     login_owner = reg_owner(url)
     channel_id = create_unique_channel(url, login_owner, "channel", True)
-    channel_id2 = create_unique_channel(url, login_owner, "channel2", True)
+
 
     msg_send(url, login_owner, channel_id, "example message") 
 
-    r = requests.get(url + "channel/messages", params={"token": login_owner["token"], "channel_id": channel_id2["channel_id"], "start": 1})
+    r = requests.get(url + "channel/messages", params={"token": login_owner["token"], "channel_id": channel_id["channel_id"], "start": 2})
     payload = r.json()
-    print(payload)
+ 
     assert payload["message"] == "<p>Start is greater than the total number of messages in the channel</p>"
     assert payload["code"] == 400
     
