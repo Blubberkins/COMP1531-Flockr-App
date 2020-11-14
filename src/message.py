@@ -428,21 +428,22 @@ def message_sendlater(token, channel_id, message, time_sent):
     # Check message length
     if len(message) > 1000:
         raise InputError("Message is larger than 1000 characters")
-    
+
     # Check time_sent is not in the past 
     # Get the current time
     current_time = datetime.now()
-    current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
+    current_time = current_time.replace(tzinfo=timezone.utc).timestamp() - 39600
 
-    if time_sent < current_time:
+    syd_time_sent = int(time_sent)
+    if syd_time_sent < current_time:
         raise InputError("Time has already passed")
     
     current_time = datetime.now()
-    current_time = current_time.replace(tzinfo=timezone.utc).timestamp()
+    current_time = current_time.replace(tzinfo=timezone.utc).timestamp() - 39600
 
     message_id = data["num_messages"]
 
-    time_period = time_sent - current_time
+    time_period = syd_time_sent - current_time
     timer = threading.Timer(time_period, message_send, [token, channel_id, message])
     timer.start()
 
