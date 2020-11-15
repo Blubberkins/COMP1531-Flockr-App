@@ -88,11 +88,12 @@ def channels_create(token, name, is_public):
     if len(name) > 20:
         raise InputError("Name is more than 20 characters long.")
     
-    # initialising variables
+    # initialise variables
     u_id = -1
     name_first = ''
     name_last = ''
-
+    profile_img_url = ''
+    
     # find corresponding u_id, first name and last name of token
     for x in data['users']:
 
@@ -100,6 +101,7 @@ def channels_create(token, name, is_public):
             u_id = x['u_id']
             name_first = x['name_first']
             name_last = x['name_last']
+            profile_img_url = x['profile_img_url']
             break
 
     # adding channel info
@@ -107,8 +109,8 @@ def channels_create(token, name, is_public):
         'channel_id': len(data['channels']) + 1,
         'name': name,
         'is_public': is_public,
-        'owner_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}],
-        'all_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last}],
+        'owner_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last, 'profile_img_url': profile_img_url}],
+        'all_members': [{"u_id": u_id, 'name_first': name_first, 'name_last': name_last, 'profile_img_url': profile_img_url}],
         'stand_up' : {'is_active': False, 'time_finish': None}
     }
 

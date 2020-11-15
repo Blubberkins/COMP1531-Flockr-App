@@ -413,8 +413,8 @@ def test_http_channels_create_public_success(url):
     channel_details = chan_details(url, login_owner, channel_id)
 
     assert channel_details == {"name": "abcdefghijklmnopqrst",
-                               "owner_members": [{"u_id": login_owner['u_id'], "name_first": "Owner", "name_last": "Test"}],
-                               "all_members": [{"u_id": login_owner['u_id'], "name_first": "Owner", "name_last": "Test"}]}
+                               "owner_members": [{"u_id": login_owner['u_id'], "name_first": "Owner", "name_last": "Test", 'profile_img_url': ''}],
+                               "all_members": [{"u_id": login_owner['u_id'], "name_first": "Owner", "name_last": "Test", 'profile_img_url': ''}]}
 
 # Create one public channel unsuccessfully with channel name > 20 characters long
 def test_http_channels_create_public_unsuccess(url):
@@ -437,8 +437,8 @@ def test_http_channels_create_private_success(url):
     channel_details = chan_details(url, login_owner, channel_id)
 
     assert channel_details == {"name": "abcdefghijklmnopqrst",
-                               "owner_members": [{"u_id": login_owner['u_id'], "name_first": "Owner", "name_last": "Test"}],
-                               "all_members" : [{"u_id": login_owner['u_id'], "name_first": "Owner", "name_last": "Test"}]}
+                               "owner_members": [{"u_id": login_owner['u_id'], "name_first": "Owner", "name_last": "Test", 'profile_img_url': ''}],
+                               "all_members" : [{"u_id": login_owner['u_id'], "name_first": "Owner", "name_last": "Test", 'profile_img_url': ''}]}
 
 # Create one private channel unsuccessfully with channel name > 20 characters long
 def test_http_channels_create_private_unsuccess(url):

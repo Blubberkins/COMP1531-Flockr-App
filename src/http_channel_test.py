@@ -176,7 +176,7 @@ def test_http_channel_invite_success(url):
 
     r = requests.get(url + "channel/details", params={'token': login_owner['token'], 'channel_id': channel_id['channel_id']})
     channel_details = r.json()
-    assert channel_details["all_members"] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details["all_members"] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url': ''}]
 
     r = requests.post(url + "channel/invite", json=success_invite)
     payload = r.json()
@@ -224,8 +224,8 @@ def test_http_channel_details_success(url):
     r = requests.get(url + "channel/details", params={'token': login_owner['token'], 'channel_id': channel_id['channel_id']})
     channel_details = r.json()
     assert channel_details['name'] == "channel"
-    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
-    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}]
+    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}]
 
     login_user = reg_user(url)
 
@@ -234,8 +234,8 @@ def test_http_channel_details_success(url):
     r = requests.get(url + "channel/details", params={'token': login_owner['token'], 'channel_id': channel_id['channel_id']})
     channel_details = r.json()
     assert channel_details['name'] == "channel"
-    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
-    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}]
+    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url': ''}]
 
 #tests http_channel_addowner
 def test_http_channel_addowner_invalid_id(url):
@@ -350,7 +350,7 @@ def test_http_channel_addowner_success(url):
 
     r = requests.get(url + "channel/details", params={'token': login_owner['token'], 'channel_id': channel_id['channel_id']})
     channel_details = r.json()
-    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url': ''}]
 
 #tests http_channel_removeowner
 def test_http_channel_removeowner_invalid_id(url):
@@ -470,7 +470,7 @@ def test_http_channel_removeowner_success(url):
 
     r = requests.get(url + "channel/details", params={'token': login_user['token'], 'channel_id': channel_id['channel_id']})
     channel_details = r.json()
-    assert channel_details['owner_members'] == [{'u_id': login_user['u_id'], 'name_first': 'User', 'name_last': 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id': login_user['u_id'], 'name_first': 'User', 'name_last': 'Test', 'profile_img_url': ''}]
 
 # Tests for channel_messages   
 def test_http_channel_messages_invalid_start_index(url):
@@ -634,4 +634,4 @@ def test_http_public_channel_join_success(url):
     r = requests.get(url + 'channel/details', params={"token": login_user["token"],"channel_id": channel_id["channel_id"]})
     payload = r.json()
     
-    assert payload["all_members"] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test"}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test"}]
+    assert payload["all_members"] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test", 'profile_img_url': ''}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test", 'profile_img_url': ''}]

@@ -50,7 +50,7 @@ def test_channel_invite_success():
     channel.channel_invite(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
 
     channel_details = channel.channel_details(login_owner['token'], channel_id['channel_id'])
-    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url': ''}]
 
 # Tests for channel_details
 def test_channel_details_invalid_id():
@@ -80,16 +80,16 @@ def test_channel_details_success():
 
     channel_details = channel.channel_details(login_owner['token'], channel_id['channel_id'])
     assert channel_details['name'] == "channel"
-    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
-    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url':''}]
+    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url':''}]
 
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
     channel.channel_invite(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
 
     channel_details = channel.channel_details(login_user['token'], channel_id['channel_id'])
     assert channel_details['name'] == "channel"
-    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
-    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url':''}]
+    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url':''}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url':''}]
 
 # Tests for channel_messages
 def test_channel_messages_invalid_start_index():
@@ -273,7 +273,7 @@ def test_public_channel_join_success():
 
     channel_details = channel.channel_details(login_user['token'], channel_id['channel_id'])
 
-    assert channel_details['all_members'] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test"}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test"}]
+    assert channel_details['all_members'] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test", 'profile_img_url':''}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test", 'profile_img_url':''}]
 
 
 # Test for channel_addowner
@@ -328,7 +328,7 @@ def test_channel_addowner_success():
 
     channel.channel_addowner(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
     channel_details = channel.channel_details(login_owner['token'], channel_id['channel_id'])
-    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url': ''}]
 
 # Tests for channel_removeowner
 def test_channel_removeowner_invalid_id():
@@ -381,4 +381,4 @@ def test_channel_removeowner_success():
     channel.channel_addowner(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
     channel.channel_removeowner(login_user['token'], channel_id['channel_id'], login_owner['u_id'])
     channel_details = channel.channel_details(login_owner['token'], channel_id['channel_id'])
-    assert channel_details['owner_members'] == [{'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url':''}]

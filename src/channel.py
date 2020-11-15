@@ -38,7 +38,7 @@ def channel_invite(token, channel_id, u_id):
     if u_id_true == False:
         raise InputError("Invitee does not exist")
 
-    invitee_member_info = {'u_id' : invitee['u_id'], 'name_first' : invitee['name_first'], 'name_last' : invitee['name_last']}
+    invitee_member_info = {'u_id' : invitee['u_id'], 'name_first' : invitee['name_first'], 'name_last' : invitee['name_last'], 'profile_img_url': invitee['profile_img_url']}
     channel_invited['all_members'].append(invitee_member_info)
 
     return {}
@@ -221,6 +221,7 @@ def channel_join(token, channel_id):
             user_dictionary["u_id"] = data["users"][x]['u_id']
             user_dictionary["name_first"] = data["users"][x]['name_first']
             user_dictionary["name_last"] = data["users"][x]['name_last']
+            user_dictionary["profile_img_url"] = data["users"][x]['profile_img_url']
             break
     data["channels"][channel_index]["all_members"].append(user_dictionary)
     return {}
@@ -264,7 +265,7 @@ def channel_addowner(token, channel_id, u_id):
     if u_id_true == False:
         raise InputError("Target is not part of the channel")
 
-    member_info = {'u_id' : member['u_id'], 'name_first' : member['name_first'], 'name_last' : member['name_last']}
+    member_info = {'u_id' : member['u_id'], 'name_first' : member['name_first'], 'name_last' : member['name_last'], 'profile_img_url': member['profile_img_url']}
     channel['owner_members'].append(member_info)
 
     return {}
