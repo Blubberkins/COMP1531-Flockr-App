@@ -1,5 +1,6 @@
 from data import data
 from error import InputError, AccessError
+import server
 import re
 import hashlib
 import jwt
@@ -8,10 +9,6 @@ import string
 import smtplib
 import threading
 import time
-import urllib.request
-from PIL import Image
-from flask import url_for
-import server
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -19,8 +16,7 @@ def valid_email(email):
 
     if re.search(regex, email):  
         return True   
-    else:         
-        return False
+    return False
 
 def encode_jwt(email):
     SECRET = "COMP1531"
@@ -67,14 +63,10 @@ def auth_logout(token):
         if token != "invalid_token" and decode_jwt(token) == user["email"]:
             # Invalidate token and log the user out
             user["token"] = "invalid_token"
-            return {
-                "is_success": True,
-            }
+            return {"is_success": True}
 
     # If token does not match a registered email, return false
-    return {
-        "is_success": False,
-    }
+    return {"is_success": False}
 
 def auth_register(email, password, name_first, name_last):
     global data
@@ -122,14 +114,7 @@ def auth_register(email, password, name_first, name_last):
                 # If new handle is unique, i.e. user2 and user3
                 if handle != user["handle_str"]:
                     is_duplicate = False
-
-    # Set default profile picture
-    img_url = "https://www.ballastpoint.com.au/wp-content/uploads/2017/11/White-Square.jpg"
-    img_filename = f"{handle}.jpg"
-    urllib.request.urlretrieve(img_url, f"src/static/imgurl/{img_filename}")
-    with server.APP.app_context(), server.APP.test_request_context():
-        profile_img_url = url_for("static", filename = f"imgurl/{img_filename}")
-
+    
     # Create a dictionary for the users' details and add this to the list of users
     user = {}
     user["u_id"] = u_id
@@ -139,15 +124,15 @@ def auth_register(email, password, name_first, name_last):
     user["handle_str"] = handle
     user["password"] = hashlib.sha256(password.encode()).hexdigest()
     user["token"] = encode_jwt(email)
-    user["profile_img_url"] = profile_img_url
-    
+    user["profile_img_url"] = ""
+
     if u_id == 1:
         user["permission_id"] = 1
     else:
         user["permission_id"] = 2
-
-    data["users"].append(user)
     
+    data["users"].append(user)
+
     return {
         "u_id": u_id,
         "token": encode_jwt(email),
@@ -185,11 +170,10 @@ def auth_passwordreset_request(email):
         for user in data["users"]: 
             if email == user["email"]:
                 user["reset_code"] = generatedcode
-    
     except:
         raise InputError("Unable to send reset code")
-    return {}
 
+    return {}
 
 def auth_passwordreset_reset(reset_code, new_password):
     global data
@@ -198,10 +182,11 @@ def auth_passwordreset_reset(reset_code, new_password):
         raise InputError("Invalid password")
     if len(reset_code) != 8:
         raise InputError("Reset code is not a valid reset code")
+
     # Assumes the caller of this function is the reset_code they enter in
     for user in data["users"]:
-        if "reset_code" in user.keys():
-            if reset_code == user["reset_code"]:
+        if "reset_code" in user.keys() and reset_code == user["reset_code"]:
                 user["password"] = new_password
                 del user["reset_code"]
+
     return {}

@@ -124,15 +124,14 @@ def test_http_users_all_successful(url):
     
     r = requests.get(url + "users/all", params={'token': login_owner['token']})
     all_users = r.json()
-    assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest", 'profile_img_url': '/imgurl/ownertest.jpg'}]
+    assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest", 'profile_img_url': ''}]
 
     login_user = reg_user(url)
 
-    requests.get(url + "user/profile", params={'token': login_owner['token'], 'u_id': login_user['u_id']})
     r = requests.get(url + "users/all", params={'token': login_owner['token']})
     all_users = r.json()
-    user1 = {'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest", 'profile_img_url': '/imgurl/ownertest.jpg'}
-    user2 = {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest", 'profile_img_url': '/imgurl/usertest.jpg'}
+    user1 = {'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest", 'profile_img_url': ''}
+    user2 = {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest", 'profile_img_url': ''}
     assert all_users['users'] == [user1, user2]
 
 #

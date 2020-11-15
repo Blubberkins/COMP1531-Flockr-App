@@ -189,6 +189,16 @@ def http_message_unreact():
 @APP.route("/users/all", methods=['GET'])
 def http_users_all():
     response = other.users_all(request.args.get('token'))
+    """
+    for x in response["users"]:
+        for y in data["users"]:
+            if x["u_id"] == y["u_id"]:
+                x["profile_img_url"] =  str(request.host_url)[:-1] + y["img_path"] 
+    """
+    for x in response["users"]:
+        for y in data["users"]:
+            if x["u_id"] == y["u_id"] and x["profile_img_url"] != "":
+                x["profile_img_url"] =  str(request.host_url)[:-1] + x["profile_img_url"] 
     return dumps(response)
 
 @APP.route("/admin/userpermission/change", methods=['POST'])
@@ -205,8 +215,10 @@ def http_search():
 # USER FUNCTIONS
 @APP.route("/user/profile", methods = ["GET"])
 def http_user_profile():
+    global data
     response = user.user_profile(request.args.get("token"), int(request.args.get("u_id")))
-    response["user"]["profile_img_url"] =  str(request.host_url)[:-1] + response["user"]["profile_img_url"]
+    if response["user"]["profile_img_url"] != "":
+        response["user"]["profile_img_url"] =  str(request.host_url)[:-1] + response["user"]["profile_img_url"]
     return dumps(response)
 
 @APP.route("/user/profile/setname", methods = ["PUT"])

@@ -73,7 +73,7 @@ def test_http_user_profile_success1(url):
     clear()
     login_owner = register_owner(url)
     payload = get_user_profile(url, login_owner["token"], login_owner["u_id"])
-    assert payload["user"] == {"u_id": 1, "email": "owner@gmail.com", "name_first": "Flock", "name_last": "Owner", "handle_str": "flockowner", "profile_img_url": f"{url}imgurl/flockowner.jpg"}
+    assert payload["user"] == {"u_id": 1, "email": "owner@gmail.com", "name_first": "Flock", "name_last": "Owner", "handle_str": "flockowner", "profile_img_url": ""}
 
 def test_http_user_profile_success2(url):
     """Tests for success when a registered user can view another user's profile."""
@@ -81,7 +81,7 @@ def test_http_user_profile_success2(url):
     register_owner(url)
     login_user = register_user(url)
     payload = get_user_profile(url, login_user["token"], login_user["u_id"])
-    assert payload["user"] == {"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last": "User", "handle_str": "newuser", "profile_img_url": f"{url}imgurl/newuser.jpg"}
+    assert payload["user"] == {"u_id": 2, "email": "user@gmail.com", "name_first": "New", "name_last": "User", "handle_str": "newuser", "profile_img_url": ""}
 
 # Failure for user profile
 def test_http_user_profile_invalid_u_id(url):
