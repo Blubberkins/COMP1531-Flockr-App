@@ -1,9 +1,14 @@
 from data import data
-from error import InputError
-from error import AccessError
+from error import InputError, AccessError
+import server
 import re
 import hashlib
 import jwt
+import random
+import string
+import smtplib
+import threading
+import time
 
 def valid_email(email):  
     # Pass the regular expression and the string into the search() method 
@@ -11,8 +16,7 @@ def valid_email(email):
 
     if re.search(regex, email):  
         return True   
-    else:         
-        return False
+    return False
 
 def encode_jwt(email):
     SECRET = "COMP1531"
@@ -24,6 +28,12 @@ def decode_jwt(token):
     SECRET = "COMP1531"
     email = jwt.decode(token, SECRET, algorithm = 'HS256')
     return email[("email")]
+
+def get_reset_code():
+    # Creates a random string of letters and numbers to be used for resetting password
+    chars = string.ascii_letters + string.digits
+    result = ''.join(random.choice(chars) for char in range(8))
+    return result
 
 def auth_login(email, password):
     global data
@@ -38,9 +48,10 @@ def auth_login(email, password):
     if data["users"] != []:
         for user in data["users"]:            
             if email == user["email"] and password == user["password"]:
+                user["token"] = encode_jwt(email)
                 return {
                     "u_id": user["u_id"],
-                    "token": encode_jwt(email),
+                    "token": user["token"],
                 }
         raise InputError("Invalid email or password")    
                
@@ -51,15 +62,11 @@ def auth_logout(token):
     for user in data["users"]: 
         if token != "invalid_token" and decode_jwt(token) == user["email"]:
             # Invalidate token and log the user out
-            token = "invalid_token"
-            return {
-                "is_success": True,
-            }
+            user["token"] = "invalid_token"
+            return {"is_success": True}
 
     # If token does not match a registered email, return false
-    return {
-        "is_success": False,
-    }
+    return {"is_success": False}
 
 def auth_register(email, password, name_first, name_last):
     global data
@@ -74,7 +81,7 @@ def auth_register(email, password, name_first, name_last):
     if data["users"] != []:
         for user in data["users"]:
             if email == user["email"]:
-                raise InputError("Email is already in use")        
+                raise InputError("Email is already in use")       
  
     # Check if password is valid
     if len(password) < 6:
@@ -107,7 +114,7 @@ def auth_register(email, password, name_first, name_last):
                 # If new handle is unique, i.e. user2 and user3
                 if handle != user["handle_str"]:
                     is_duplicate = False
-
+    
     # Create a dictionary for the users' details and add this to the list of users
     user = {}
     user["u_id"] = u_id
@@ -117,13 +124,69 @@ def auth_register(email, password, name_first, name_last):
     user["handle_str"] = handle
     user["password"] = hashlib.sha256(password.encode()).hexdigest()
     user["token"] = encode_jwt(email)
+    user["profile_img_url"] = ""
+
     if u_id == 1:
         user["permission_id"] = 1
     else:
         user["permission_id"] = 2
-    data["users"].append(user)
     
+    data["users"].append(user)
+
     return {
         "u_id": u_id,
         "token": encode_jwt(email),
     }
+
+def auth_passwordreset_request(email):
+    global data
+    # This code is influenced by "https://stackabuse.com/how-to-send-emails-with-gmail-using-python/"
+    generatedcode = get_reset_code()
+    message = "Your reset code is:\n" + generatedcode
+
+    gmail_user = 'bigmanthebiggerman@gmail.com'
+    gmail_password = 'python123!'
+
+    sent_from = gmail_user
+    to = [email]
+    subject = "Reset password"
+    body = message
+
+    email_text = """\
+    From: %s
+    To: %s
+    Subject: %s
+
+    %s
+    """ % (sent_from, ", ".join(to), subject, body)
+
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(gmail_user, gmail_password)
+        server.sendmail(sent_from, to, email_text)
+        server.close()
+
+        for user in data["users"]: 
+            if email == user["email"]:
+                user["reset_code"] = generatedcode
+    except:
+        raise InputError("Unable to send reset code")
+
+    return {}
+
+def auth_passwordreset_reset(reset_code, new_password):
+    global data
+
+    if len(new_password) < 6:
+        raise InputError("Invalid password")
+    if len(reset_code) != 8:
+        raise InputError("Reset code is not a valid reset code")
+
+    # Assumes the caller of this function is the reset_code they enter in
+    for user in data["users"]:
+        if "reset_code" in user.keys() and reset_code == user["reset_code"]:
+                user["password"] = new_password
+                del user["reset_code"]
+
+    return {}

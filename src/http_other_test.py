@@ -114,19 +114,25 @@ def test_http_users_all_invalid_token(url):
     assert payload['code'] == 400
 
 def test_http_users_all_successful(url):
+    """
+    tests for user_all success
+    In users_all()'s return, profile_img_url's are paths to the image in static.
+    """
     clear()
 
     login_owner = reg_owner(url)
-
+    
     r = requests.get(url + "users/all", params={'token': login_owner['token']})
     all_users = r.json()
-    assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}]
+    assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest", 'profile_img_url': ''}]
 
     login_user = reg_user(url)
 
     r = requests.get(url + "users/all", params={'token': login_owner['token']})
     all_users = r.json()
-    assert all_users['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}, {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest"}]
+    user1 = {'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest", 'profile_img_url': ''}
+    user2 = {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest", 'profile_img_url': ''}
+    assert all_users['users'] == [user1, user2]
 
 #
 # TEST FUNCTIONS FOR ADMIN_USERPERMISSION_CHANGE

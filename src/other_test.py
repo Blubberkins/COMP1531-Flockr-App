@@ -17,15 +17,18 @@ def test_users_all_invalid_token():
         other.users_all("")
 
 def test_users_all_successful():
-    """tests for user_all sucess"""
+    """
+    tests for user_all success
+    In users_all()'s return, profile_img_url's are paths to the image in static since the url is not involved in these non-http tests.
+    """
     other.clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     r = other.users_all(login_owner['token'])
-    assert r['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}]
+    assert r['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest", 'profile_img_url': ''}]
 
     login_user = auth.auth_register("user@email.com", "password321", "User", "Test")
     r = other.users_all(login_user['token'])
-    assert r['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest"}, {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest"}]
+    assert r['users'] == [{'u_id' : login_owner['u_id'], 'email' : "owner@email.com", 'name_first' : "Owner", 'name_last' : "Test", 'handle_str' : "ownertest", 'profile_img_url': ''}, {'u_id' : login_user['u_id'], 'email' : "user@email.com", 'name_first' : "User", 'name_last' : "Test", 'handle_str' : "usertest", 'profile_img_url': ''}]
 
 # test functions for admin_userpermission_change
 def test_admin_userpermission_change_invalid_id():

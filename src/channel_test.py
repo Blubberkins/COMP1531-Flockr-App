@@ -50,7 +50,7 @@ def test_channel_invite_success():
     channel.channel_invite(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
 
     channel_details = channel.channel_details(login_owner['token'], channel_id['channel_id'])
-    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url': ''}]
 
 # Tests for channel_details
 def test_channel_details_invalid_id():
@@ -80,19 +80,23 @@ def test_channel_details_success():
 
     channel_details = channel.channel_details(login_owner['token'], channel_id['channel_id'])
     assert channel_details['name'] == "channel"
-    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
-    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url':''}]
+    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url':''}]
 
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
     channel.channel_invite(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
 
     channel_details = channel.channel_details(login_user['token'], channel_id['channel_id'])
     assert channel_details['name'] == "channel"
-    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}]
-    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url':''}]
+    assert channel_details['all_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url':''}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url':''}]
 
 # Tests for channel_messages
 def test_channel_messages_invalid_start_index():
+    '''
+    Tests the input error for when the start argument is invalid
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -106,16 +110,24 @@ def test_channel_messages_invalid_start_index():
 
 
 def test_channel_messages_invalid_channel():
+    '''
+    Tests the input error for when the channel_id is invalid
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channels.channels_create(login_owner['token'], "channel", True)
-    invalid_channel_id = 1
+    invalid_channel_id = -1
 
     with pytest.raises(InputError):
         channel.channel_messages(login_owner['token'], invalid_channel_id, 0)
 
 
 def test_channel_messages_invalid_token():
+    '''
+    Tests for the access error for a channel that the user has not joined yet
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", False)
@@ -129,6 +141,10 @@ def test_channel_messages_invalid_token():
 
 
 def test_channel_messages_one_message_success():
+    '''
+    Tests the success case for one message in the channel
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -143,6 +159,10 @@ def test_channel_messages_one_message_success():
     assert channel_messages['messages'][0]['message'] == 'example message'
 
 def test_channel_messages_max_messages_success():
+    '''
+    Tests the success case for the maximum number of message the function can display at once
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)   
@@ -152,17 +172,21 @@ def test_channel_messages_max_messages_success():
         message.message_send(login_owner['token'], channel_id['channel_id'], 'example message')
         x += 1
     
-    channel_messages = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0) 
-    channel_messages2 = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 1) 
+    channel_messages = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 1) 
+    channel_messages2 = channel.channel_messages(login_owner['token'], channel_id['channel_id'], 0) 
     
-    assert channel_messages['start'] == 0
-    assert channel_messages['end'] == 50
-    assert channel_messages2['start'] == 1
-    assert channel_messages2['end'] == -1
+    assert channel_messages['start'] == 1
+    assert channel_messages['end'] == -1
+    assert channel_messages2['start'] == 0
+    assert channel_messages2['end'] == 50
 
 
 # Tests for channel_leave
 def test_channel_leave_invalid_channel_id():
+    '''
+    Tests the input error for when the channel id is invalid
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channels.channels_create(login_owner['token'], "channel", True)
@@ -172,6 +196,11 @@ def test_channel_leave_invalid_channel_id():
         channel.channel_leave(login_owner['token'], invalid_channel_id)
     
 def test_channel_leave_not_in_channel():
+    '''
+    Tests the access error for when the user tries to leave 
+    a channel that they are not currently a member of
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
@@ -184,6 +213,11 @@ def test_channel_leave_not_in_channel():
         channel.channel_leave(login_user['token'], owner_channel['channel_id'])
 
 def test_channel_leave_success():
+    '''
+    Tests the success case when the user tries to leave a channel
+    they are a member of
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     channel_id = channels.channels_create(login_owner['token'], "channel", True)
@@ -193,7 +227,12 @@ def test_channel_leave_success():
     assert channel_list == {'channels': []}
 
 # Tests for channel_join
-def test_channel_join_invalid_channel_id():    
+def test_channel_join_invalid_channel_id():   
+    '''
+    Tests the input error for when the user tries to join 
+    a channel with an invalid channel id
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
@@ -205,6 +244,11 @@ def test_channel_join_invalid_channel_id():
         channel.channel_join(login_user['token'], invalid_channel_id)
 
 def test_channel_join_private_channel():
+    '''
+    Tests the access error for when the user 
+    tries to join a channel that is private
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
@@ -215,6 +259,11 @@ def test_channel_join_private_channel():
         channel.channel_join(login_user['token'], channel_id['channel_id'])
 
 def test_public_channel_join_success():
+    '''
+    Tests the success case for when the user
+    tries to join a public channel
+    '''
+
     clear()
     login_owner = auth.auth_register("owner@email.com", "password123", "Owner", "Test")
     login_user = auth.auth_register("user@email.com", "password123", "User", "Test")
@@ -224,7 +273,7 @@ def test_public_channel_join_success():
 
     channel_details = channel.channel_details(login_user['token'], channel_id['channel_id'])
 
-    assert channel_details['all_members'] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test"}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test"}]
+    assert channel_details['all_members'] == [{'u_id': login_owner['u_id'], 'name_first': "Owner", 'name_last': "Test", 'profile_img_url':''}, {'u_id': login_user["u_id"], 'name_first': "User", 'name_last': "Test", 'profile_img_url':''}]
 
 
 # Test for channel_addowner
@@ -279,7 +328,7 @@ def test_channel_addowner_success():
 
     channel.channel_addowner(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
     channel_details = channel.channel_details(login_owner['token'], channel_id['channel_id'])
-    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test'}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_owner['u_id'], 'name_first' : 'Owner', 'name_last' : 'Test', 'profile_img_url': ''}, {'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url': ''}]
 
 # Tests for channel_removeowner
 def test_channel_removeowner_invalid_id():
@@ -332,4 +381,4 @@ def test_channel_removeowner_success():
     channel.channel_addowner(login_owner['token'], channel_id['channel_id'], login_user['u_id'])
     channel.channel_removeowner(login_user['token'], channel_id['channel_id'], login_owner['u_id'])
     channel_details = channel.channel_details(login_owner['token'], channel_id['channel_id'])
-    assert channel_details['owner_members'] == [{'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test'}]
+    assert channel_details['owner_members'] == [{'u_id' : login_user['u_id'], 'name_first' : 'User', 'name_last' : 'Test', 'profile_img_url':''}]

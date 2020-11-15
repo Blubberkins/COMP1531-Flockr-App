@@ -40,15 +40,12 @@ def users_all(token):
             "email": user['email'],
             "name_first": user['name_first'],
             "name_last": user['name_last'],
-            "handle_str": user['handle_str']
+            "handle_str": user['handle_str'],
+            "profile_img_url": user['profile_img_url']
         }
         users_list.append(user_dict)
-        
-        all_users = {
-            'users': users_list
-        }
 
-    return all_users
+    return {'users': users_list}
 
 def admin_userpermission_change(token, u_id, permission_id):
     """
@@ -150,7 +147,7 @@ def search(token, query_str):
                         'message_id': x['message_id'],
                         'u_id': x['u_id'],
                         'message': x['message'],
-                        'time_created': x['time_created']
+                        'time_created': x['time_created'],
                     })
                     break
 
