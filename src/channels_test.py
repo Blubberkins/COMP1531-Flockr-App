@@ -338,3 +338,4 @@ def test_channels_create_private_unsuccess():
 
     with pytest.raises(InputError):
         channels.channels_create(login['token'], "abcdefghijklmnopqrstu", False)
+        
